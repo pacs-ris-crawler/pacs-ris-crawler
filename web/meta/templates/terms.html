@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Terms</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{{url_for('static', filename='css/tachyons.min.css') }}">
+
+<body class="w-100">
+  {% include 'partials/header.html' %}
+  <div class="w-100 bt b--black-10">
+    <h1 class="f3 pa3 ph5-ns mb0 pb0">Terms</h1>
+    <div class="pa3 ph5-ns pt0 cf">
+    {% for (key, value) in terms %}
+    <div class="cf fl pa2 pl0">
+      <ul class="list pl0 f4 fw6 ml0"><p class="bb mb0 bw1">{{ key }}</p>
+        {% for v in value %}
+        <li class="f6 fw4 ml0 pa1">
+          <a href='search?query=*:*&{{key}}="{{ v[0] }}"' class="link underline-hover navy">{{ v[0] }} <span class="f6 fw6">{{ v[1] }}</span></a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+</body>
+
+</html>

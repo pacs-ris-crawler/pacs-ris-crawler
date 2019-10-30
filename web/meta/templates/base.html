@@ -1,0 +1,15 @@
+{% extends "page.html" %}
+
+{% block content %}
+<div class="container rounded pt-3 mt-4" style="background-color:#edf4f7">
+  {% block search %}
+  {% endblock %}
+</div>
+{% if show_transfer_targets or show_download_options %}
+{% include 'partials/actions.html' %}
+{% endif %}
+<div class="container pt-1">
+  {% block table %}
+  {% endblock %}
+</div>
+{% endblock %}

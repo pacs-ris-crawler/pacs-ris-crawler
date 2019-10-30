@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block search %}
+<form id="search-form" action="/search" method="POST">
+<div class="row">
+  <div class="col-sm-2">
+    <a class="pl-3" href="/">Pacs / RIS Crawler</a>
+    <div class="pl-3 dib">
+      <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="form-group">
+      <div class="input-group input-group-sm mb-3">
+        <input type="text" class="form-control form-control-sm" id="search-input" name="RisReport"
+          value="{{ params.RisReport }}" autofocus>
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit">Search in RIS Reports</button>
+        </div>
+      </div>
+      <div class="d-inline small"><a data-toggle="collapse" data-target="#search-details" href="#">Show more inputs</a>
+      </div>
+      <div class="d-inline pl-4 small"><a class="text-dark" target="_blank" href="{{mova_dashboard_url}}">Transfer &amp;
+          Download progress <span class="oi oi-external-link small"></span></a>
+      </div>
+      {% if indexed_start_date %}
+      <div class="d-inline float-right">
+        <small>Indexed dates: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</small>
+      </div>
+      {% endif %}
+    </div>
+    <div class="alert alert-danger small {% if not error %} d-none {% endif %}" role="alert">
+      <strong>Error:</strong> {{error}}
+      <br>
+      <small>{{trace}}</small>
+    </div>
+    <input type="hidden" name="offset" value="{{offset}}">
+    <input type="hidden" name="page" value="{{page}}">
+  </div>
+
+  <div class="col-sm-3">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Universitätsspital Basel" style="height:34px">
+    <small class="pt-1 mb-0">
+      <p>Klinik für Radiologie und Nuklearmedizin</p>
+    </small>
+  </div>
+  <div id="search-details" class="w-100 pb-2 small collapse">
+    <div class="form-group row mx-auto px-4">
+      <div class="col">
+        <label for="patientname-input" class="col-form-label">Patient Name</label>
+        <input class="form-control form-control-sm" type="text" id="patientname-input" name="PatientName"
+          value="{{ params.PatientName }}">
+      </div>
+      <div class="col">
+        <label for="patientid-input" class="col-form-label"
+          title="Patient ID to search for, multiples are separated by space">Patient Id</label>
+        <input class="form-control form-control-sm" type="text" id="patientid-input" name="PatientID"
+          value="{{ params.PatientID }}">
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4 ">
+      <div class="col">
+        <label for="accessionnumber-input" class="col-form-label"
+          title="Accession Number to search for, multiples are separated by space">Accession Number</label>
+        <input class="form-control form-control-sm" type="text" id="accessionnumber-input" name="AccessionNumber"
+          value="{{ params.AccessionNumber }}">
+      </div>
+      <div class="col">
+        <label for="studydescription-input" class="col-form-label"
+          title="Study Description to search for, for exact search put it between &quot; &quot;">Study
+          Description</label>
+        <input class="form-control form-control-sm" type="text" id="studydescription-input" name="StudyDescription"
+          value="{{ params.StudyDescription }}">
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4 ">
+      <div class="col">
+        <label for="protocolname-input" class="col-form-label" title="ProtocolName">Protocol Name</label>
+        <input class="form-control form-control-sm" type="text" id="protocolname-input" name="ProtocolName"
+          value="{{ params.ProtocolName }}">
+      </div>
+      <div class="col">
+        <label for="referringphysicianname-input" class="col-form-label" title="Referring Physician ">Referring
+          Physician</label>
+        <input class="form-control form-control-sm" type="text" id="referringphysicianname-input"
+          name="ReferringPhysicianName" value="{{ params.ReferringPhysicianName }}">
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4">
+      <div class="col-sm-6">
+        <label for="seriesdescription-input" class="col-form-label"
+          title="Series Description to search for, AND is *not* supported">Series Description</label>
+        <input class="form-control form-control-sm" type="text" id="seriesdescription-input" name="SeriesDescription"
+          value="{{ params.SeriesDescription }}">
+      </div>
+      <div class="col-sm-6">
+        <label for="sort-field" class="col-form-label" title="On which field to sort the results">Sort field
+        </label>
+        <div>
+          <div class="custom-control custom-radio custom-control-inline align-items-center">
+            <input type="radio" id="customRadioInline1" name="sort_field" class="custom-control-input" value="Default"
+              {% if 'Default' == params.sort_field %} checked="checked" {% endif %}>
+            <label class="custom-control-label" for="customRadioInline1">Default</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline align-items-center">
+            <input type="radio" id="customRadioInline2" name="sort_field" class="custom-control-input" value="PatientID"
+              {% if 'PatientID' == params.sort_field %} checked="checked" {% endif %}>
+            <label class="custom-control-label" for="customRadioInline2">PatientID</label>
+          </div>
+          <div class="custom-control custom-radio custom-control-inline align-items-center">
+            <input type="radio" id="customRadioInline3" name="sort_field" class="custom-control-input"
+              value="AccessionNumber" {% if 'AccessionNumber' == params.sort_field %} checked="checked" {% endif %}>
+            <label class="custom-control-label" for="customRadioInline3">AccessionNumber</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4 ">
+      <div class="col">
+        <label for="modality1" class="col-form-label" title="Modality to search for">Modality</label>
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4">
+      <div class="col">
+        <div class="form-check form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality1" name="Modality" value="CT"
+            {% if 'CT' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Computer Tomography">CT</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality2" name="Modality" value="MR"
+            {% if 'MR' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Magnetic Resonance">MR</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality11" name="Modality" value="PT"
+            {% if 'PT' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Positron emission tomography (PET)">PT</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality3" name="Modality" value="CR"
+            {% if 'CR' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Computed Radiography">CR</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality4" name="Modality" value="XA"
+            {% if 'XA' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="X Ray Angiography">XA</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality5" name="Modality" value="SR"
+            {% if 'SR' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="SR Document">SR</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality6" name="Modality" value="NM"
+            {% if 'NM' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Nuclear Medicine">NM</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality7" name="Modality" value="MG"
+            {% if 'MG' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Mammography">MG</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality8" name="Modality" value="US"
+            {% if 'US' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Mammography">US</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality9" name="Modality" value="DX"
+            {% if 'DX' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Digital Radiography">DX</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality10" name="Modality" value="RF"
+            {% if 'RF' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Radio Fluoroscopy">RF</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality12" name="Modality" value="OT"
+            {% if 'OT' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Other">OT</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality13" name="Modality" value="PR"
+            {% if 'PR' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Presentation State">PR</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality14" name="Modality" value="KO"
+            {% if 'KO' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Key Object Selection">KO</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality15" name="Modality" value="SC"
+            {% if 'SC' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Second Capture">SC</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality16" name="Modality" value="SD"
+            {% if 'SD' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Nicht Normiert">SD</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality17" name="Modality" value="PX"
+            {% if 'PX' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Panoramic X-Ray">PX</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input modality" type="checkbox" id="modality20" name="Modality" value="DR"
+            {% if 'DR' in modalities %} checked {% endif %}>
+          <label class="form-check-label" title="Digital Radiography ">DR</label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4">
+      <div class="col">
+        <label class="col-form-label" for="start-date-picker" title="Start date of exam">StudyDate: Start</label>
+        <input class="form-control form-control-sm" type="text" id="start-date-picker" name="StartDate"
+          value="{{ params.StartDate }}">
+      </div>
+      <div class="col">
+        <label class="col-form-label" for="end-date-picker" title="End date of exam">End</label>
+        <input class="form-control form-control-sm" type="text" id="end-date-picker" name="EndDate"
+          value="{{ params.EndDate}}">
+      </div>
+      <div class="col">
+        <label class="col-form-label">Patient age: From</label>
+        <input class="form-control form-control-sm" type="number" min="0" id="start-age-picker" name="AgeFrom"
+          value="{{ params.AgeFrom }}">
+      </div>
+      <div class="col">
+        <label class="col-form-label">To</label>
+        <input class="form-control form-control-sm" type="number" min="0" id="end-age-picker" name="AgeTo"
+          value="{{ params.AgeTo }}">
+      </div>
+    </div>
+    <div class="form-group row mx-auto px-4">
+      <div class="col d-flex">
+        <button type="submit" class="btn btn-primary btn-sm align-self-end ml-auto">Search</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+{% endblock %}

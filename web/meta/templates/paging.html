@@ -1,0 +1,18 @@
+
+  <ul class="pagination pagination-sm mb-0 float-right">
+    {% for page in paging %}
+      <li class="page-item  {% if page[2] %} active {% endif %}">
+        <a href="#" class="page-link" data-offset="{{page[1]}}" data-page="{{ page[0] }}" style="line-height: 1.25">
+          {% if page[3] and loop.first %}
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Next</span>
+          {% elif not page[4] and loop.last %}
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          {% else %}
+            {{ page[0] + 1 }}
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>PACS Crawler</title>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+  <div id="loading" class="loading d-none">Loading&#8230;</div>
+  {% block content %}
+  {% endblock %}
+  {% assets "js_all" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+</body>
+</html>
