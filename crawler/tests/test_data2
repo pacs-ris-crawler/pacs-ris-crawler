@@ -1,0 +1,38 @@
+I: Requesting Association
+I: Association Accepted (Max Send PDV: 16366)
+I: ===================== OUTGOING DIMSE MESSAGE ====================
+I: Message Type                  : C-FIND RQ
+I: Presentation Context ID       : 1
+I: Message ID                    : 1
+I: Affected SOP Class UID        : FINDStudyRootQueryRetrieveInformationModel
+I: Data Set                      : present
+I: Priority                      : low
+I: ======================= END DIMSE MESSAGE =======================
+I: Find SCU Request Identifiers:
+I:
+I: # Dicom-Data-Set
+I: # Used TransferSyntax: Unknown Transfer Syntax
+I: (0008,0050) SH [9109561]                                #   8, 1 AccessionNumber
+I: (0008,0052) CS [STUDY]                                  #   6, 1 QueryRetrieveLevel
+I: (0020,000d) UI (no value available)                     #   0, 0 StudyInstanceUID
+I:
+W: ---------------------------
+W: Find Response: 1 (Pending)
+W:
+W: # Dicom-Data-Set
+W: # Used TransferSyntax: Little Endian Explicit
+W: (0008,0005) CS [ISO_IR 100]                             #  10, 1 SpecificCharacterSet
+W: (0008,0050) SH [9109561 ]                               #   8, 1 AccessionNumber
+W: (0008,0052) CS [STUDY ]                                 #   6, 1 QueryRetrieveLevel
+W: (0008,0054) AE [SYNEDRA ]                               #   8, 1 RetrieveAETitle
+W: (0008,0056) CS [ONLINE]                                 #   6, 1 InstanceAvailability
+W: (0020,000d) UI [9.2.841.113619.6.95.31.0.3.4.1.24.13.6109561] #  44, 1 StudyInstanceUID
+W:
+I: ===================== INCOMING DIMSE MESSAGE ====================
+I: Message Type                  : C-FIND RSP
+I: Message ID Being Responded To : 1
+I: Affected SOP Class UID        : FINDStudyRootQueryRetrieveInformationModel
+I: Data Set                      : none
+I: DIMSE Status                  : 0x0000: Success
+I: ======================= END DIMSE MESSAGE =======================
+I: Releasing Association

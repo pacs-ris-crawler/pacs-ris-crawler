@@ -1,0 +1,86 @@
+I: Requesting Association
+I: Association Accepted (Max Send PDV: 65524)
+I: Sending Find Request (MsgID 1)
+I: Request Identifiers:
+I:
+I: # Dicom-Data-Set
+I: # Used TransferSyntax: Little Endian Explicit
+I: (0008,0020) DA [20100101]                               #   8, 1 StudyDate
+I: (0008,0021) DA [20100101]                               #   8, 1 SeriesDate
+I: (0008,0031) TM [000000-235959]                          #  14, 1 SeriesTime
+I: (0008,0050) SH (no value available)                     #   0, 0 AccessionNumber
+I: (0008,0052) CS [SERIES]                                 #   6, 1 QueryRetrieveLevel
+I: (0008,0060) CS [CT]                                     #   2, 1 Modality
+I: (0008,0080) LO (no value available)                     #   0, 0 InstitutionName
+I: (0008,0090) PN (no value available)                     #   0, 0 ReferringPhysicianName
+I: (0008,1030) LO (no value available)                     #   0, 0 StudyDescription
+I: (0008,103e) LO (no value available)                     #   0, 0 SeriesDescription
+I: (0010,0010) PN (no value available)                     #   0, 0 PatientName
+I: (0010,0020) LO (no value available)                     #   0, 0 PatientID
+I: (0010,0030) DA (no value available)                     #   0, 0 PatientBirthDate
+I: (0010,0040) CS (no value available)                     #   0, 0 PatientSex
+I: (0018,0015) CS (no value available)                     #   0, 0 BodyPartExamined
+I: (0020,000d) UI (no value available)                     #   0, 0 StudyInstanceUID
+I: (0020,000e) UI (no value available)                     #   0, 0 SeriesInstanceUID
+I: (0020,0010) SH (no value available)                     #   0, 0 StudyID
+I: (0020,0011) IS (no value available)                     #   0, 0 SeriesNumber
+I: (0020,0013) IS (no value available)                     #   0, 0 InstanceNumber
+I:
+I: ---------------------------
+I: Find Response: 1 (Pending)
+I:
+I: # Dicom-Data-Set
+I: # Used TransferSyntax: Little Endian Explicit
+I: (0008,0005) CS [ISO_IR 100]                             #  10, 1 SpecificCharacterSet
+I: (0008,0020) DA [20100101]                               #   8, 1 StudyDate
+I: (0008,0021) DA [20100101]                               #   8, 1 SeriesDate
+I: (0008,0031) TM [140028]                                 #   6, 1 SeriesTime
+I: (0008,0050) SH [123]                               #   8, 1 AccessionNumber
+I: (0008,0052) CS [SERIES]                                 #   6, 1 QueryRetrieveLevel
+I: (0008,0054) AE [RetrieveAETitle]                           #  12, 1 RetrieveAETitle
+I: (0008,0056) CS [InstanceAvailability]                               #   8, 1 InstanceAvailability
+I: (0008,0060) CS [CT]                                     #   2, 1 Modality
+I: (0008,0080) LO [InstitutionName]               #  24, 1 InstitutionName
+I: (0008,0090) PN [ReferringPhysicianName]                 #  22, 1 ReferringPhysicianName
+I: (0008,1030) LO [CT]                             #  10, 1 StudyDescription
+I: (0008,103e) LO [SeriesDescription1]                 #  22, 1 SeriesDescription
+I: (0010,0010) PN [JOE^BLACK]                           #  12, 1 PatientName
+I: (0010,0020) LO [TEST11111111]                         #  14, 1 PatientID
+I: (0010,0030) DA [19600101]                               #   8, 1 PatientBirthDate
+I: (0010,0040) CS [M ]                                     #   2, 1 PatientSex
+I: (0018,0015) CS [BodyPartExamined]                               #   8, 1 BodyPartExamined
+I: (0020,000d) UI [1] #  44, 1 StudyInstanceUID
+I: (0020,000e) UI [11] #  56, 1 SeriesInstanceUID
+I: (0020,0010) SH [1]                               #   8, 1 StudyID
+I: (0020,0011) IS [1]                                     #   2, 1 SeriesNumber
+I:
+I: ---------------------------
+I: Find Response: 2 (Pending)
+I:
+I: # Dicom-Data-Set
+I: # Used TransferSyntax: Little Endian Explicit
+I: (0008,0005) CS [ISO_IR 100]                             #  10, 1 SpecificCharacterSet
+I: (0008,0020) DA [20100101]                               #   8, 1 StudyDate
+I: (0008,0021) DA [20100101]                               #   8, 1 SeriesDate
+I: (0008,0031) TM [140254]                                 #   6, 1 SeriesTime
+I: (0008,0050) SH [20897720]                               #   8, 1 AccessionNumber
+I: (0008,0052) CS [SERIES]                                 #   6, 1 QueryRetrieveLevel
+I: (0008,0054) AE [RetrieveAETitle]                           #  12, 1 RetrieveAETitle
+I: (0008,0056) CS [InstanceAvailability]                               #   8, 1 InstanceAvailability
+I: (0008,0060) CS [CT]                                     #   2, 1 Modality
+I: (0008,0080) LO [InstitutionName]               #  24, 1 InstitutionName
+I: (0008,0090) PN [ReferringPhysicianName]                 #  22, 1 ReferringPhysicianName
+I: (0008,1030) LO [StudyDescription]                             #  10, 1 StudyDescription
+I: (0008,103e) LO [SeriesDescription]                 #  22, 1 SeriesDescription
+I: (0010,0010) PN [JOE^BLACK]                           #  12, 1 PatientName
+I: (0010,0020) LO [TEST11111111 ]                         #  14, 1 PatientID
+I: (0010,0030) DA [19600101]                               #   8, 1 PatientBirthDate
+I: (0010,0040) CS [M ]                                     #   2, 1 PatientSex
+I: (0018,0015) CS [BodyPartExamined]                               #   8, 1 BodyPartExamined
+I: (0020,000d) UI [12] #  44, 1 StudyInstanceUID
+I: (0020,000e) UI [123] #  56, 1 SeriesInstanceUID
+I: (0020,0010) SH [1]                               #   8, 1 StudyID
+I: (0020,0011) IS [2]                                     #   2, 1 SeriesNumber
+I:
+I: Received Final Find Response (Success)
+I: Releasing Association
