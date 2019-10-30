@@ -1,0 +1,10 @@
+[Unit]
+Description=PACS RIS Crawler Admin
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/ris-pacs-crawler/web
+ExecStart=/var/www/ris-pacs-crawler/env/bin/gunicorn -b localhost:5009 -w 4 crawler.app:app
+
+[Install]
+WantedBy=multi-user.target

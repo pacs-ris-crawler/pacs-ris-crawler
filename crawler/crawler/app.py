@@ -111,7 +111,6 @@ def upload():
     if accession_number:
         task = DailyUpConvertedMerged({"acc": accession_number})
     else:
-        print("day")
         task = DailyUpConvertedMerged({"day": day})
     w.add(task)
     w.run()

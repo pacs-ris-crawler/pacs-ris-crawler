@@ -83,7 +83,6 @@ class DailyUpConvertedMerged(luigi.Task):
                 url=upload_url, files=file, params={"commit": "true"}
             )
         if not update_response.ok:
-            print(update_response)
             update_response.raise_for_status()
         else:
             with self.output().open("w") as my_file:

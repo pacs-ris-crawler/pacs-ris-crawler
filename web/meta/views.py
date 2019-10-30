@@ -33,7 +33,6 @@ def main():
             params=params,
             error='No response from Solr, is it running?',
             trace=solr_url(app.config))
-    print(response.json())
     stats = response.json()['stats']
     indexed_start_date = stats['stats_fields']['StudyDate']['min']
     indexed_end_date = stats['stats_fields']['StudyDate']['max']
@@ -57,7 +56,6 @@ def search():
     payload = query_body(params, RESULT_LIMIT)
     headers = {'content-type': "application/json"}
     logging.debug(payload)
-    print(payload)
     try:
         response = get(
             solr_url(app.config), data=json.dumps(payload), headers=headers)
@@ -69,7 +67,6 @@ def search():
             trace=solr_url(app.config))
     if response.status_code >= 400 and response.status_code < 500:
         logging.error(response.text)
-        print(response.text)
         return render_template(
             'search.html',
             params=params,
