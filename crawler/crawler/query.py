@@ -1,25 +1,17 @@
 # Finds out the time ranges for a given day
-import sys
-import logging
 import datetime as datetime
+import logging
+import sys
+from typing import Dict, List
+
 import pandas as pd
 
-from typing import List, Dict
-from crawler.command import (
-    basic_query,
-    study_uid_query,
-    add_study_uid,
-    add_time,
-    add_day,
-    add_day_range,
-    add_modality,
-    add_study_description,
-    year_start_end,
-    MODALITIES,
-    INITIAL_TIME_RANGE,
-)
-
+from crawler.command import (INITIAL_TIME_RANGE, MODALITIES, add_day,
+                             add_day_range, add_modality,
+                             add_study_description, add_study_uid, add_time,
+                             basic_query, study_uid_query, year_start_end)
 from crawler.executor import run
+from ptime import split
 
 
 def query_for_study_uid(config, accession_number):
@@ -103,4 +95,3 @@ def prepare_query(config, mod, day, time_range):
     query = add_modality(query, mod)
     query = add_time(query, time_range)
     return query
-
