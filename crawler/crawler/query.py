@@ -11,7 +11,7 @@ from crawler.command import (INITIAL_TIME_RANGE, MODALITIES, add_day,
                              add_study_description, add_study_uid, add_time,
                              basic_query, study_uid_query, year_start_end)
 from crawler.executor import run
-from ptime import split
+from crawler.ptime import split
 
 
 def query_for_study_uid(config, accession_number):
