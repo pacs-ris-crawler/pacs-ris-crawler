@@ -173,6 +173,8 @@ def post_download(data):
             return json.dumps(response.json())
         else:
             app.logger.error("Post to MOVA failed")
+            logging.error("Error posting to MOVA")
+            logging.error(response.reason)
             return json.dumps({'status':'error', 'message': 'POST to MOVA failed'})
     except requests.exceptions.ConnectionError:
         app.logger.error("ConnectionError: Can\'t connect to MOVA")
