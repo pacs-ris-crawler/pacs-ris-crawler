@@ -3,8 +3,8 @@ Description=PACS RIS Crawler frontend
 After=network.target
 
 [Service]
-WorkingDirectory=/var/www/ris-pacs-crawler/web
-ExecStart=/var/www/ris-pacs-crawler/web/env/bin/gunicorn -b localhost:5000 -w 4 meta.app:app
+WorkingDirectory=/var/www/pacs-ris-crawler/web
+ExecStart=/var/www/pacs-ris-crawler/web/env/bin/gunicorn -b localhost:5000 -w 4 meta.app:app
 
 [Install]
 WantedBy=multi-user.target
