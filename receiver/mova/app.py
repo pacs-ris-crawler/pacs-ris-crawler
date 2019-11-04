@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 from datetime import datetime, timedelta
 
 import rq_dashboard
@@ -30,6 +31,9 @@ def download():
     """ Post to download series of images. """
     app.logger.info("download called")
     data = request.get_json(force=True)
+    timestamp = int(time.time())
+    with open(f"jobs/{timestamp}_download.json", "w") as f:
+        json.dump(data, f)
     series_list = data.get('data')
     dir_name = data.get('dir')
     length = download_series(app.config, series_list, dir_name)
@@ -40,6 +44,9 @@ def download():
 def transfer():
     """ Post to transfer series of images to another PACS node. """
     data = request.get_json(force=True)
+    timestamp = int(time.time())
+    with open(f"jobs/{timestamp}_transfer.json", "w") as f:
+        json.dump(data, f)
     target = data.get('target', '')
     series_list = data.get('data', '')
     app.logger.info("transfer called and sending to %s", target)
