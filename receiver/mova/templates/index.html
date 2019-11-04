@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Job history</title>
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="container">
+  {% include 'partials/header.html' %}
+  <div class="container py-3 bg-light mt-1">
+    <div class="pl-3">
+      <h4>Jobs</h4>
+      <ul class="px-3 list-group row d-flex">
+      {% for f in files %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="col-4">Creation date: {{creation_date}}</div>
+          <div class="col-8 d-flex justify-content-end">
+            <div>
+              Series count <span class="badge badge-primary badge-pill">2</span>
+            </div>
+          </div>
+
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% assets "js_all" %}
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
+</body>
+
+</html>
