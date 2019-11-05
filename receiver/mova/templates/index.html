@@ -11,19 +11,26 @@
 
 <body class="container">
   {% include 'partials/header.html' %}
-  <div class="container py-3 bg-light mt-1">
-    <div class="pl-3">
-      <h4>Jobs</h4>
-      <ul class="px-3 list-group row d-flex">
-      {% for f in files %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="col-4">Creation date: {{creation_date}}</div>
-          <div class="col-8 d-flex justify-content-end">
-            <div>
-              Series count <span class="badge badge-primary badge-pill">2</span>
-            </div>
-          </div>
+  <div class="container py-3 mt-1 rounded" style="background-color:#B3D7FF">
+    <div class="pl-3 pt-2">
+      <div class="d-flex justify-content-between">
+        <h4>Job history</h4>
+        <a class="btn btn-sm mr-1 text-white" target="_blank" href="http://localhost:9001/rq" style="background-color: #526880;border-color: #526880;">Transfer &amp;
+          Download progress <span class="oi oi-external-link small"></span></a>
+      </div>
 
+      <ul class="px-3 list-group row d-flex pt-5">
+        {% for f in files %}
+        {% set filename = f.split('_') %}
+        <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0 rounded mb-3 border-right-0 border-left-0">
+          <div class="col-3">Created at: <p class="text-monospace font-weight-bold">{{filename[0] | to_date}}</p>
+          </div>
+          <div class="col-2">Type: <p class="text-monospace font-weight-bold">{{filename[1]}}</p>
+          </div>
+          <div class="col">View Job: <p class=""><a class="btn btn-primary btn-sm text-monospace"
+                href="/show?filename={{f}}">{{f}}</a>
+            </p>
+          </div>
         </li>
         {% endfor %}
       </ul>
