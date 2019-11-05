@@ -1,0 +1,20 @@
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+install: "pip install -r crawler/requirements.txt"
+install: "pip install -r web/requirements.txt"
+install: "pip install -r receiver/requirements.txt"
+
+# command to run tests
+before_script: cd crawler
+script: python -m pytest
+
+# command to run tests
+before_script: cd web
+script: python -m pytest
+
+
+# command to run tests
+before_script: cd receiver
+script: python -m pytest
