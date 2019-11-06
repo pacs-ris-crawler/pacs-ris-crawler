@@ -32,6 +32,9 @@ js = Bundle(
 )
 assets.register("js_all", js)
 
+if not os.path.exists("jobs"):
+    os.makedirs("jobs")
+
 
 @app.template_filter("to_date")
 def to_date(timestamp):
