@@ -4,7 +4,7 @@
 <form id="search-form" action="/search" method="POST">
 <div class="row">
   <div class="col-sm-2">
-    <a class="pl-3" href="/">Pacs / RIS Crawler</a>
+    <a class="pl-3" href="/">PACS / RIS Crawler</a>
     <div class="pl-3 dib">
       <small class="nowrap f6 mt2 mt3-ns pr2 black-70 fw2">v{{ version }}</small>
     </div>
@@ -24,9 +24,11 @@
       <div class="d-inline pl-4 small"><a class="text-dark" target="_blank" href="{{mova_dashboard_url}}">Transfer &amp;
           Download progress <span class="oi oi-external-link small"></span></a>
       </div>
+      <div class="d-inline pl-4 small"><a class="text-dark" target="_blank" href="{{mova_url}}">Job history <span class="oi oi-external-link small"></span></a>
+      </div>
       {% if indexed_start_date %}
       <div class="d-inline float-right">
-        <small>Indexed dates: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</small>
+        <small>Indexed: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</small>
       </div>
       {% endif %}
     </div>
