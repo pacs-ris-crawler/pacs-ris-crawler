@@ -34,7 +34,9 @@ luigi_scheduler = app.config["LUIGI_SCHEDULER"]
 assets = Environment(app)
 js = Bundle(
     "js/jquery-3.3.1.min.js",
+    "js/bootstrap.bundle.min.js",
     "js/jquery.noty.packaged.min.js",
+    "js/intercooler.js",
     "js/script.js",
     filters="jsmin",
     output="gen/packed.js",
@@ -134,7 +136,11 @@ def batch():
         cmd = (
             ex
             + ' -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"studydescription": "%s", "from_date":"%s", "to_date":"%s"}\''
-            % (study_description, from_date_as_date.strftime("%Y%m%d"), to_date_as_date.strftime("%Y%m%d"))
+            % (
+                study_description,
+                from_date_as_date.strftime("%Y%m%d"),
+                to_date_as_date.strftime("%Y%m%d"),
+            )
         )
         logging.debug("Running command :", cmd)
         cmds = shlex.split(cmd)
@@ -170,3 +176,19 @@ def batch():
             cmds = shlex.split(cmd)
             subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
+
+
+@app.route("/debug")
+def debug():
+    return render_template("debug.html", version=app.config["VERSION"])
+
+
+@app.route("/execute")
+def execute():
+    command = request.args.get("command")
+    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return render_template(
+        "execute-result.html",
+        stdout=result.stdout.decode("latin-1"),
+        stderr=result.stderr.decode("latin-1"),
+    )

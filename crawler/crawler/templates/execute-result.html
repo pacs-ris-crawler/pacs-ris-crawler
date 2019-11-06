@@ -1,0 +1,13 @@
+{% if stdout %}
+<h4>Standard Output</h4>
+<div class="container bg-white rounded border p-3">
+    <samp style="white-space: pre;">{{stdout}}</samp>
+</div>
+{% endif %}
+
+{% if stderr %}
+<h4 class="pt-3">Standard Error Output</h4>
+<div class="container pt-3 mt-3 bg-white rounded border p-3">
+    <samp style="white-space: pre-wrap;">{{stderr}}</samp>
+</div>
+{% endif %}
