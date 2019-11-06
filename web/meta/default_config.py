@@ -20,6 +20,7 @@ SHOW_TRANSFER_TARGETS = True
 
 TRANSFER_TARGETS = [{'AE_TITLE': 'AE_TITLE', 'DISPLAY_NAME': 'Foo'}]
 
+MOVA_URL = 'http://localhost:9001/'
 MOVA_DASHBOARD_URL = 'http://localhost:9001/rq'
 MOVA_DOWNLOAD_URL = 'http://localhost:9001/download'
 MOVA_TRANSFER_URL = 'http://localhost:9001/transfer'
