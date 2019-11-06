@@ -1,12 +1,12 @@
 <div id="search-details" class="container py-3 show bg-light mt-1 form-inline">
     <form class="form-group pl-3 py-2" action="/search">
         <label for="patientname-input" class="pr-2">Accession Number </label>
-        <input class="form-control form-control-sm" type="text" id="search-input" name="accession_number" value=""
+        <input class="form-control form-control-sm" type="text" id="search-input" name="accession_number" value="{{accession_number}}"
             placeholder="A single accession number">
         <span class="px-5 bold"> or </span>
         <label for="patientid-input" class="pr-2"
             title="Patient ID to search for, multiples are separated by space">Day</label>
-        <input class="form-control form-control-sm" type="date" id="day-input" name="day" value="">
+        <input class="form-control form-control-sm" type="date" id="day-input" name="day" value="{{day}}">
         <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Search PACS</button>
     </form>
     <form id="batch-upload" action="/batch-upload" class="form-group pl-3 py-2">
