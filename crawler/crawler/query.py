@@ -6,7 +6,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (INITIAL_TIME_RANGE, MODALITIES, add_day,
+from crawler.command import (INITIAL_TIME_RANGE, modalities, add_day,
                              add_day_range, add_modality,
                              add_study_description, add_study_uid, add_time,
                              basic_query, study_uid_query, year_start_end)
@@ -55,7 +55,7 @@ def query_month(config, year_month: str) -> List[Dict[str, str]]:
     end = start + pd.tseries.offsets.MonthEnd()
     results = []
     for day in pd.date_range(start, end):
-        for mod in MODALITIES:
+        for mod in modalities:
             results.extend(query_day_extended(config, mod, day, INITIAL_TIME_RANGE))
     return results
 
@@ -63,7 +63,7 @@ def query_month(config, year_month: str) -> List[Dict[str, str]]:
 def query_day(config, day: str) -> List[Dict[str, str]]:
     query_date = datetime.datetime.strptime(day, "%Y-%m-%d")
     results = []
-    for mod in MODALITIES:
+    for mod in modalities:
         results.extend(query_day_extended(config, mod, query_date, INITIAL_TIME_RANGE))
     return results
 
@@ -74,7 +74,8 @@ def query_day_extended(
     query = prepare_query(config, mod, day, time_range)
     result, size = run(query)
 
-    if size < 500:
+    print(config["SERIES_LIMIT"], type(config["SERIES_LIMIT"]))
+    if size < int(config["SERIES_LIMIT"]):
         sys.stdout.write(".")
         sys.stdout.flush()
         return [result]
