@@ -6,10 +6,20 @@ from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (INITIAL_TIME_RANGE, MODALITIES, add_day,
-                             add_day_range, add_modality,
-                             add_study_description, add_study_uid, add_time,
-                             basic_query, study_uid_query, year_start_end)
+from crawler.command import (
+    INITIAL_TIME_RANGE,
+    MODALITIES,
+    add_day,
+    add_day_range,
+    add_modality,
+    add_study_description,
+    add_study_uid,
+    add_time,
+    basic_query,
+    study_uid_query,
+    year_start_end,
+    accs_per_day,
+)
 from crawler.executor import run
 from crawler.ptime import split
 
@@ -66,6 +76,12 @@ def query_day(config, day: str) -> List[Dict[str, str]]:
     for mod in MODALITIES:
         results.extend(query_day_extended(config, mod, query_date, INITIAL_TIME_RANGE))
     return results
+
+
+def query_day_accs(config, day) -> List[Dict[str, str]]:
+    query = accs_per_day(config, day.strftime("%Y%m%d"))
+    result, _ = run(query)
+    return result
 
 
 def query_day_extended(

@@ -78,11 +78,6 @@ def get_results(strings: List[str]) -> List[Dict[str, str]]:
     return result[1:]
 
 
-def _sanity_check(single_result: Dict[str, str]):
-    """ Only return results which have a PatientID and a Accession Number"""
-    return "PatientID" in single_result and "AccessionNumber" in single_result
-
-
 def _is_start_or_end(line: str) -> bool:
     """ Returns True if it is the start or end of a DICOM header. """
     return line.startswith("I: ---------------------------") or line.startswith(
