@@ -13,7 +13,10 @@
 <body class="container">
   {% include 'partials/header.html' %}
   {% include 'partials/search.html' %}
+  {% block content %}
+  {% endblock %}
   <div class="container py-3 mt-1 bg-info">
+
     <div class="embed-responsive embed-responsive-1by1">
       <iframe id="luigi" class="embed-responsive-item" frameborder="0" src="{{luigi_scheduler}}"></iframe>
     </div>
