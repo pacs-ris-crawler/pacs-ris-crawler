@@ -20,7 +20,6 @@ class ConvertPacsFile(luigi.Task):
     query = luigi.DictParameter()
 
     def requires(self):
-        print(">>>>>>>>>><< <<<<<<<<<<<<<<<<<<", self.query, "acc" in self.query)
         if "acc" in self.query:
             return AccessionTask(self.query["acc"])
         elif "studydescription" in self.query:
