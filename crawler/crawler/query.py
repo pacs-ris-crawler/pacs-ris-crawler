@@ -60,16 +60,6 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
     return [d.strftime("%Y-%m") for d in pd.date_range(start, end, freq="MS")]
 
 
-def query_month(config, year_month: str) -> List[Dict[str, str]]:
-    start = datetime.datetime.strptime(year_month, "%Y-%m")
-    end = start + pd.tseries.offsets.MonthEnd()
-    results = []
-    for day in pd.date_range(start, end):
-        for mod in MODALITIES:
-            results.extend(query_day_extended(config, mod, day, INITIAL_TIME_RANGE))
-    return results
-
-
 def query_day(config, day: str) -> List[Dict[str, str]]:
     query_date = datetime.datetime.strptime(day, "%Y-%m-%d")
     results = []

@@ -168,11 +168,9 @@ def batch():
             cur_day = day.strftime("%Y-%m-%d")
             cmd = (
                 ex
-                + ' -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"day": "%s"}\''
+                + ' -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s'
                 % cur_day
             )
-
-            logging.debug("Running command :", cmd)
             cmds = shlex.split(cmd)
             subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
