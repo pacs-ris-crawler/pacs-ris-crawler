@@ -249,13 +249,40 @@ def statistics():
 
 @app.route("/statistics/data.csv")
 def statistics_data():
-    if not os.path.exists("institute_statistics.csv"):
-        data = get_statistics()
-        df = pd.DataFrame.from_dict(data["response"]["docs"])
-        df = calculate(df)
-        df.to_csv("institute_statistics.csv", index=False)
-    df = pd.read_csv("institute_statistics.csv")
+    years = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
+    for year in years:
+        if not os.path.exists(f"institute_statistics_{year}.csv"):
+            data = get_statistics_per_year(year)
+            df = pd.DataFrame.from_dict(data["response"]["docs"])
+            if df.empty:
+                df = pd.DataFrame.from_dict(
+                    {
+                        "year": [year],
+                        "institution_type": ["Main"],
+                        "InstitutionName": [1],
+                        "StudyDate": [1],
+                    }
+                )
+            else:
+                df = calculate(df)
+            print(df.columns)
+            df.to_csv(f"institute_statistics_{year}.csv", index=False)
+
+    df = pd.concat([pd.read_csv(f"institute_statistics_{year}.csv") for year in years])
     return df.to_csv()
+
+
+def get_statistics_per_year(year):
+    payload = {
+        "q": "*",
+        "rows": "10000000",
+        "fq": ["Category:parent"],
+        "fq": [f"StudyDate:[{year}0101 TO {year}1241]"],
+        "fl": "InstitutionName, StudyDate",
+    }
+    headers = {"content-type": "application/json"}
+    response = get(solr_url(app.config), payload, headers=headers)
+    return response.json()
 
 
 def get_statistics():
