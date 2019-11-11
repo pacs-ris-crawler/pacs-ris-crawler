@@ -97,7 +97,7 @@ class DailyUpAccConvertedMerged(luigi.WrapperTask):
         config = load_config()
         results = query_day_accs(config, self.day)
         logging.debug(f"Got {len(results)} accession number for day: {self.day}")
-        for i in results[:3]:
+        for i in results:
             if "AccessionNumber" in i:
                 yield DailyUpConvertedMerged({"acc":i["AccessionNumber"]})
 
