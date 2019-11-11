@@ -26,14 +26,12 @@
               data-accession-number="{{ study['AccessionNumber'] }}">
               <thead>
                 <tr>
-                  <th></th>
                   <th>Modality</th>
                   <th>Series Number</th>
                   <th>Series Description</th>
                 </tr>
               </thead>
               <tbody>
-                
                 <tr>
                     {% for child in study._childDocuments_ %}
                   <td>{{ child['Modality'] }} </td>
