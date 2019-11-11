@@ -10,8 +10,8 @@ import requests
 import luigi
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
+from crawler.query import query_day_accs
 from tasks.accession import AccessionTask
-from tasks.day import DayTask
 from tasks.study_description import StudyDescription
 from tasks.util import dict_to_str, load_config
 
@@ -20,9 +20,7 @@ class ConvertPacsFile(luigi.Task):
     query = luigi.DictParameter()
 
     def requires(self):
-        if "day" in self.query:
-            return DayTask(self.query["day"])
-        elif "acc" in self.query:
+        if "acc" in self.query:
             return AccessionTask(self.query["acc"])
         elif "studydescription" in self.query:
             return StudyDescription(
@@ -33,8 +31,7 @@ class ConvertPacsFile(luigi.Task):
 
     def run(self):
         with self.input().open("r") as daily:
-            data = daily.read()
-            json_in = json.loads(data)
+            json_in = json.load(daily)
 
         json_out = convert_pacs_file(json_in)
 
@@ -91,6 +88,18 @@ class DailyUpConvertedMerged(luigi.Task):
     def output(self):
         name = dict_to_str(self.query)
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
+
+
+class DailyUpAccConvertedMerged(luigi.WrapperTask):
+    day = luigi.DateParameter()
+
+    def requires(self):
+        config = load_config()
+        results = query_day_accs(config, self.day)
+        logging.debug(f"Got {len(results)} accession number for day: {self.day}")
+        for i in results:
+            if "AccessionNumber" in i:
+                yield DailyUpConvertedMerged({"acc":i["AccessionNumber"]})
 
 
 # example usage:

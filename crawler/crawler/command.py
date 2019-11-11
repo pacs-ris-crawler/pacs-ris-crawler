@@ -4,13 +4,6 @@ from typing import Tuple, List
 from crawler.config import pacs_settings
 
 
-INITIAL_TIME_RANGE = "000000-235959"
-
-
-def modalities(configuration) ->List[str]:
-    return configuration["MODALITIES"]
-
-
 def study_uid_query(configuration, accession_number):
     """It is not possible to query by accession number therefore we need
     to first fetch the studyinstanceuid.
@@ -19,6 +12,17 @@ def study_uid_query(configuration, accession_number):
            -k StudyInstanceUID
            -k AccessionNumber={}""".format(
         pacs_settings(configuration), accession_number
+    )
+
+
+def accs_per_day(configuration, day):
+    """
+    Query for all studyinstanceuids for a given day.
+    """
+    return """findscu -to 6000 -v -S -k 0008,0052=STUDY {}
+           -k AccessionNumber
+           -k StudyDate={}""".format(
+        pacs_settings(configuration), day
     )
 
 

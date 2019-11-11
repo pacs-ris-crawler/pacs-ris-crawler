@@ -7,8 +7,6 @@ from typing import Dict, List
 import pandas as pd
 
 from crawler.command import (
-    INITIAL_TIME_RANGE,
-    modalities,
     add_day,
     add_day_range,
     add_modality,
@@ -18,9 +16,9 @@ from crawler.command import (
     basic_query,
     study_uid_query,
     year_start_end,
+    accs_per_day,
 )
 from crawler.executor import run
-from crawler.ptime import split
 
 
 def query_for_study_uid(config, accession_number):
@@ -101,8 +99,8 @@ def query_day_extended(
         )
 
 
-def prepare_query(config, mod, day, time_range):
-    query = add_day(basic_query(config), day)
-    query = add_modality(query, mod)
-    query = add_time(query, time_range)
-    return query
+def query_day_accs(config, day) -> List[Dict[str, str]]:
+    query = accs_per_day(config, day.strftime("%Y%m%d"))
+    result, _ = run(query)
+    return result
+

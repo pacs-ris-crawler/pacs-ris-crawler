@@ -105,7 +105,11 @@ def merge_pacs_ris(pacs):
         elif "AccessionNumber" in entry:
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
-            response = get(url, auth=HTTPBasicAuth(user, pwd))
+            if uses_basis_auth:
+                response = get(url, auth=HTTPBasicAuth(user, pwd))
+            else:
+                response = get(url)
+            response.raise_for_status()
             data = response.text
             dic["RisReport"] = data
             my_dict.append(dic)

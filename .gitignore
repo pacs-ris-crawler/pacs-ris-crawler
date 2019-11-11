@@ -110,3 +110,4 @@ crawler/data/*
 .DS_Store
 
 receiver/jobs/*
+.vscode
