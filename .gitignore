@@ -111,3 +111,5 @@ crawler/data/*
 
 receiver/jobs/*
 .vscode
+
+institute_statistics*.csv
