@@ -4,30 +4,6 @@ from typing import Tuple
 from crawler.config import pacs_settings
 
 
-MODALITIES = [
-    "CT",
-    "MR",
-    "PT",
-    "CR",
-    "XA",
-    "SR",
-    "NM",
-    "MG",
-    "US",
-    "DX",
-    "RF",
-    "OT",
-    "PR",
-    "KO",
-    "SC",
-    "SD",
-    "PX",
-    "DR",
-]
-
-INITIAL_TIME_RANGE = "000000-235959"
-
-
 def study_uid_query(configuration, accession_number):
     """It is not possible to query by accession number therefore we need
     to first fetch the studyinstanceuid.
