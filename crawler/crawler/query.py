@@ -6,10 +6,19 @@ from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (INITIAL_TIME_RANGE, modalities, add_day,
-                             add_day_range, add_modality,
-                             add_study_description, add_study_uid, add_time,
-                             basic_query, study_uid_query, year_start_end)
+from crawler.command import (
+    INITIAL_TIME_RANGE,
+    modalities,
+    add_day,
+    add_day_range,
+    add_modality,
+    add_study_description,
+    add_study_uid,
+    add_time,
+    basic_query,
+    study_uid_query,
+    year_start_end,
+)
 from crawler.executor import run
 from crawler.ptime import split
 
@@ -55,7 +64,7 @@ def query_month(config, year_month: str) -> List[Dict[str, str]]:
     end = start + pd.tseries.offsets.MonthEnd()
     results = []
     for day in pd.date_range(start, end):
-        for mod in modalities:
+        for mod in modalities():
             results.extend(query_day_extended(config, mod, day, INITIAL_TIME_RANGE))
     return results
 
@@ -63,7 +72,7 @@ def query_month(config, year_month: str) -> List[Dict[str, str]]:
 def query_day(config, day: str) -> List[Dict[str, str]]:
     query_date = datetime.datetime.strptime(day, "%Y-%m-%d")
     results = []
-    for mod in modalities:
+    for mod in modalities():
         results.extend(query_day_extended(config, mod, query_date, INITIAL_TIME_RANGE))
     return results
 
@@ -73,9 +82,8 @@ def query_day_extended(
 ) -> List[Dict[str, str]]:
     query = prepare_query(config, mod, day, time_range)
     result, size = run(query)
-
-    print(config["SERIES_LIMIT"], type(config["SERIES_LIMIT"]))
-    if size < int(config["SERIES_LIMIT"]):
+    limit = int(config["SERIES_LIMIT"])
+    if size < limit:
         sys.stdout.write(".")
         sys.stdout.flush()
         return [result]
@@ -83,7 +91,9 @@ def query_day_extended(
         sys.stdout.write("|")
         sys.stdout.flush()
         logging.debug(
-            "results >= 500 for {} {} {}, splitting".format(mod, day, time_range)
+            "results >= {} for {} {} {}, splitting".format(
+                str(limit), mod, day, time_range
+            )
         )
         l, r = split(time_range)
         return query_day_extended(config, mod, day, l) + query_day_extended(

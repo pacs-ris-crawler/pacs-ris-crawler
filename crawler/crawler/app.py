@@ -16,6 +16,7 @@ import luigi
 from crawler.config import get_report_show_url
 from crawler.query import query_accession_number
 from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+from tasks.accession import AccessionTask
 
 try:
     import uwsgi
@@ -181,10 +182,27 @@ def debug():
     return render_template("debug.html", version=app.config["VERSION"])
 
 
+@app.route("/acc")
+def acc():
+    acc = request.args.get("acc")
+    cmd = ex + " -m tasks.accession AccessionTask --accession-number  %s" % acc
+
+    result = subprocess.run(
+        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    return render_template(
+        "execute-result.html",
+        stdout=result.stdout.decode("latin-1"),
+        stderr=result.stderr.decode("latin-1"),
+    )
+
+
 @app.route("/execute")
 def execute():
     command = request.args.get("command")
-    result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = subprocess.run(
+        command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
     return render_template(
         "execute-result.html",
         stdout=result.stdout.decode("latin-1"),

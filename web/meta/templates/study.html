@@ -27,6 +27,7 @@
                 <th>Modality</th>
                 <th>Series Number</th>
                 <th>Series Description</th>
+                <th>Protocol Name</th>
               </tr>
             </thead>
             <tbody>
@@ -64,6 +65,7 @@
                 <td>{{ child['Modality'] }} </td>
                 <td>{{ child['SeriesNumber'] }} </td>
                 <td>{{ child['SeriesDescription'] }} </td>
+                <td>{{ child['ProtocolName'] }}</td>
               </tr>
               {% endfor %}
             </tbody>

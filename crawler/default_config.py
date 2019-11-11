@@ -19,3 +19,8 @@ REPORT_PWD = ""
 
 # Luigi central scheduler
 LUIGI_SCHEDULER = "http://localhost:8082"
+
+# After which a time split is done to query data
+SERIES_LIMIT = 5000
+MODALITIES = ['CT', 'MR', 'PT', 'CR', 'XA', 'SR', 'NM', 'MG', 'US', 'DX', 'RF',
+              'OT', 'PR', 'KO', 'SC', 'SD', 'PX', 'DR']

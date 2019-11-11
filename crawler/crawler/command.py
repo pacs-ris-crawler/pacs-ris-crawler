@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Tuple
+from typing import Tuple, List
 
 from crawler.config import pacs_settings
 
@@ -7,7 +7,7 @@ from crawler.config import pacs_settings
 INITIAL_TIME_RANGE = "000000-235959"
 
 
-def modalities(configuration):
+def modalities(configuration) ->List[str]:
     return configuration["MODALITIES"]
 
 
