@@ -164,10 +164,8 @@ def batch():
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
             cur_day = day.strftime("%Y-%m-%d")
-            cmd = (
-                "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s"
-                % cur_day
-            )
+            cmd = f"python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day {cur_day}"
+            #print("Running cmd", cmd)
             cmds = shlex.split(cmd)
             subprocess.run(cmds, shell=True, check=False)
         return json.dumps({"status": "ok"})

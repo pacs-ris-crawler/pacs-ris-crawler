@@ -11,8 +11,6 @@ class StudyUIDTask(luigi.Task):
     # python -m tasks.accession AccessionTask --accession-number 1234 --local-scheduler
     accession_number = luigi.Parameter()
 
-    resources = {"pacs": 5}
-
     def run(self):
         config = configparser.ConfigParser()
         filename = "./instance/config.cfg"
