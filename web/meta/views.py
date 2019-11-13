@@ -247,6 +247,16 @@ def statistics():
     return render_template("statistics.html")
 
 
+@app.route("/statistics/month")
+def month_statistics():
+    data = get_statistics_per_month(request.args["month"])
+    df = pd.DataFrame.from_dict(data["response"]["docs"])
+    df["date"] = pd.to_datetime(df["StudyDate"], format="%Y%m%d")
+    df = df.groupby("date").agg("count").reset_index()
+    df.to_csv("test.csv", index=False)
+    return df.to_json(orient="records")
+
+
 @app.route("/statistics/data.csv")
 def statistics_data():
     years = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
@@ -265,11 +275,23 @@ def statistics_data():
                 )
             else:
                 df = calculate(df)
-            print(df.columns)
             df.to_csv(f"institute_statistics_{year}.csv", index=False)
 
     df = pd.concat([pd.read_csv(f"institute_statistics_{year}.csv") for year in years])
     return df.to_csv()
+
+
+def get_statistics_per_month(date):
+    payload = {
+        "q": "*",
+        "rows": "10000000",
+        "fq": ["Category:parent"],
+        "fq": [f"StudyDate:[{date}01 TO {date}31]"],
+        "fl": "InstitutionName, StudyDate",
+    }
+    headers = {"content-type": "application/json"}
+    response = get(solr_url(app.config), payload, headers=headers)
+    return response.json()
 
 
 def get_statistics_per_year(year):

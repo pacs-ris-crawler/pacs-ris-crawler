@@ -54,6 +54,7 @@ js = Bundle(
     "js/jquery.noty.packaged.min.js",
     "js/jszip.min.js",
     "js/FileSaver.js",
+    "js/intercooler.js",
     "js/script.js",
     filters="jsmin",
     output="gen/packed.js",

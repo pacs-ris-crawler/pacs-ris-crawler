@@ -408,6 +408,17 @@ $(function () {
   });
 
   if ('statistics' == $('body').data('page')) {
+    
+    
+    var statistics_month = $('#statistics_month').pikaday({
+      format: 'YYYYMM',
+      firstDay: 1,
+      minDate: new Date(2012, 0, 1),
+      maxDate: new Date(),
+      yearRange: [2005, 2019]
+    });
+    
+    
     function draw_statistics() {
       // Assign the specification to a local variable vlSpec.
       var vlSpec = {
@@ -449,6 +460,49 @@ $(function () {
       // Embed the visualization in the container with id `vis`
       vegaEmbed("#vis", vlSpec, { "actions": false });
     };
+    
+    function draw_month_statistics(e) {
+      e.preventDefault();
+      var date = $("#statistics_month").val()
+      console.log(date)
+      // Assign the specification to a local variable vlSpec.
+      var vlSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+        "data": { "url": "statistics/month?month=" + date },
+        "mark": {
+          "type": "line",
+          "point": "true"
+        },
+        "title": "Exams",
+        "width": 420,
+        "height": 380,
+        "encoding": {
+          "x": {
+            "field": "date",
+            "type": "temporal",
+            "axis": {
+              "format": "%d",
+              "title": "Days"
+            }
+          },
+          "y": {
+            "field": "InstitutionName",
+            "type": "quantitative",
+            "axis": {
+              "title": "Number of Studies"
+            }
+          }
+        }
+      }
+      vegaEmbed("#month_vis", vlSpec, { "actions": false });
+    };
     draw_statistics()
+  
+    $('#month_draw').on("click", draw_month_statistics)
+  
+  
   }
+  
+  
+  
 });
