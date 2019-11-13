@@ -15,15 +15,13 @@ from flask_assets import Bundle, Environment
 import luigi
 from crawler.config import get_report_show_url
 from crawler.query import query_accession_number
-from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+from tasks.ris_pacs_merge_upload import (
+    DailyUpConvertedMerged,
+    MergePacsRis,
+    DailyUpAccConvertedMerged,
+)
 from tasks.accession import AccessionTask
 
-try:
-    import uwsgi
-
-    ex = os.path.join(uwsgi.opt["venv"].decode("latin1"), "bin/python")
-except (ImportError, KeyError):
-    ex = sys.executable
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("default_config")
@@ -145,18 +143,17 @@ def batch():
         )
         logging.debug("Running command :", cmd)
         cmds = shlex.split(cmd)
-        subprocess.run(cmds, shell=False, check=False)
+        subprocess.run(cmds, shell=True, check=False)
         return json.dumps({"status": "ok"})
 
     elif accession_number:
         cmd = (
-            ex
-            + ' -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
+            'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
             % accession_number
         )
         logging.debug("Running command :", cmd)
         cmds = shlex.split(cmd)
-        subprocess.run(cmds, shell=False, check=False)
+        subprocess.run(cmds, shell=True, check=False)
         return json.dumps({"status": "ok"})
     else:
         if not (any([from_date, to_date])):
@@ -168,12 +165,11 @@ def batch():
         for day in range:
             cur_day = day.strftime("%Y-%m-%d")
             cmd = (
-                ex
-                + ' -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s'
+                "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s"
                 % cur_day
             )
             cmds = shlex.split(cmd)
-            subprocess.run(cmds, shell=False, check=False)
+            subprocess.run(cmds, shell=True, check=False)
         return json.dumps({"status": "ok"})
 
 
@@ -185,7 +181,7 @@ def debug():
 @app.route("/acc")
 def acc():
     acc = request.args.get("acc")
-    cmd = ex + " -m tasks.accession AccessionTask --accession-number  %s" % acc
+    cmd = "python -m tasks.accession AccessionTask --accession-number  %s" % acc
 
     result = subprocess.run(
         cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
