@@ -124,7 +124,6 @@ def upload():
 
 @app.route("/batch-upload")
 def batch():
-    print("---§§§§§§§§§§§")
     from_date = request.args.get("from-date", "")
     to_date = request.args.get("to-date", "")
     accession_number = request.args.get("accession_number")
