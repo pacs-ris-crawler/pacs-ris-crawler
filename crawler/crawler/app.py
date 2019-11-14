@@ -167,7 +167,7 @@ def batch():
             for i in r:
                 cmd = (
                     'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
-                    % i
+                    % i.AccessionNumber
                 )
                 cmds = shlex.split(cmd)
                 subprocess.run(cmds, shell=False, check=False)
