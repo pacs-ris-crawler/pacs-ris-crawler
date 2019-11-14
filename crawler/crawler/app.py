@@ -165,12 +165,13 @@ def batch():
             cur_day = day.strftime("%Y-%m-%d")
             r = query_day_accs(app.config, day)
             for i in r:
-                cmd = (
-                    'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
-                    % i["AccessionNumber"]
-                )
-                cmds = shlex.split(cmd)
-                subprocess.run(cmds, shell=False, check=False)
+                if "AccessionNumber" in i:
+                    cmd = (
+                        'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
+                        % i["AccessionNumber"]
+                    )
+                    cmds = shlex.split(cmd)
+                    subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
 
 
