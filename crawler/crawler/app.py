@@ -165,8 +165,7 @@ def batch():
         for day in range:
             cur_day = day.strftime("%Y-%m-%d")
             cmd = (
-                ex
-                + ' -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s'
+                'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day %s'
                 % cur_day
             )
             cmds = shlex.split(cmd)
