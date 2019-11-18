@@ -31,6 +31,12 @@ from meta.statistics import calculate
 from meta.terms import get_terms_data
 
 
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
+
 @app.route("/")
 def main():
     """ Renders the initial page. """
@@ -67,7 +73,6 @@ def search():
     params = request.form
     payload = query_body(params, RESULT_LIMIT)
     headers = {"content-type": "application/json"}
-    logging.debug(payload)
     try:
         response = get(solr_url(app.config), data=json.dumps(payload), headers=headers)
     except RequestException:
@@ -103,7 +108,6 @@ def search():
         )
     else:
         app.logger.debug("Calling Solr with url %s", response.url)
-        app.logger.debug("Request body %s", json.dumps(payload))
         data = response.json()
         docs = data["grouped"]["PatientID"]
         results = data["grouped"]["PatientID"]["ngroups"]
@@ -189,7 +193,7 @@ def transfer_all():
     target = q["target"]
     transfer_data = {"data": data, "target": q["target"]}
 
-    app.logger.info("transfer called and sending to %s", target)
+    app.logger.info(f"Transfer called and sending to AE_TITLE {target}")
     t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
     if t:
         destination = t[0]["AE_TITLE"]
@@ -205,12 +209,12 @@ def transfer():
     data = request.get_json(force=True)
     target = data.get("target", "")
     series_list = data.get("data", "")
-    app.logger.info("transfer called and sending to %s", target)
+    app.logger.info(f"Transfer called and sending to AE_TITLE {target}")
     t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
     if t:
         destination = t[0]["AE_TITLE"]
         data["target"] = destination
-        return download_or_transfer(MOVA_TRANSFER_URL,data)
+        return download_or_transfer(MOVA_TRANSFER_URL, data)
     else:
         return "Error: Could not find destination AE_TITLE"
 

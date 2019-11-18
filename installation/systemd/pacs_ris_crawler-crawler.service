@@ -4,7 +4,8 @@ After=network.target
 
 [Service]
 WorkingDirectory=/var/www/pacs-ris-crawler/web
-ExecStart=/var/www/pacs-ris-crawler/env/bin/gunicorn -b localhost:5009 -w 4 crawler.app:app
+Environment="PATH=<python virtual env path>:/usr/bin"
+ExecStart=/var/www/pacs-ris-crawler/env/bin/gunicorn -b localhost:5009 -w 4 --log-level=debug crawler.app:app
 
 [Install]
 WantedBy=multi-user.target

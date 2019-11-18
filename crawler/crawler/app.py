@@ -43,6 +43,12 @@ js = Bundle(
 assets.register("js_all", js)
 
 
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
+
 @app.template_filter("to_date")
 def to_date(date_as_int):
     if date_as_int:
