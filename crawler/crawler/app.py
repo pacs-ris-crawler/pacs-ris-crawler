@@ -14,7 +14,7 @@ from flask_assets import Bundle, Environment
 
 import luigi
 from crawler.config import get_report_show_url
-from crawler.query import query_accession_number
+from crawler.query import query_accession_number, query_day_accs
 from tasks.ris_pacs_merge_upload import (
     DailyUpConvertedMerged,
     MergePacsRis,
@@ -133,8 +133,7 @@ def batch():
         from_date_as_date = datetime.strptime(from_date, "%Y-%m-%d")
         to_date_as_date = datetime.strptime(to_date, "%Y-%m-%d")
         cmd = (
-            ex
-            + ' -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"studydescription": "%s", "from_date":"%s", "to_date":"%s"}\''
+            'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"studydescription": "%s", "from_date":"%s", "to_date":"%s"}\''
             % (
                 study_description,
                 from_date_as_date.strftime("%Y%m%d"),
@@ -164,10 +163,15 @@ def batch():
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
             cur_day = day.strftime("%Y-%m-%d")
-            cmd = f"python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --day {cur_day}"
-            #print("Running cmd", cmd)
-            cmds = shlex.split(cmd)
-            subprocess.run(cmds, shell=True, check=False)
+            r = query_day_accs(app.config, day)
+            for i in r:
+                if "AccessionNumber" in i:
+                    cmd = (
+                        'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
+                        % i["AccessionNumber"]
+                    )
+                    cmds = shlex.split(cmd)
+                    subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
 
 
