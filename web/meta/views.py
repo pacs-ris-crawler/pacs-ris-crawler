@@ -168,7 +168,7 @@ def download_all():
     df = query_all(q, solr_url(app.config))
     data = convert(df)
     download_data = {"data": data, "dir": q["download-dir"]}
-    return post_download(download_data)
+    return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
 
 
 @app.route("/download", methods=["POST"])
@@ -176,23 +176,7 @@ def download():
     """ Ajax post to download series of images. """
     app.logger.info("download called")
     data = request.get_json(force=True)
-    return post_download(data)
-
-
-def post_download(data):
-    headers = {"content-type": "application/json"}
-    try:
-        response = post(MOVA_DOWNLOAD_URL, json=data, headers=headers)
-        if response.status_code == requests.codes.ok:
-            return json.dumps(response.json())
-        else:
-            app.logger.error("Post to MOVA failed")
-            logging.error("Error posting to MOVA")
-            logging.error(response.reason)
-            return json.dumps({"status": "error", "message": "POST to MOVA failed"})
-    except requests.exceptions.ConnectionError:
-        app.logger.error("ConnectionError: Can't connect to MOVA")
-        return "is MOVA running? Can't get a connection", 400
+    return download_or_transfer(MOVA_DOWNLOAD_URL, data)
 
 
 @app.route("/transfer-all", methods=["POST"])
@@ -209,12 +193,10 @@ def transfer_all():
     t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
     if t:
         destination = t[0]["AE_TITLE"]
-        headers = {"content-type": "application/json"}
         transfer_data["target"] = destination
-        response = post(MOVA_TRANSFER_URL, json=transfer_data, headers=headers)
-        return json.dumps(response.json())
+        return download_or_transfer(MOVA_TRANSFER_URL, transfer_data)
     else:
-        return "Error: Could not find destination AE_TITLE"
+        return f"Error: Could not find destination AE_TITLE for {t}"
 
 
 @app.route("/transfer", methods=["POST"])
@@ -227,12 +209,26 @@ def transfer():
     t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
     if t:
         destination = t[0]["AE_TITLE"]
-        headers = {"content-type": "application/json"}
         data["target"] = destination
-        response = post(MOVA_TRANSFER_URL, json=data, headers=headers)
-        return json.dumps(response.json())
+        return download_or_transfer(MOVA_TRANSFER_URL,data)
     else:
         return "Error: Could not find destination AE_TITLE"
+
+
+def download_or_transfer(url, data):
+    headers = {"content-type": "application/json"}
+    try:
+        response = post(url, json=data, headers=headers)
+        if response.status_code == requests.codes.ok:
+            return json.dumps(response.json())
+        else:
+            app.logger.error(f"POST to url {url} failed")
+            logging.error(f"Error posting to f{url}")
+            logging.error(response.reason)
+            return json.dumps({"status": "error", "message": "POST failed"})
+    except requests.exceptions.ConnectionError:
+        app.logger.error("ConnectionError: Can't connect to receiver")
+        return ("Is pacs_ris_crawler-receiver running? Can't get a connection", 400)
 
 
 @app.route("/terms")
