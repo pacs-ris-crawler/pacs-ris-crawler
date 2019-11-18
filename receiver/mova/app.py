@@ -36,6 +36,12 @@ if not os.path.exists("jobs"):
     os.makedirs("jobs")
 
 
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
+
 @app.template_filter("to_date")
 def to_date(timestamp):
     if timestamp:
@@ -88,7 +94,7 @@ def resend():
 @app.route("/download", methods=["POST"])
 def download():
     """ Post to download series of images. """
-    app.logger.info("download called")
+    app.logger.info("Download request received")
     data = request.get_json(force=True)
     timestamp = int(time.time())
     with open(f"jobs/{timestamp}_download.json", "w") as f:
@@ -103,6 +109,7 @@ def download():
 @app.route("/transfer", methods=["POST"])
 def transfer():
     """ Post to transfer series of images to another PACS node. """
+    app.logger.info("Transfer request received")
     data = request.get_json(force=True)
     timestamp = int(time.time())
     with open(f"jobs/{timestamp}_transfer.json", "w") as f:
