@@ -1,6 +1,9 @@
-# What is the PACS-RIS Crawler?
+Introduction
+=============================
+What is the PACS-RIS Crawler?
 
-## Why is this tool necessary?
+Why is this tool necessary?
+---------------------------
 
 The usual usecase for PACS/RIS is single patient-oriented. This is sufficient
 for the clinical routine. In the research setting, where patients cohorts are
@@ -13,7 +16,8 @@ corresponding RIS Report. So finding all x-ray images with a e.g.
 wrist fracture now takes only seconds instead of days.
 
 
-# How does it work
+How does it work
+------------------
 
 The PACS-RIS Crawler consists of mainly three modules. The crawler modules is
 reponsible to querying the PACS and RIS for data and storing them. The web

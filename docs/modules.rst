@@ -1,7 +1,7 @@
 Code Documentation
 ==================
 
-This is about he code.
+This is about the code.
 
 .. toctree::
    :maxdepth: 2
