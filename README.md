@@ -1,7 +1,9 @@
 # PACS / RIS Crawler
 [![Build Status](https://travis-ci.org/pacs-ris-crawler/pacs-ris-crawler.svg?branch=master)](https://travis-ci.org/pacs-ris-crawler/pacs-ris-crawler)
 
-This a renovated version of the existing solution at USB. This is now a single
-package with three differen applications.
+This is a major revision of the previous [PACS/RIS crawler](https://github.com/joshy/meta/) 
+solution developed at the clinic for 
+[Radiology & Nuclear Medicine](https://www.unispital-basel.ch/en/ueber-uns/bereiche/medizinische-querschnittsfunktionen/kliniken-institute-abteilungen/radiology-department/kliniken-institute/radiology-nuclear-medicine-clinic/) 
+at the  [University Hospital Basel](https://www.unispital-basel.ch/en/).
 
-For a installation guide please look at INSTALL.md
+The documentation can be found at: https://pacs-ris-crawler.github.io/
