@@ -1,25 +1,35 @@
 {
-    "license": "GPL v3",
-    "upload_type": "software",
-    "keywords": [
-        "pacs",
-        "ris",
-        "search"
-      ],
-    "title": "PACS-RIS Crawler",
     "description": "A unified search application to link PACS exams with the RIS reports.",
+    "license": "GPL v3",
+    "title": "PACS-RIS Crawler v1.0",
+    "version": "v1.0",
+    "upload_type": "software",
+    "publication_date": "2019-12-16",
     "creators": [
         {
-            "name": "Joshy Cyriac",
-            "affiliation": "Universitätsspital Basel, Schweiz"
+            "affiliation": "Universit\u00e4tsspital Basel",
+            "name": "Joshy Cyriac"
         },
         {
             "name": "Ivan Nesic",
-            "affiliation": "Universitätsspital Basel, Schweiz"
+            "affiliation": "Universit\u00e4tsspital Basel"
         },
         {
             "name": "Manuela Moor",
-            "affiliation": "Universitätsspital Basel, Schweiz"
+            "affiliation": "Universit\u00e4tsspital Basel"
+        }
+    ],
+    "access_right": "open",
+    "related_identifiers": [
+        {
+            "scheme": "url",
+            "identifier": "https://github.com/pacs-ris-crawler/pacs-ris-crawler/tree/v1.0",
+            "relation": "isSupplementTo"
+        },
+        {
+            "scheme": "doi",
+            "identifier": "10.5281/zenodo.3579262",
+            "relation": "isVersionOf"
         }
     ]
 }
