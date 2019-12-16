@@ -48,8 +48,7 @@ def base_command(dcmtk_config, pacs_config):
 
 def download_series(config, series_list, dir_name):
     """ Download the series. The folder structure is as follows:
-        MAIN_DOWNLOAD_DIR / USER_DEFINED / PATIENTID / ACCESSION_NUMBER /
-          / SERIES_NUMER
+        MAIN_DOWNLOAD_DIR / USER_DEFINED / PATIENTID / ACCESSION_NUMBER / SERIES_NUMER
     """
     output_dir = config['IMAGE_FOLDER']
     dcmtk = dcmtk_config(config)
