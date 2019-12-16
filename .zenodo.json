@@ -1,0 +1,24 @@
+{
+    "license": "GPL v3",
+    "upload_type": "software",
+    "keywords": [
+        "pacs",
+        "ris",
+        "search"
+      ],
+    "title": "PACS-RIS Crawler - A unified search interface to PACS and RIS ",
+    "creators": [
+        {
+            "name": "Joshy Cyriac",
+            "affiliation": "Universitätsspital Basel, Schweiz"
+        },
+        {
+            "name": "Ivan Nesic",
+            "affiliation": "Universitätsspital Basel, Schweiz"
+        },
+        {
+            "name": "Manuela Moor",
+            "affiliation": "Universitätsspital Basel, Schweiz"
+        }
+    ]
+}
