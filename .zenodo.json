@@ -6,7 +6,8 @@
         "ris",
         "search"
       ],
-    "title": "PACS-RIS Crawler - A unified search interface to PACS and RIS ",
+    "title": "PACS-RIS Crawler",
+    "description": "A unified search application to link PACS exams with the RIS reports.",
     "creators": [
         {
             "name": "Joshy Cyriac",
