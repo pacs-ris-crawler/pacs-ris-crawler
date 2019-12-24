@@ -12,6 +12,7 @@ affiliations:
  - name: Joshy Cyriac, Researcher at University Hospital Basel, Switzerland
    index: 1
 date: 31 December 2019
+bibliography:
 ---
 
 # Summary
