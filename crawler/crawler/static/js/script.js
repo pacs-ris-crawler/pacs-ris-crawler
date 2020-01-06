@@ -6,7 +6,7 @@ $(function () {
   });
 
 
-  $('#batch-upload').submit(function (e) {
+  $('.batch-upload').submit(function (e) {
     var form = $(this);
     var url = form.attr('action');
 

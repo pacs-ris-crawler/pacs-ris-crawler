@@ -9,7 +9,7 @@
         <input class="form-control form-control-sm" type="date" id="day-input" name="day" value="{{day}}">
         <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Search PACS</button>
     </form>
-    <form id="batch-upload" action="/batch-upload">
+    <form class="batch-upload" action="/batch-upload">
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Accession Numbers:</label>
             <input class="form-control form-control-sm" name="accession_numbers" id="accession_numbers"
@@ -22,6 +22,8 @@
             <input class="form-control form-control-sm" type="date" id="to-date" name="to-date" value="">
             <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Upload</button>
         </div>
+    </form>
+    <form class="batch-upload" action="/batch-upload">
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Study Description:</label>
             <input class="form-control form-control-sm" name="study_description" id="study_description"
