@@ -1,7 +1,7 @@
 {
     "description": "A unified search application to link PACS exams with the RIS reports.",
-    "license": "GPL v3",
-    "title": "PACS-RIS Crawler v1.0.0",
+    "license": "GPL-3.0",
+    "title": "PACS-RIS Crawler v1.0.2",
     "version": "v1.0.0",
     "upload_type": "software",
     "publication_date": "2019-12-16",
