@@ -55,6 +55,9 @@ def convert_pacs_file(json_in):
                 p_dict["StudyID"] = entry["StudyID"]
             if "StationName" in entry:
                 p_dict["StationName"] = entry["StationName"]
+            if "ProtocolName" in entry:
+                p_dict["ProtocolName"] = set()
+                p_dict["ProtocolName"].add(entry["ProtocolName"])
             p_dict["_childDocuments_"] = []
             p_dict = add_child(p_dict, entry)
             acc_dict[entry["AccessionNumber"]] = p_dict
@@ -62,7 +65,13 @@ def convert_pacs_file(json_in):
             p_dict = acc_dict[entry["AccessionNumber"]]
             p_dict = add_child(p_dict, entry)
 
-    return list(acc_dict.values())
+    # pos processing 
+    # all protocolnames (a set datatype) is concated to a single string
+    values = list(acc_dict.values())
+    for v in values:
+        if "ProtocolName" in v:
+            v["ProtocolName"] = ";".join(v["ProtocolName"])
+    return values
 
 
 def add_child(parent, entry):
@@ -81,8 +90,9 @@ def add_child(parent, entry):
         child_dict["SeriesDescription"] = entry["SeriesDescription"]
     if "SeriesNumber" in entry:
         child_dict["SeriesNumber"] = entry["SeriesNumber"]
+    # add protocolname to set
     if "ProtocolName" in entry:
-        child_dict["ProtocolName"] = entry["ProtocolName"]
+        parent["ProtocolName"].add(entry["ProtocolName"])
     parent["_childDocuments_"].append(child_dict)
     return parent
 
