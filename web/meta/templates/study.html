@@ -1,17 +1,32 @@
 <div class="card my-3 small rounded-1 bg-light">
   <div class="card-body p-3">
     <h5 class="card-title h6">
-      <input type="checkbox" name='select-all-accession-number' data-patient-id="{{ doc['groupValue'] }}" data-accession-number="{{ study['AccessionNumber'] }}">
+      <input type="checkbox" name='select-all-accession-number' data-patient-id="{{ doc['groupValue'] }}"
+        data-accession-number="{{ study['AccessionNumber'] }}">
       <a href="#{{ study['AccessionNumber'] }}" data-toggle="collapse" class="exam-details">
-            <span class="small oi oi-collapse-down float-right " title="Collapse"></span>
-            {{study['StudyDescription']}}
+        <span class="small oi oi-collapse-down float-right " title="Collapse"></span>
+        {{study['StudyDescription']}}
 
       </a>
       {% if zfp_viewer %}
-        <a class="text-success pl-2" target="_blank" href="{{ study['AccessionNumber'] | zfp_url }}">Open images in ZFP <span class="oi oi-external-link small"></span></a>
+      <a class="text-success pl-2" target="_blank" href="{{ study['AccessionNumber'] | zfp_url }}">Open images in ZFP
+        <span class="oi oi-external-link small"></span></a>
       {% endif %}
     </h5>
-    <h6 class="card-subtitle" style="font-size:0.8rem">{{ study['StudyDate'] | to_date}}, Age {{study['PatientAge']}}, {{study['AccessionNumber']}}, {{study['ProtocolName']}}, {{study['ReferringPhysicianName']}}, {{study['InstitutionName']}}</h6>
+    {% if study['ProtocolName']|length %}
+    <div class="h6" style="font-size:0.8rem">
+      <span>StudyDate: {{ study['StudyDate'] | to_date}}, Age: {{study['PatientAge']}}, AccessionNumber:
+        {{study['AccessionNumber']}}, ReferringPhysician: {{study['ReferringPhysicianName']}}, Institution:
+        {{study['InstitutionName']}}<br>
+        ProtocolNames: {{study['ProtocolName']}}</span>
+    </div>
+    {% else %}
+    <div class="h6" style="font-size:0.8rem">
+      <span>StudyDate: {{ study['StudyDate'] | to_date}}, Age: {{study['PatientAge']}}, AccessionNumber:
+        {{study['AccessionNumber']}}, ReferringPhysician: {{study['ReferringPhysicianName']}}, Institution:
+        {{study['InstitutionName']}}
+    </div>
+    {% endif %}
     <div class="container p-0 pt-2 collapse" id="{{study['AccessionNumber']}}">
       <div class="row">
         <div class="col">
@@ -20,7 +35,8 @@
               <strong>Series</strong>
             </u>
           </p>
-          <table class="table table-sm" data-patient-id="{{ doc['groupValue'] }}" data-accession-number="{{ study['AccessionNumber'] }}">
+          <table class="table table-sm" data-patient-id="{{ doc['groupValue'] }}"
+            data-accession-number="{{ study['AccessionNumber'] }}">
             <thead>
               <tr>
                 <th></th>
@@ -31,15 +47,13 @@
             </thead>
             <tbody>
               {% for series in study['_childDocuments_'] %}
-                {% set d = series.update({'series_int': series.get('SeriesNumber') | int }) %}
+              {% set d = series.update({'series_int': series.get('SeriesNumber') | int }) %}
               {% endfor %}
               {% for child in study['_childDocuments_'] | sort(attribute='series_int') %}
               <tr>
                 <td>
-                  <input type="checkbox" name="series"
-                    data-patient-id="{{ doc['groupValue'] }}"
-                    data-patient-birthdate="{{ doc.doclist.docs[0]['PatientBirthDate'] }}"
-                    {#
+                  <input type="checkbox" name="series" data-patient-id="{{ doc['groupValue'] }}"
+                    data-patient-birthdate="{{ doc.doclist.docs[0]['PatientBirthDate'] }}" {#
                       Why is here an if?
                       In the beginning all series had the same StudyInstanceUID. But then
                       someone started to download the GRASP sequences. They have the same
@@ -48,17 +62,13 @@
                       is needed to ensure old behaviour is working where the StudyInstanceUID
                       is saved on the parent, as well as the new way, where StudyInstanceUID
                       is saved on the series level.
-                      #}
-                    {% if child.StudyInstanceUID %}
-                      data-study-id="{{ child['StudyInstanceUID'].strip(' \t\r\0') }}"
-                    {% else %}
-                      data-study-id="{{ study['StudyInstanceUID'].strip(' \t\r\0') }}"
-                    {% endif %}
+                      #} {% if child.StudyInstanceUID %}
+                    data-study-id="{{ child['StudyInstanceUID'].strip(' \t\r\0') }}" {% else %}
+                    data-study-id="{{ study['StudyInstanceUID'].strip(' \t\r\0') }}" {% endif %}
                     data-series-id="{{ child['SeriesInstanceUID'].strip(' \t\r\0') }}"
                     data-accession-number="{{ study['AccessionNumber'] }}"
                     data-series-number="{{ child['SeriesNumber'] }}"
-                    data-study-description="{{study['StudyDescription']}}"
-                    data-study-date="{{ study['StudyDate'] }}"
+                    data-study-description="{{study['StudyDescription']}}" data-study-date="{{ study['StudyDate'] }}"
                     data-series-description="{{ child['SeriesDescription'] }}">
                 </td>
                 <td>{{ child['Modality'] }} </td>
