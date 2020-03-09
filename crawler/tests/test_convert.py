@@ -46,4 +46,10 @@ class ConvertTest(unittest.TestCase):
         study = [d for d in self.data if d["AccessionNumber"] == "1"]
         self.assertEqual(1, len(study))
         self.assertEqual("P_1;P_2", study[0]["ProtocolName"])
+        
+    def test_protocolname_second_series_contains_protocolname(self):
+        df_raw = pd.DataFrame.from_dict(self.raw_data)
+        study = [d for d in self.data if d["AccessionNumber"] == "3"]
+        self.assertEqual(1, len(study))
+        self.assertEqual("P_3", study[0]["ProtocolName"])
 

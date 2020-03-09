@@ -157,6 +157,7 @@
         "PatientName": "CC",
         "PatientSex": "M",
         "QueryRetrieveLevel": "SERIES",
+        "ProtocolName": "P_3",
         "ReferringPhysicianName": "Notfall-Bettenstation ME",
         "RetrieveAETitle": "A",
         "SeriesDate": "20151208",
