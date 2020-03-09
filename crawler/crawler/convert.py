@@ -28,7 +28,7 @@ def convert_pacs_file(json_in):
                 p_dict["InstitutionName"] = entry["InstitutionName"]
             if (
                 "PatientBirthDate" in entry
-                and "SeriesDate" in entry
+                and "StudyDate" in entry
                 and entry["PatientBirthDate"] is not None
             ):
                 patient_birthdate = entry["PatientBirthDate"]
