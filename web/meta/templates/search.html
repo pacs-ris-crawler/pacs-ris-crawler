@@ -121,7 +121,6 @@
         <p class="h6 px-3">Series Filters</p>
       </div>
       <div class="form-group row mx-auto px-4">
-
         <div class="col-sm-6">
           <label for="seriesdescription-input" class="col-form-label"
             title="Series Description to search for, AND is *not* supported">Series Description</label>
@@ -129,28 +128,9 @@
             value="{{ params.SeriesDescription }}">
         </div>
         <div class="col-sm-6">
-          <label for="sort-field" class="col-form-label" title="On which field to sort the results">Sort field
-          </label>
-          <div>
-            <div class="custom-control custom-radio custom-control-inline align-items-center">
-              <input type="radio" id="customRadioInline1" name="sort_field" class="custom-control-input" value="Default"
-                {% if 'Default' == params.sort_field %} checked="checked" {% endif %}>
-              <label class="custom-control-label" for="customRadioInline1">Default</label>
-            </div>
-            <div class="custom-control custom-radio custom-control-inline align-items-center">
-              <input type="radio" id="customRadioInline2" name="sort_field" class="custom-control-input"
-                value="PatientID" {% if 'PatientID' == params.sort_field %} checked="checked" {% endif %}>
-              <label class="custom-control-label" for="customRadioInline2">PatientID</label>
-            </div>
-            <div class="custom-control custom-radio custom-control-inline align-items-center">
-              <input type="radio" id="customRadioInline3" name="sort_field" class="custom-control-input"
-                value="AccessionNumber" {% if 'AccessionNumber' == params.sort_field %} checked="checked" {% endif %}>
-              <label class="custom-control-label" for="customRadioInline3">AccessionNumber</label>
-            </div>
-          </div>
         </div>
       </div>
-      <div class="form-group row mx-auto px-4 ">
+      <div class="form-group row mx-auto px-4 mb-0">
         <div class="col">
           <label for="modality1" class="col-form-label" title="Modality to search for">Modality</label>
         </div>
