@@ -28,3 +28,5 @@ def write_file(results: List[Dict[str, str]], filename: str) -> str:
     frames = pd.concat([pd.DataFrame(x) for x in results if len(x) > 0])
     frames.to_json(filename, orient='records')
     return filename
+
+
