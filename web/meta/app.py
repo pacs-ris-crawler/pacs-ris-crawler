@@ -12,7 +12,7 @@ app.config.from_pyfile("config.cfg", silent=True)
 
 # Exposing constants to use
 
-VERSION = app.config["VERSION"] = "1.0.1"
+VERSION = app.config["VERSION"] = "1.1.0"
 RESULT_LIMIT = app.config["RESULT_LIMIT"]
 
 REPORT_SHOW_URL = app.config["REPORT_SHOW_URL"]
