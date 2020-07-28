@@ -14,7 +14,7 @@ from mova.job import download_series, transfer_series
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("mova.default_config")
 app.config.from_pyfile("config.cfg")
-version = app.config["VERSION"] = "1.0.0"
+version = app.config["VERSION"] = "1.0.1"
 
 app.config.from_object(rq_dashboard.default_settings)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")

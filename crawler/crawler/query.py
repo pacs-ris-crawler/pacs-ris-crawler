@@ -7,12 +7,9 @@ from typing import Dict, List
 import pandas as pd
 
 from crawler.command import (
-    add_day,
     add_day_range,
-    add_modality,
     add_study_description,
     add_study_uid,
-    add_time,
     basic_query,
     study_uid_query,
     year_start_end,
@@ -62,5 +59,5 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 def query_day_accs(config, day) -> List[Dict[str, str]]:
     query = accs_per_day(config, day.strftime("%Y%m%d"))
     result, _ = run(query)
-    return result
+    return [result]
 

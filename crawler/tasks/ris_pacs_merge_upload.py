@@ -22,6 +22,8 @@ class ConvertPacsFile(luigi.Task):
     def requires(self):
         if "acc" in self.query:
             return AccessionTask(self.query["acc"])
+        if "day" in self.query:
+            return StudyDescription("", self.query["day"], self.query["day"])
         elif "studydescription" in self.query:
             return StudyDescription(
                 self.query["studydescription"],
@@ -51,9 +53,7 @@ class MergePacsRis(luigi.Task):
 
     def run(self):
         with self.input().open("r") as daily:
-            data = daily.read()
-            pacs_in = json.loads(data)
-
+            pacs_in = json.load(daily)
         merged_out = merge_pacs_ris(pacs_in)
 
         with self.output().open("w") as my_dict:
@@ -99,7 +99,7 @@ class DailyUpAccConvertedMerged(luigi.WrapperTask):
         logging.debug(f"Got {len(results)} accession number for day: {self.day}")
         for i in results:
             if "AccessionNumber" in i:
-                yield DailyUpConvertedMerged({"acc":i["AccessionNumber"]})
+                yield DailyUpConvertedMerged({"acc": i["AccessionNumber"]})
 
 
 # example usage:

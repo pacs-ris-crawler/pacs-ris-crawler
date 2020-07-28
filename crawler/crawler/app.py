@@ -26,7 +26,7 @@ from tasks.accession import AccessionTask
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("default_config")
 app.config.from_pyfile("config.cfg")
-version = app.config["VERSION"] = "3.0.0"
+version = app.config["VERSION"] = "1.0.1"
 
 luigi_scheduler = app.config["LUIGI_SCHEDULER"]
 

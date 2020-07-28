@@ -110,13 +110,13 @@ def merge_pacs_ris(pacs):
     user = config["REPORT_USER"]
     pwd = config["REPORT_PWD"]
     my_dict = []
+    print(f"Getting RisReport for {len(pacs)} studies")
     for entry in pacs:
         dic = {}
-        dic = entry
+        dic = entry.copy()
         if not use_reports:
             dic["RisReport"] = ""
             my_dict.append(dic)
-            return my_dict
         elif "AccessionNumber" in entry:
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
