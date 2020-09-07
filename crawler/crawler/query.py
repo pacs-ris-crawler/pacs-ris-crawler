@@ -59,5 +59,6 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 def query_day_accs(config, day) -> List[Dict[str, str]]:
     query = accs_per_day(config, day.strftime("%Y%m%d"))
     result, _ = run(query)
-    return [result]
+    # not wrapping the result in a list is *no* mistake!
+    return result
 
