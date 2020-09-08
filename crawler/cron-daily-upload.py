@@ -14,7 +14,8 @@ def upload(host, port):
     today = datetime.date.today()
     week_ago = today - datetime.timedelta(days=7)
     week_ago_str = week_ago.strftime("%Y-%m-%d")
-    payload = {"from_date": week_ago_str, "to_date": week}
+    payload = {"from_date": week_ago_str, "to_date": week_ago_str}
+    print(f"Payload is: {payload}")
     r = requests.get(f"http://{host}:{port}/batch-upload", params=payload)
     r.raise_for_status()
     print(r.json())
