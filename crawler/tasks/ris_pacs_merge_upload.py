@@ -5,12 +5,13 @@ import json
 import logging
 import os
 
-import requests
-
 import luigi
+import requests
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 from crawler.query import query_day_accs
+from crawler.tasks.cdwh_store import AccessionStoreTask
+
 from tasks.accession import AccessionTask
 from tasks.study_description import StudyDescription
 from tasks.util import dict_to_str, load_config
@@ -100,6 +101,7 @@ class DailyUpAccConvertedMerged(luigi.WrapperTask):
         for i in results:
             if "AccessionNumber" in i:
                 yield DailyUpConvertedMerged({"acc": i["AccessionNumber"]})
+                yield AccessionStoreTask(i["AccessionNumber"])
 
 
 # example usage:
