@@ -21,7 +21,7 @@ class ConvertPacsFile(luigi.Task):
 
     def requires(self):
         if "acc" in self.query:
-            return AccessionTask(self.query["acc"])
+            return AccessionTask(self.query["acc"])           
         if "day" in self.query:
             return StudyDescription("", self.query["day"], self.query["day"])
         elif "studydescription" in self.query:
@@ -79,7 +79,7 @@ class DailyUpConvertedMerged(luigi.Task):
             update_response = requests.post(
                 url=upload_url, files=file, params={"commit": "true"}
             )
-        if not update_response.ok:
+        if not update_response.ok:  
             update_response.raise_for_status()
         else:
             with self.output().open("w") as my_file:

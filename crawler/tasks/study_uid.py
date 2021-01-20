@@ -8,7 +8,7 @@ from crawler.query import query_for_study_uid
 
 class StudyUIDTask(luigi.Task):
     # example run command
-    # python -m tasks.accession AccessionTask --accession-number 1234 --local-scheduler
+    # python -m tasks.study_uid StudyUIDTask --accession-number 1234 --local-scheduler
     accession_number = luigi.Parameter()
 
     def run(self):

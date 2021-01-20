@@ -1,7 +1,5 @@
-import configparser
-from itertools import chain
-
 from flask import Flask
+from luigi.parameter import UnknownParameterException
 
 
 def load_config():
