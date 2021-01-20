@@ -1,6 +1,7 @@
-import luigi
 import crawler.writer as w
+import luigi
 from crawler.query import query_accession_number
+
 from tasks.study_uid import StudyUIDTask
 from tasks.util import load_config
 
