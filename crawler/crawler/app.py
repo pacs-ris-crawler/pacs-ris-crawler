@@ -1,26 +1,23 @@
 import json
 import logging
-import os
+
 import shlex
 import subprocess
-import sys
+
 from datetime import datetime
 
 import pandas as pd
-import requests
-import schedule
-from flask import Flask, g, jsonify, render_template, request
+
+from flask import Flask, g, render_template, request
 from flask_assets import Bundle, Environment
 
 import luigi
-from crawler.config import get_report_show_url
-from crawler.query import query_accession_number, query_day_accs
+from crawler.query import query_day_accs
 from tasks.ris_pacs_merge_upload import (
     DailyUpConvertedMerged,
     MergePacsRis,
     DailyUpAccConvertedMerged,
 )
-from tasks.accession import AccessionTask
 
 
 app = Flask(__name__, instance_relative_config=True)
@@ -172,7 +169,7 @@ def batch():
             for i in r:
                 if "AccessionNumber" in i:
                     cmd = (
-                        'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
+                        'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --query \'{"acc": "%s"}\''
                         % i["AccessionNumber"]
                     )
                     cmds = shlex.split(cmd)
