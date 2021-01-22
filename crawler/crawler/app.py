@@ -168,8 +168,7 @@ def batch():
             for i in r:
                 if "AccessionNumber" in i:
                     cmd = (
-                        'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s"}\''
-                        % i["AccessionNumber"]
+                        "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s" % i["AccessionNumber"]
                     )
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
