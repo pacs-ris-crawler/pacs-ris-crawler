@@ -30,7 +30,7 @@ class AccessionStoreTask(luigi.Task):
             o.write("done")
     
     def output(self):
-        return luigi.LocalTarget("data/%s_cdwh.json" % self.accession_number)
+        return luigi.LocalTarget("data/%s_cdwh.txt" % self.accession_number)
 
 
 if __name__ == "__main__":
