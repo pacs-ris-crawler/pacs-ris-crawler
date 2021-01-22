@@ -3,13 +3,11 @@
 """
 import json
 import logging
-import os
 
 import luigi
 import requests
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
-from crawler.query import query_day_accs
 
 from tasks.accession import AccessionTask
 from tasks.cdwh_store import AccessionStoreTask
@@ -92,16 +90,11 @@ class DailyUpConvertedMerged(luigi.Task):
 
 
 class DailyUpAccConvertedMerged(luigi.WrapperTask):
-    day = luigi.DateParameter()
+    accession_number = luigi.Parameter()
 
     def requires(self):
-        config = load_config()
-        results = query_day_accs(config, self.day)
-        logging.debug(f"Got {len(results)} accession number for day: {self.day}")
-        for i in results:
-            if "AccessionNumber" in i:
-                yield DailyUpConvertedMerged({"acc": i["AccessionNumber"]})
-                yield AccessionStoreTask(i["AccessionNumber"])
+        yield DailyUpConvertedMerged({"acc": self.accession_number})
+        yield AccessionStoreTask(self.accession_number)
 
 
 # example usage:

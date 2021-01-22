@@ -164,12 +164,11 @@ def batch():
         to_date_as_date = datetime.strptime(to_date, "%Y-%m-%d")
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
-            cur_day = day.strftime("%Y-%m-%d")
             r = query_day_accs(app.config, day)
             for i in r:
                 if "AccessionNumber" in i:
                     cmd = (
-                        'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --query \'{"acc": "%s"}\''
+                        'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s"}\''
                         % i["AccessionNumber"]
                     )
                     cmds = shlex.split(cmd)
