@@ -10,9 +10,9 @@ import requests
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 from crawler.query import query_day_accs
-from crawler.tasks.cdwh_store import AccessionStoreTask
 
 from tasks.accession import AccessionTask
+from tasks.cdwh_store import AccessionStoreTask
 from tasks.study_description import StudyDescription
 from tasks.util import dict_to_str, load_config
 
