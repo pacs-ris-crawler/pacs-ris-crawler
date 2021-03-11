@@ -6,3 +6,4 @@ schedule==0.6.0
 jsmin==2.2.2
 daiquiri==2.1.1
 luigi==2.8.13
+pytest
