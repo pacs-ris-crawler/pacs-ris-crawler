@@ -1,0 +1,23 @@
+name: PACS/RIS Crawler CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu18
+    strategy:
+      matrix:
+        python:[3.6,3.8,3.9]
+    steps:
+      - name: install dependencies
+        run: pip install -r crawler/requirements.txt
+        run: pip install -r web/requirements.txt
+        run: pip install -r receiver/requirements.txt
+     - name: crawler tests
+        working-directory: crawler
+        run: python -m pytest  
+     - name: web tests
+        working-directory: web
+        run: python -m pytest
+     - name: crawler tests
+        working-directory: receiver
+        run: python -m pytest
+       
