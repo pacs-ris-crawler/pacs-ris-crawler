@@ -1,5 +1,6 @@
 # PACS / RIS Crawler
-[![Build Status](https://travis-ci.org/pacs-ris-crawler/pacs-ris-crawler.svg?branch=master)](https://travis-ci.org/pacs-ris-crawler/pacs-ris-crawler)
+![Build status](https://github.com/pacs-ris-crawler/pacs-ris-crawler/workflows/PACS/RIS%20Crawler%20CI/badge.svg)
+
 
 This is a major revision of the previous [PACS/RIS crawler](https://github.com/joshy/meta/) 
 solution developed for the clinic of 
