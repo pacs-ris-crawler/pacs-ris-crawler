@@ -17,13 +17,13 @@ jobs:
         python -m pip install -r crawler/requirements.txt
         python -m pip install -r web/requirements.txt
         python -m pip install -r receiver/requirements.txt
-   - name: crawler tests
+    - name: crawler tests
       working-directory: crawler
       run: python -m pytest  
-   - name: web tests
+    - name: web tests
       working-directory: web
       run: python -m pytest
-   - name: crawler tests
+    - name: crawler tests
       working-directory: receiver
       run: python -m pytest
        
