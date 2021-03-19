@@ -69,15 +69,19 @@ def download_series(config, series_list, dir_name):
                   + ' -k SeriesInstanceUID=' + series_uid \
                   + ' ' + dcmtk.dcmin
         args = shlex.split(command)
-        queue(args)
+        queue(args, image_folder)
         logger.debug('Running download command %s', args)
     return len(series_list)
 
+def create_nifti(image_folder):
+    return shlex.split("dcm2niix -f %i_%g_%s -z y " + image_folder)
 
-def queue(cmd):
+
+def queue(cmd, image_folder):
     redis_conn = Redis()
     q = Queue(connection=redis_conn)  # no args implies the default queue
     j = q.enqueue(run, cmd)
+    k = q.enqueue(run, create_nifti(image_folder), depends_on=j)
     return j
 
 
@@ -87,6 +91,7 @@ def _create_image_dir(output_dir, entry, dir_name):
     series_number = str(entry['series_number'])
     image_folder = os.path.join(output_dir, dir_name, patient_id,
                                 accession_number, series_number)
+    print("-------------------->", image_folder)
     if not os.path.exists(image_folder):
         os.makedirs(image_folder, exist_ok=True)
     return image_folder
