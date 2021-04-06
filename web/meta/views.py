@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 import requests
-from flask import make_response, render_template, request, send_file
+from flask import render_template, request, send_file
 from requests import RequestException, get, post
 
 from meta.app import (
@@ -171,7 +171,7 @@ def download_all():
     q = request.form
     df = query_all(q, solr_url(app.config))
     data = convert(df)
-    download_data = {"data": data, "dir": q["download-dir"]}
+    download_data = {"data": data, "dir": q["download-dir"], "image_type": q["imageType"]}
     return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
 
 

@@ -46,7 +46,7 @@ def base_command(dcmtk_config, pacs_config):
                pacs_config.peer_port, pacs_config.incoming_port)
 
 
-def download_series(config, series_list, dir_name):
+def download_series(config, series_list, dir_name, image_type):
     """ Download the series. The folder structure is as follows:
         MAIN_DOWNLOAD_DIR / USER_DEFINED / PATIENTID / ACCESSION_NUMBER / SERIES_NUMER
     """
@@ -69,7 +69,7 @@ def download_series(config, series_list, dir_name):
                   + ' -k SeriesInstanceUID=' + series_uid \
                   + ' ' + dcmtk.dcmin
         args = shlex.split(command)
-        queue(args, image_folder)
+        queue(args, image_folder, image_type)
         logger.debug('Running download command %s', args)
     return len(series_list)
 
@@ -77,11 +77,12 @@ def create_nifti(image_folder):
     return shlex.split("dcm2niix -f %i_%g_%s -z y " + image_folder)
 
 
-def queue(cmd, image_folder):
+def queue(cmd, image_folder, image_type):
     redis_conn = Redis()
     q = Queue(connection=redis_conn)  # no args implies the default queue
     j = q.enqueue(run, cmd)
-    k = q.enqueue(run, create_nifti(image_folder), depends_on=j)
+    if image_type == "nifti":
+        k = q.enqueue(run, create_nifti(image_folder), depends_on=j)
     return j
 
 

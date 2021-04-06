@@ -10,7 +10,6 @@
   <script src="https://cdn.jsdelivr.net/npm/vega@5.7.3"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.0-beta.11"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.0.0"></script>
-  <script type=text/javascript src="{{url_for('static', filename='js/jquery-3.1.0.min.js') }}"></script>
   {% assets "js_all" %}
   <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
@@ -20,30 +19,39 @@
   {% include 'partials/header-statistics.html' %}
   <div class="container pt-5">
     <div class="row">
-      <div class="col">
-        <div class="row">
-          <div>Yearly distribution</div>
+      <div class="container">
+        <div class="year-target">
+          <button class="btn btn-primary btn-sm ml-2" id="year_draw" ic-get-from="/statistics/year"
+            ic-target="#year-target">Draw</button>
         </div>
-        <div id="vis" class=""></div>
       </div>
-      <div class="col">
-        <form class="row">
-          <div class="col">
-            <div class="input-group input-group-sm mb-3 col">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="inputGroup-sizing-sm">Month</span>
+
+
+      <div class="row">
+        <div class="col">
+          <div class="row">
+            <div>Yearly distribution</div>
+          </div>
+          <div id="vis" class=""></div>
+        </div>
+        <div class="col">
+          <form class="row">
+            <div class="col">
+              <div class="input-group input-group-sm mb-3 col">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="inputGroup-sizing-sm">Month</span>
+                </div>
+                <input name="month" type="text" class="form-control" id="statistics_month">
               </div>
-              <input name="month" type="text" class="form-control" id="statistics_month">
             </div>
-          </div>
-          <div class="col">
-            <button class="btn btn-primary btn-sm ml-2" id="month_draw">Draw</button>
-          </div>
-        </form>
-        <div id="month_vis" class=""></div>
+            <div class="col">
+              <button class="btn btn-primary btn-sm ml-2" id="month_draw">Draw</button>
+            </div>
+          </form>
+          <div id="month_vis" class=""></div>
+        </div>
       </div>
     </div>
-  </div>
 </body>
 
 </html>

@@ -53,6 +53,20 @@
         <div class="dropdown-menu">
           <form class="px-4 py-3" id="download-form">
             <div class="form-check">
+              <input class="form-check-input" type="radio" name="download-type" id="download-dicom"
+                value="dicom" checked>
+              <label class="form-check-label" for="download-dicom">
+                as Dicom (default)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="download-type" id="download-nifti" value="nifti">
+              <label class="form-check-label" for="download-nifti">
+                as Nifti (experimental)
+              </label>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="form-check">
               <input class="form-check-input" type="radio" name="download-selection" id="download-selected"
                 value="selected" checked>
               <label class="form-check-label" for="download-selected">

@@ -6,9 +6,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import rq_dashboard
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
-from mova.config import dcmtk_config, pacs_config
 from mova.job import download_series, transfer_series
 
 app = Flask(__name__, instance_relative_config=True)
@@ -101,8 +100,9 @@ def download():
         json.dump(data, f)
     series_list = data.get("data")
     dir_name = data.get("dir")
+    image_type = data.get("image_type", "dicom")
     app.logger.info("download called and saving to %s", dir_name)
-    length = download_series(app.config, series_list, dir_name)
+    length = download_series(app.config, series_list, dir_name, image_type)
     return json.dumps({"status": "OK", "series_length": length})
 
 
