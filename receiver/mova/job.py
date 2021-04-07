@@ -40,7 +40,7 @@ def transfer_series(config, series_list, target):
         series_uid = entry["series_uid"]
         command = transfer_command(dcmtk, pacs, target, study_uid, series_uid)
         args = shlex.split(command)
-        queue(args)
+        queue_transfer(args)
         logger.debug("Running transfer command %s", args)
     return len(series_list)
 
@@ -107,6 +107,13 @@ def delete_dicom_cmd(image_folder):
     for f in os.scandir(image_folder):
         if f.is_file():
             os.remove(f)
+
+
+def queue_transfer(cmd):
+    redis_conn = Redis()
+    q = Queue(connection=redis_conn)  # no args implies the default queue
+    j = q.enqueue(run, cmd)
+    return 
 
 
 def queue(cmd, image_folder, image_type):
