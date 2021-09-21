@@ -1,6 +1,7 @@
 import logging
 import os
 import shlex
+import glob
 from rq import Queue
 from redis import Redis
 
@@ -102,6 +103,31 @@ def create_nifti_cmd(image_folder):
         "dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
     )
 
+def create_dicom_anonymize_cmd(image_folder):
+    tags_to_delete = [
+        '(0010,0010)', # Name
+        '(0010,0020)', # ID
+        '(0010,0030)', # Birthdate
+        '(0010,1010)', # Age
+        '(0010,1020)', # Size
+        '(0010,1030)', # Weight
+        '(0008,0050)', # Accession number
+        '(0008,0080)', # Institution Name
+        '(0008,0081)', # Institution Address
+        '(0008,0090)', # Referring Physician
+        '(0008,1070)', # Operator Name
+        '(0010,1000)'  # Other Patient IDs
+    ]
+    
+    dcmodify_cmd = '/dcmodify -ie -gin -nb '
+    for tag in tags_to_delete:
+        dcmodify_cmd += f'-ea "{tag}" ' # Remove tag
+        #dcmodify_cmd += f'-m "{tag}=0" ' # Modify tag instead of removing
+    
+    files = glob.glob(os.path.join(image_folder, '*'))
+    dcmodify_cmd += ' '.join([f'"{filename}"' for filename in files) # this is a very long command. But it should be fine on POSIX
+    #print(dcmodify_cmd)
+    return shlex.split(dcmodify_cmd)
 
 def delete_dicom_cmd(image_folder):
     for f in os.scandir(image_folder):
@@ -124,6 +150,9 @@ def queue(cmd, image_folder, image_type):
         nifti_job = q.enqueue(run, create_nifti_cmd(image_folder), depends_on=download_job)
         delete_dicom_job = q.enqueue(delete_dicom_cmd, image_folder, depends_on=nifti_job)
         return delete_dicom_job
+    if image_type == "anon-dicom":
+        dicom_anonymize_job = q.enqueue(run, create_dicom_anonymize_cmd(image_folder), depends_on=download_job)
+        return dicom_anonymize_job
     return download_job
 
 
