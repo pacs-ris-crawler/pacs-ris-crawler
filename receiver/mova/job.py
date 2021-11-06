@@ -112,7 +112,7 @@ def create_dicom_anonymize_cmd(image_folder):
         '(0010,1010)', # Age
         '(0010,1020)', # Size
         '(0010,1030)', # Weight
-        '(0008,0050)', # Accession number
+        '(0010,1040)', # Patient Address
         '(0008,0080)', # Institution Name
         '(0008,0081)', # Institution Address
         '(0008,0090)', # Referring Physician
@@ -128,7 +128,7 @@ def create_dicom_anonymize_cmd(image_folder):
         #dcmodify_cmd += f'-m "{tag}=0" ' # Modify tag instead of removing
     
     files = glob.glob(os.path.join(image_folder, '*'))
-    dcmodify_cmd += ' '.join([f'"{filename}"' for filename in files) # this is a very long command. But it should be fine on POSIX
+    dcmodify_cmd += ' '.join([f'"{filename}"' for filename in files]) # this is a very long command. But it should be fine on POSIX
     #print(dcmodify_cmd)
     return shlex.split(dcmodify_cmd)
 
