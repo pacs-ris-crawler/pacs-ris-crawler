@@ -106,6 +106,7 @@ def create_nifti_cmd(image_folder):
 def create_dicom_anonymize_cmd(image_folder):
     tags_to_delete = [
         '(0010,0010)', # Name
+        '(0010,1001)', # Other Patient Names 
         '(0010,0020)', # ID
         '(0010,0030)', # Birthdate
         '(0010,1010)', # Age
@@ -115,8 +116,10 @@ def create_dicom_anonymize_cmd(image_folder):
         '(0008,0080)', # Institution Name
         '(0008,0081)', # Institution Address
         '(0008,0090)', # Referring Physician
+        '(0008,0094)', # Referring Physician's Telephone numbers 
         '(0008,1070)', # Operator Name
-        '(0010,1000)'  # Other Patient IDs
+        '(0010,1000)', # Other Patient IDs
+        '(0008,0092)', # Referring Physician's Address 
     ]
     
     dcmodify_cmd = '/dcmodify -ie -gin -nb '
