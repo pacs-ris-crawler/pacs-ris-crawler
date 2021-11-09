@@ -6,21 +6,21 @@ from rq import Queue
 from redis import Redis
 
 from mova.config import pacs_config, dcmtk_config
-from mova.executor import run
+from mova.executor import run, run_many
 
 logger = logging.getLogger("job")
 
 
-def transfer_command(dcmkt_config, pacs_config, target, study_uid, series_uid):
+def transfer_command(dcmtk_config, pacs_config, target, study_uid, series_uid):
     """ Constructs the first part of the transfer command to a PACS node. """
     return (
-        dcmkt_config.dcmtk_bin
+        dcmtk_config.dcmtk_bin
         + "/movescu -v -S "
-        + _transfer(dcmkt_config, pacs_config, target, study_uid, series_uid)
+        + _transfer(dcmtk_config, pacs_config, target, study_uid, series_uid)
     )
 
 
-def _transfer(dcmkt_config, pacs_config, target, study_uid, series_uid):
+def _transfer(dcmtk_config, pacs_config, target, study_uid, series_uid):
     return "-aem {} -aet {} -aec {} {} {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
         target,
         pacs_config.ae_title,
@@ -29,7 +29,7 @@ def _transfer(dcmkt_config, pacs_config, target, study_uid, series_uid):
         pacs_config.peer_port,
         study_uid,
         series_uid,
-        dcmkt_config.dcmin,
+        dcmtk_config.dcmin,
     )
 
 
@@ -90,7 +90,7 @@ def download_series(config, series_list, dir_name, image_type):
             + dcmtk.dcmin
         )
         args = shlex.split(command)
-        queue(args, image_folder, image_type)
+        queue(args, config, image_folder, image_type)
         logger.debug("Running download command %s", args)
     return len(series_list)
 
@@ -102,35 +102,6 @@ def create_nifti_cmd(image_folder):
     return shlex.split(
         "dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
     )
-
-def create_dicom_anonymize_cmd(image_folder):
-    tags_to_delete = [
-        '(0010,0010)', # Name
-        '(0010,1001)', # Other Patient Names 
-        '(0010,0020)', # ID
-        '(0010,0030)', # Birthdate
-        '(0010,1010)', # Age
-        '(0010,1020)', # Size
-        '(0010,1030)', # Weight
-        '(0010,1040)', # Patient Address
-        '(0008,0080)', # Institution Name
-        '(0008,0081)', # Institution Address
-        '(0008,0090)', # Referring Physician
-        '(0008,0094)', # Referring Physician's Telephone numbers 
-        '(0008,1070)', # Operator Name
-        '(0010,1000)', # Other Patient IDs
-        '(0008,0092)', # Referring Physician's Address 
-    ]
-    
-    dcmodify_cmd = '/dcmodify -ie -gin -nb '
-    for tag in tags_to_delete:
-        dcmodify_cmd += f'-ea "{tag}" ' # Remove tag
-        #dcmodify_cmd += f'-m "{tag}=0" ' # Modify tag instead of removing
-    
-    files = glob.glob(os.path.join(image_folder, '*'))
-    dcmodify_cmd += ' '.join([f'"{filename}"' for filename in files]) # this is a very long command. But it should be fine on POSIX
-    #print(dcmodify_cmd)
-    return shlex.split(dcmodify_cmd)
 
 def delete_dicom_cmd(image_folder):
     for f in os.scandir(image_folder):
@@ -145,7 +116,7 @@ def queue_transfer(cmd):
     return 
 
 
-def queue(cmd, image_folder, image_type):
+def queue(cmd, config, image_folder, image_type):
     redis_conn = Redis()
     q = Queue(connection=redis_conn)  # no args implies the default queue
     download_job = q.enqueue(run, cmd)
@@ -154,7 +125,8 @@ def queue(cmd, image_folder, image_type):
         delete_dicom_job = q.enqueue(delete_dicom_cmd, image_folder, depends_on=nifti_job)
         return delete_dicom_job
     if image_type == "anon-dicom":
-        dicom_anonymize_job = q.enqueue(run, create_dicom_anonymize_cmd(image_folder), depends_on=download_job)
+        
+        dicom_anonymize_job = q.enqueue(run_many, config, image_folder, depends_on=download_job)
         return dicom_anonymize_job
     return download_job
 
