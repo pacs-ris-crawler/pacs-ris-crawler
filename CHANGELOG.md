@@ -1,5 +1,8 @@
 # Changelog
 
+
+## v1.3.0 - 09.11.2021
+ * Option to anonymize dicoms to after downloading it
 ## v1.2.0 - 07.04.2021
  * Option to convert dicoms to nifti after downloading it (depends on dcm2niix)
 
