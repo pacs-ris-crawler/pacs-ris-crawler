@@ -9,10 +9,10 @@ from flask import render_template, request, send_file
 from requests import RequestException, get, post
 
 from meta.app import (
-    MOVA_URL,
     MOVA_DASHBOARD_URL,
     MOVA_DOWNLOAD_URL,
     MOVA_TRANSFER_URL,
+    MOVA_URL,
     REPORT_SHOW_URL,
     RESULT_LIMIT,
     SHOW_DOWNLOAD_OPTIONS,
@@ -30,7 +30,6 @@ from meta.solr import solr_url
 from meta.statistics import calculate
 from meta.terms import get_terms_data
 
-
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
     app.logger.handlers = gunicorn_logger.handlers
@@ -39,7 +38,7 @@ if __name__ != "__main__":
 
 @app.route("/")
 def main():
-    """ Renders the initial page. """
+    """Renders the initial page."""
     url = query_indexed_dates(solr_url(app.config))
     try:
         response = get(url)
@@ -69,7 +68,7 @@ def main():
 
 @app.route("/search", methods=["POST", "GET"])
 def search():
-    """ Renders the search results. """
+    """Renders the search results."""
     params = request.form
     payload = query_body(params, RESULT_LIMIT)
     headers = {"content-type": "application/json"}
@@ -97,7 +96,7 @@ def search():
         error = result["error"]
         msg = result["error"]["msg"]
         trace = error.get("trace", "")
-        logging.error(reposonse.text)
+        logging.error(response.text)
         return render_template(
             "search.html",
             params=params,
@@ -142,27 +141,29 @@ def search():
 def export_anon():
     q = request.form
     df = query_all(q, solr_url(app.config))
-    df = df.drop(["PatientName", "PatientBirthDate"], axis=1)
-    out = io.BytesIO()
-    writer = pd.ExcelWriter(out)
-    df.to_excel(writer, index=False, sheet_name="Sheet1")
-    writer.save()
-    writer.close()
-    out.seek(0)
-    return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
+    if df is not None:
+        df = df.drop(["PatientName", "PatientBirthDate"], axis=1)
+        out = io.BytesIO()
+        writer = pd.ExcelWriter(out)
+        df.to_excel(writer, index=False, sheet_name="Sheet1")
+        writer.save()
+        writer.close()
+        out.seek(0)
+        return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
 
 
 @app.route("/export", methods=["POST"])
 def export():
     q = request.form
     df = query_all(q, solr_url(app.config))
-    out = io.BytesIO()
-    writer = pd.ExcelWriter(out)
-    df.to_excel(writer, index=False, sheet_name="Sheet1")
-    writer.save()
-    writer.close()
-    out.seek(0)
-    return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
+    if df is not None:
+        out = io.BytesIO()
+        writer = pd.ExcelWriter(out)
+        df.to_excel(writer, index=False, sheet_name="Sheet1")
+        writer.save()
+        writer.close()
+        out.seek(0)
+        return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
 
 
 @app.route("/download-all", methods=["POST"])
@@ -170,14 +171,19 @@ def download_all():
     app.logger.info("download all called")
     q = request.form
     df = query_all(q, solr_url(app.config))
-    data = convert(df)
-    download_data = {"data": data, "dir": q["download-dir"], "image_type": q["imageType"]}
-    return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
+    if df is not None:
+        data = convert(df)
+        download_data = {
+            "data": data,
+            "dir": q["download-dir"],
+            "image_type": q["imageType"],
+        }
+        return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
 
 
 @app.route("/download", methods=["POST"])
 def download():
-    """ Ajax post to download series of images. """
+    """Ajax post to download series of images."""
     app.logger.info("download called")
     data = request.get_json(force=True)
     return download_or_transfer(MOVA_DOWNLOAD_URL, data)
@@ -185,27 +191,27 @@ def download():
 
 @app.route("/transfer-all", methods=["POST"])
 def transfer_all():
-    """ Ajax post to transfer series of images to <target> PACS node. """
+    """Ajax post to transfer series of images to <target> PACS node."""
     app.logger.info("transfer all called")
     q = request.form
     df = query_all(q, solr_url(app.config))
-    data = convert(df)
-    target = q["target"]
-    transfer_data = {"data": data, "target": q["target"]}
-
-    app.logger.info(f"Transfer called and sending to AE_TITLE {target}")
-    t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
-    if t:
-        destination = t[0]["AE_TITLE"]
-        transfer_data["target"] = destination
-        return download_or_transfer(MOVA_TRANSFER_URL, transfer_data)
-    else:
-        return f"Error: Could not find destination AE_TITLE for {t}"
+    if df is not None:
+        data = convert(df)
+        target = q["target"]
+        transfer_data = {"data": data, "target": q["target"]}
+        app.logger.info(f"Transfer called and sending to AE_TITLE {target}")
+        t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
+        if t:
+            destination = t[0]["AE_TITLE"]
+            transfer_data["target"] = destination
+            return download_or_transfer(MOVA_TRANSFER_URL, transfer_data)
+        else:
+            return f"Error: Could not find destination AE_TITLE for {t}"
 
 
 @app.route("/transfer", methods=["POST"])
 def transfer():
-    """ Ajax post to transfer series of images to <target> PACS node. """
+    """Ajax post to transfer series of images to <target> PACS node."""
     data = request.get_json(force=True)
     target = data.get("target", "")
     series_list = data.get("data", "")
@@ -237,7 +243,7 @@ def download_or_transfer(url, data):
 
 @app.route("/terms")
 def terms():
-    """ Renders a page about term information. Only internal use. """
+    """Renders a page about term information. Only internal use."""
     data = get_terms_data(app.config)
     return render_template("terms.html", terms=data)
 
