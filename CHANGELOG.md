@@ -1,6 +1,7 @@
 # Changelog
 
-
+## v1.3.1 - 24.01.2022
+ * Fixes #5
 ## v1.3.0 - 09.11.2021
  * Option to anonymize dicoms to after downloading it
 ## v1.2.0 - 07.04.2021
