@@ -95,6 +95,16 @@ $(function () {
         $('#loading').addClass('d-none');
         var blob = this.response;
         saveAs(blob, 'download.xlsx');
+      } else if (this.status == 204) {
+        $('#loading').addClass('d-none');
+        console.log(" got empty response")
+        noty({
+          text: 'No results to export',
+          layout: 'center',
+          timeout: '3000',
+          closeWith: ['click', 'hover'],
+          type: 'error'
+        });
       } else if (this.status >= 400 || this.status == 500) {
         $('#loading').addClass('d-none');
       }
@@ -129,6 +139,16 @@ $(function () {
         $('#loading').addClass('d-none');
         var blob = this.response;
         saveAs(blob, 'download.xlsx');
+      } else if (this.status == 204) {
+        $('#loading').addClass('d-none');
+        console.log(" got empty response")
+        noty({
+          text: 'No results to export',
+          layout: 'center',
+          timeout: '3000',
+          closeWith: ['click', 'hover'],
+          type: 'error'
+        });
       } else if (this.status >= 400 || this.status == 500) {
         $('#loading').addClass('d-none');
       }

@@ -1,4 +1,5 @@
 import logging
+import copy
 from datetime import datetime
 
 DEFAULT_PAYLOAD = {'offset': 0, 'limit': 1,
@@ -8,7 +9,7 @@ DEFAULT_PAYLOAD = {'offset': 0, 'limit': 1,
 
 
 def query_body(args, limit=100):
-    body = DEFAULT_PAYLOAD.copy()
+    body = copy.deepcopy(DEFAULT_PAYLOAD)
     body['limit'] = limit
     if ('RisReport' not in args) or ('RisReport' in args and args.get('RisReport') == '*'):
         # Old exams have no report that is why we must match all documents.
