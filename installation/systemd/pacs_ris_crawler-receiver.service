@@ -7,7 +7,7 @@ User=cyriacj
 Group=www-data
 WorkingDirectory=/var/www/pacs-ris-crawler/receiver
 Environment="PATH=<python virtual env path>:/usr/bin"
-ExecStart=/var/www/env3.6_meta/bin/gunicorn -b localhost:5005 -w 4 --log-level=info mova.app:app
+ExecStart=/var/www/pacs-ris-crawler/.env/bin/gunicorn -b localhost:5005 -w 4 --log-level=info receiver.app:app
 
 [Install]
 WantedBy=multi-user.target

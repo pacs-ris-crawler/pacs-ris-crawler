@@ -8,3 +8,7 @@ solution developed for the clinic of
 at the  [University Hospital Basel](https://www.unispital-basel.ch/en/).
 
 The documentation can be found at: https://pacs-ris-crawler.github.io/
+
+## Requirements
+* python 3.9
+* solr 7.7 (for now)

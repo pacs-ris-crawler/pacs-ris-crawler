@@ -1,11 +1,11 @@
 [Unit]
-Description=PACS RIS Crawler frontend
+Description=PACS RIS Crawler web frontend
 After=network.target
 
 [Service]
 WorkingDirectory=/var/www/pacs-ris-crawler/web
 Environment="PATH=<python virtual env path>:/usr/bin"
-ExecStart=/var/www/pacs-ris-crawler/web/env/bin/gunicorn -b localhost:5000 -w 4 --log-level=debug meta.app:app
+ExecStart=/var/www/pacs-ris-crawler/.env/bin/gunicorn -b localhost:5000 -w 4 --log-level=info web.app:app
 
 [Install]
 WantedBy=multi-user.target
