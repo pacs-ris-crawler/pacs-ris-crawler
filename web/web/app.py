@@ -60,4 +60,4 @@ js = Bundle(
 )
 assets.register("js_all", js)
 
-import meta.views
+import web.views

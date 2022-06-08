@@ -1,6 +1,6 @@
 import unittest
 
-import meta.query
+import web.query
 from werkzeug.datastructures import MultiDict
 
 
@@ -9,7 +9,7 @@ class TestQueryStuff(unittest.TestCase):
         args = MultiDict(
             [("RisReport", "foo"), ("StartDate", "1.1.2016"), ("EndDate", "31.12.2016")]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(result["query"], "RisReport:(foo)")
 
     def test_filter_single(self):
@@ -21,7 +21,7 @@ class TestQueryStuff(unittest.TestCase):
                 ("StudyDescription", "lorem ipsum"),
             ]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(
             result["filter"],
             ["StudyDescription:(lorem ipsum)", "StudyDate:[20160101 TO 20161231]"],
@@ -36,7 +36,7 @@ class TestQueryStuff(unittest.TestCase):
                 ("StudyDescription", "lorem ipsum"),
             ]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(
             result["filter"],
             ["StudyDescription:(lorem ipsum)", "StudyDate:[20160101 TO 20161231]"],
@@ -54,7 +54,7 @@ class TestQueryStuff(unittest.TestCase):
                 ("AccessionNumber", "A123456789"),
             ]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(
             result["filter"],
             [
@@ -75,7 +75,7 @@ class TestQueryStuff(unittest.TestCase):
                 ("Modality", "CT"),
             ]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(
             result["filter"],
             [
@@ -94,7 +94,7 @@ class TestQueryStuff(unittest.TestCase):
                 ("Modality", "MR"),
             ]
         )
-        result = meta.query.query_body(args)
+        result = web.query.query_body(args)
         self.assertEqual(
             result["filter"],
             [

@@ -5,8 +5,8 @@ import shlex
 from redis import Redis
 from rq import Queue
 
-from mova.config import dcmtk_config, pacs_config
-from mova.executor import run, run_many
+from receiver.config import dcmtk_config, pacs_config
+from receiver.executor import run, run_many
 
 logger = logging.getLogger("job")
 

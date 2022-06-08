@@ -1,7 +1,7 @@
 import unittest
 
-from mova.config import dcmtk_config, pacs_config
-from mova.job import base_command, transfer_command
+from receiver.config import dcmtk_config, pacs_config
+from receiver.job import base_command, transfer_command
 
 DCMTK_CONFIG = dcmtk_config({"DCMTK_BIN": "/usr/local/bin", "DCMIN": "/opt/dcm.in"})
 

@@ -4,7 +4,7 @@ import shlex
 import subprocess
 from subprocess import PIPE
 
-from mova.config import dcmtk_config
+from receiver.config import dcmtk_config
 
 TAGS_TO_DELETE = [
     "(0010,0010)",  # Name

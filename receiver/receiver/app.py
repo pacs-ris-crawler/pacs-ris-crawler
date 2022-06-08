@@ -9,7 +9,7 @@ import rq_dashboard
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
 
-from mova.job import download_series, transfer_series
+from receiver.job import download_series, transfer_series
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("mova.default_config")

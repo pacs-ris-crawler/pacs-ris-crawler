@@ -8,7 +8,7 @@ import requests
 from flask import render_template, request, send_file
 from requests import RequestException, get, post
 
-from meta.app import (
+from web.app import (
     MOVA_DASHBOARD_URL,
     MOVA_DOWNLOAD_URL,
     MOVA_TRANSFER_URL,
@@ -22,13 +22,13 @@ from meta.app import (
     ZFP_VIEWER,
     app,
 )
-from meta.convert import convert
-from meta.paging import calc
-from meta.query import query_body, query_indexed_dates
-from meta.query_all import query_all
-from meta.solr import solr_url
-from meta.statistics import calculate
-from meta.terms import get_terms_data
+from web.convert import convert
+from web.paging import calc
+from web.query import query_body, query_indexed_dates
+from web.query_all import query_all
+from web.solr import solr_url
+from web.statistics import calculate
+from web.terms import get_terms_data
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")

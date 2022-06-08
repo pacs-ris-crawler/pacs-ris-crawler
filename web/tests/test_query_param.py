@@ -1,6 +1,6 @@
 import unittest
 
-from meta.query_param import set_query_parameter
+from web.query_param import set_query_parameter
 
 
 class TestQueryParam(unittest.TestCase):

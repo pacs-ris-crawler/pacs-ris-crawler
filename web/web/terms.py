@@ -2,7 +2,7 @@ from operator import itemgetter
 
 from requests import get
 
-from meta.solr import solr_terms_url
+from web.solr import solr_terms_url
 
 
 def get_terms_data(config):

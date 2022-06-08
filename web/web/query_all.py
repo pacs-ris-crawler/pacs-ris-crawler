@@ -5,7 +5,7 @@ import pandas as pd
 from requests import RequestException, get
 from werkzeug.datastructures import MultiDict
 
-from meta.query import query_body
+from web.query import query_body
 
 
 def query_all(search_params: MultiDict, solr_url: str):
