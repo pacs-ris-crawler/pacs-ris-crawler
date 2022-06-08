@@ -2,12 +2,13 @@ import json
 import logging
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 import rq_dashboard
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
+
 from mova.job import download_series, transfer_series
 
 app = Flask(__name__, instance_relative_config=True)
@@ -45,8 +46,7 @@ if __name__ != "__main__":
 def to_date(timestamp):
     if timestamp:
         return datetime.fromtimestamp(int(timestamp)).strftime("%d.%m.%Y %H:%M:%S")
-    else:
-        return ""
+    return ""
 
 
 @app.route("/")
@@ -92,7 +92,7 @@ def resend():
 
 @app.route("/download", methods=["POST"])
 def download():
-    """ Post to download series of images. """
+    """Post to download series of images."""
     app.logger.info("Download request received")
     data = request.get_json(force=True)
     timestamp = int(time.time())
@@ -108,7 +108,7 @@ def download():
 
 @app.route("/transfer", methods=["POST"])
 def transfer():
-    """ Post to transfer series of images to another PACS node. """
+    """Post to transfer series of images to another PACS node."""
     app.logger.info("Transfer request received")
     data = request.get_json(force=True)
     timestamp = int(time.time())

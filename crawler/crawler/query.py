@@ -1,25 +1,14 @@
-# Finds out the time ranges for a given day
-import datetime as datetime
-import logging
-import sys
 from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (
-    add_day_range,
-    add_study_description,
-    add_study_uid,
-    basic_query,
-    study_uid_query,
-    year_start_end,
-    accs_per_day,
-)
+from crawler.command import (accs_per_day, add_study_uid, basic_query,
+                             study_uid_query, year_start_end)
 from crawler.executor import run
 
 
 def query_for_study_uid(config, accession_number):
-    """ There could be different study_uids for a single accession number.
+    """There could be different study_uids for a single accession number.
     An example would be GRASP sequences."""
     query = study_uid_query(config, accession_number)
     result, _ = run(query)
@@ -29,19 +18,8 @@ def query_for_study_uid(config, accession_number):
             ids.append(r["StudyInstanceUID"])
         return ids
     raise LookupError(
-        "No result found for accession number: {}\nQuery was: {}".format(
-            accession_number, query
-        )
+        f"No result found for accession number: {accession_number}\nQuery was: {query}"
     )
-
-
-def query_study_description(config, study_description, from_date, to_date):
-    query = basic_query(config)
-    query = add_study_description(query, study_description)
-    query = add_day_range(query, from_date, to_date)
-    result, _ = run(query)
-    return [result]
-
 
 def query_accession_number(config, study_uid):
     query = basic_query(config)
@@ -61,4 +39,3 @@ def query_day_accs(config, day) -> List[Dict[str, str]]:
     result, _ = run(query)
     # not wrapping the result in a list is *no* mistake!
     return result
-

@@ -1,8 +1,0 @@
-Flask==1.1.2
-Flask-Assets==2.0
-jsmin==2.2.2
-requests==2.24.0
-pandas==1.1.1
-daiquiri==2.1.1
-rq==1.1.0
-rq-dashboard

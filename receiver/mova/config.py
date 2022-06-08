@@ -12,7 +12,7 @@ DcmtkConfig = namedtuple("DcmtkConfig", ["dcmtk_bin", "dcmin"])
 
 
 def pacs_config(config):
-    """ Returns the pacs configuration parameters. """
+    """Returns the pacs configuration parameters."""
     return PacsConfig(
         config["AE_TITLE"],
         config["AE_CALLED"],
@@ -23,5 +23,5 @@ def pacs_config(config):
 
 
 def dcmtk_config(config):
-    """ Returns the dcmtk configuration. """
+    """Returns the dcmtk configuration."""
     return DcmtkConfig(config["DCMTK_BIN"], config["DCMIN"])

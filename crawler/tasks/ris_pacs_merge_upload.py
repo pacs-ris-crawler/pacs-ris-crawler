@@ -11,7 +11,6 @@ from crawler.convert import convert_pacs_file, merge_pacs_ris
 
 from tasks.accession import AccessionTask
 from tasks.cdwh_store import AccessionStoreTask
-from tasks.study_description import StudyDescription
 from tasks.util import dict_to_str, load_config
 
 
@@ -20,15 +19,9 @@ class ConvertPacsFile(luigi.Task):
 
     def requires(self):
         if "acc" in self.query:
-            return AccessionTask(self.query["acc"])           
+            return AccessionTask(self.query["acc"])
         if "day" in self.query:
             return StudyDescription("", self.query["day"], self.query["day"])
-        elif "studydescription" in self.query:
-            return StudyDescription(
-                self.query["studydescription"],
-                self.query["from_date"],
-                self.query["to_date"],
-            )
 
     def run(self):
         with self.input().open("r") as daily:
@@ -78,7 +71,7 @@ class DailyUpConvertedMerged(luigi.Task):
             update_response = requests.post(
                 url=upload_url, files=file, params={"commit": "true"}
             )
-        if not update_response.ok:  
+        if not update_response.ok:
             update_response.raise_for_status()
         else:
             with self.output().open("w") as my_file:

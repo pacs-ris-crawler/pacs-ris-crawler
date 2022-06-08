@@ -5,7 +5,7 @@ import os
 
 import pandas as pd
 import requests
-from flask import render_template, request, send_file, redirect, url_for
+from flask import render_template, request, send_file
 from requests import RequestException, get, post
 
 from meta.app import (
@@ -152,6 +152,7 @@ def export_anon():
         return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
     return ("", 204)
 
+
 @app.route("/export", methods=["POST"])
 def export():
     q = request.form
@@ -165,6 +166,7 @@ def export():
         out.seek(0)
         return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
     return ("", 204)
+
 
 @app.route("/download-all", methods=["POST"])
 def download_all():
@@ -180,6 +182,7 @@ def download_all():
         }
         return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
     return ("", 204)
+
 
 @app.route("/download", methods=["POST"])
 def download():
@@ -208,6 +211,7 @@ def transfer_all():
         else:
             return f"Error: Could not find destination AE_TITLE for {t}"
     return ("", 204)
+
 
 @app.route("/transfer", methods=["POST"])
 def transfer():

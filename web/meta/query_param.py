@@ -1,4 +1,4 @@
-from urllib.parse import urlencode, parse_qs, urlsplit, urlunsplit
+from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 
 def set_query_parameter(url, param_name, param_value):

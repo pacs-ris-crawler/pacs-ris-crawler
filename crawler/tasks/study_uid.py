@@ -2,7 +2,6 @@ import configparser
 from itertools import chain
 
 import luigi
-import crawler.writer as w
 from crawler.query import query_for_study_uid
 
 

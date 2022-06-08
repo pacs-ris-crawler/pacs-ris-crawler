@@ -6,6 +6,7 @@ import requests
 from tasks.accession import AccessionTask
 from tasks.util import load_config
 
+
 class AccessionStoreTask(luigi.Task):
 
     # example run command
@@ -14,6 +15,7 @@ class AccessionStoreTask(luigi.Task):
 
     def requires(self):
         return AccessionTask(self.accession_number)
+
 
     def run(self):
         config = load_config()
@@ -28,7 +30,7 @@ class AccessionStoreTask(luigi.Task):
         r.raise_for_status()
         with self.output().open("w") as o:
             o.write("done")
-    
+
     def output(self):
         return luigi.LocalTarget("data/%s_cdwh.txt" % self.accession_number)
 

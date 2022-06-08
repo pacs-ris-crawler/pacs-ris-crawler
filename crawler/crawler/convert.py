@@ -1,13 +1,13 @@
 """ This file contains the locic associated with the tasks
     in the file 'ris_pacs_merge_upload.py'
 """
-from datetime import date, datetime
+from datetime import datetime
 
 from requests import get
 from requests.auth import HTTPBasicAuth
+from tasks.util import load_config
 
 from crawler.config import get_report_show_url
-from tasks.util import load_config
 
 
 def convert_pacs_file(json_in):

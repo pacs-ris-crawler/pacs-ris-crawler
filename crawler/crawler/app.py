@@ -1,24 +1,16 @@
 import json
 import logging
-
 import shlex
 import subprocess
-
 from datetime import datetime
 
-import pandas as pd
-
-from flask import Flask, g, render_template, request
-from flask_assets import Bundle, Environment
-
 import luigi
-from crawler.query import query_day_accs
-from tasks.ris_pacs_merge_upload import (
-    DailyUpConvertedMerged,
-    MergePacsRis,
-    DailyUpAccConvertedMerged,
-)
+import pandas as pd
+from flask import Flask, render_template, request
+from flask_assets import Bundle, Environment
+from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
 
+from crawler.query import query_day_accs
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("default_config")
@@ -50,8 +42,7 @@ if __name__ != "__main__":
 def to_date(date_as_int):
     if date_as_int:
         return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
-    else:
-        return ""
+    return ""
 
 
 @app.route("/")
@@ -118,7 +109,6 @@ def upload():
         task = DailyUpConvertedMerged({"day": day})
     w.add(task)
     w.run()
-    headers = {"content-type": "application/json"}
     if task.complete():
         return json.dumps({"status": "ok"})
     else:
@@ -130,24 +120,7 @@ def batch():
     from_date = request.args.get("from-date", "")
     to_date = request.args.get("to-date", "")
     accession_number = request.args.get("accession_number")
-    study_description = request.args.get("study_description")
-    if study_description:
-        from_date_as_date = datetime.strptime(from_date, "%Y-%m-%d")
-        to_date_as_date = datetime.strptime(to_date, "%Y-%m-%d")
-        logging.debug(f"Running upload for {study_description} from {from_date} to {to_date}")
-        cmd = (
-            'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"studydescription": "%s", "from_date":"%s", "to_date":"%s"}\''
-            % (
-                study_description,
-                from_date_as_date.strftime("%Y%m%d"),
-                to_date_as_date.strftime("%Y%m%d"),
-            )
-        )
-        cmds = shlex.split(cmd)
-        subprocess.run(cmds, shell=False, check=False)
-        return json.dumps({"status": "ok"})
-
-    elif accession_number:
+    if accession_number:
         logging.debug(f"Running upload for acc {accession_number}")
         cmd = (
             'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
@@ -168,11 +141,12 @@ def batch():
             for i in r:
                 if "AccessionNumber" in i:
                     cmd = (
-                        "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s" % i["AccessionNumber"]
+                        "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s"
+                        % i["AccessionNumber"]
                     )
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
-        return json.dumps({"status": "ok"})
+        return json.dumps({"status": "ok", "acc": r})
 
 
 @app.route("/debug")

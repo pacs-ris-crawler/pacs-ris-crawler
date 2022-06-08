@@ -1,6 +1,6 @@
 """ A simple regex based parser for DICOM (DCMTK output to be more precise). """
 import re
-from typing import List, Dict, Tuple
+from typing import Dict, List, Tuple
 
 PATIENT_NAME = "PatientName"
 PATIENT_BIRTHDATE = "PatientBirthDate"
@@ -79,7 +79,7 @@ def get_results(strings: List[str]) -> List[Dict[str, str]]:
 
 
 def _is_start_or_end(line: str) -> bool:
-    """ Returns True if it is the start or end of a DICOM header. """
+    """Returns True if it is the start or end of a DICOM header."""
     return line.startswith("I: ---------------------------") or line.startswith(
         "W: ---------------------------"
     )

@@ -1,18 +1,18 @@
 import logging
 import os
 import shlex
-import glob
-from rq import Queue
-from redis import Redis
 
-from mova.config import pacs_config, dcmtk_config
+from redis import Redis
+from rq import Queue
+
+from mova.config import dcmtk_config, pacs_config
 from mova.executor import run, run_many
 
 logger = logging.getLogger("job")
 
 
 def transfer_command(dcmtk_config, pacs_config, target, study_uid, series_uid):
-    """ Constructs the first part of the transfer command to a PACS node. """
+    """Constructs the first part of the transfer command to a PACS node."""
     return (
         dcmtk_config.dcmtk_bin
         + "/movescu -v -S "
@@ -47,7 +47,7 @@ def transfer_series(config, series_list, target):
 
 
 def base_command(dcmtk_config, pacs_config):
-    """ Constructs the first part of a dcmtk command. """
+    """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
         + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
@@ -103,6 +103,7 @@ def create_nifti_cmd(image_folder):
         "dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
     )
 
+
 def delete_dicom_cmd(image_folder):
     for f in os.scandir(image_folder):
         if f.is_file():
@@ -113,7 +114,7 @@ def queue_transfer(cmd):
     redis_conn = Redis()
     q = Queue(connection=redis_conn)  # no args implies the default queue
     j = q.enqueue(run, cmd)
-    return 
+    return
 
 
 def queue(cmd, config, image_folder, image_type):
@@ -121,12 +122,18 @@ def queue(cmd, config, image_folder, image_type):
     q = Queue(connection=redis_conn)  # no args implies the default queue
     download_job = q.enqueue(run, cmd)
     if image_type == "nifti":
-        nifti_job = q.enqueue(run, create_nifti_cmd(image_folder), depends_on=download_job)
-        delete_dicom_job = q.enqueue(delete_dicom_cmd, image_folder, depends_on=nifti_job)
+        nifti_job = q.enqueue(
+            run, create_nifti_cmd(image_folder), depends_on=download_job
+        )
+        delete_dicom_job = q.enqueue(
+            delete_dicom_cmd, image_folder, depends_on=nifti_job
+        )
         return delete_dicom_job
     if image_type == "anon-dicom":
-        
-        dicom_anonymize_job = q.enqueue(run_many, config, image_folder, depends_on=download_job)
+
+        dicom_anonymize_job = q.enqueue(
+            run_many, config, image_folder, depends_on=download_job
+        )
         return dicom_anonymize_job
     return download_job
 

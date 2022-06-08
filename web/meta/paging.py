@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import List, Tuple
 
 # Total number of paging links to render left and
 # right to the current page. Is capped at 0 and
@@ -6,7 +6,9 @@ from typing import Tuple, List
 PAGING_LINKS = 5
 
 
-def calc(results: int, current: int, limit=100) -> List[Tuple[int, int, bool, bool, bool]]:
+def calc(
+    results: int, current: int, limit=100
+) -> List[Tuple[int, int, bool, bool, bool]]:
     """
     Zero based paging. PAGING_LINKS is the number of
     pages links to be shown. Because results can be easily
@@ -25,13 +27,17 @@ def calc(results: int, current: int, limit=100) -> List[Tuple[int, int, bool, bo
     max_page = min(current_page + PAGING_LINKS, pages)
 
     for page in range(min_page, max_page):
-        result.append((page,
-                       page * limit,
-                       # highlight current page marker
-                       True if page == current_page else False,
-                       # replace first page number with arrow
-                       True if min_page >= 1 else False,
-                       True if current_page >= pages - PAGING_LINKS else False))
+        result.append(
+            (
+                page,
+                page * limit,
+                # highlight current page marker
+                True if page == current_page else False,
+                # replace first page number with arrow
+                True if min_page >= 1 else False,
+                True if current_page >= pages - PAGING_LINKS else False,
+            )
+        )
     if len(result) == 1:
         return []
     return result
