@@ -114,7 +114,9 @@ def _get_tag(line: str) -> str:
         I: (0010,0040) CS [F ]
     tag value would be (0010,0040) and resolved would be 'Modality'.
     """
-    return TAGS[line[3:14]]
+    start = line.find("(") 
+    end = line.rfind(")") +1 # () needs to be included
+    return TAGS[line[start:end].strip(" \t\r\n\0")]
 
 
 def _get_value(line: str) -> str:
