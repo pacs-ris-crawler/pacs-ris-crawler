@@ -38,7 +38,6 @@ def basic_query(configuration):
            -k StudyDescription
            -k SeriesDescription
            -k SeriesNumber
-           -k InstanceNumber
            -k ReferringPhysicianName
            -k InstitutionName
            -k StationName
