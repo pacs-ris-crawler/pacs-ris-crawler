@@ -9,10 +9,10 @@ from flask import render_template, request, send_file
 from requests import RequestException, get, post
 
 from web.app import (
-    MOVA_DASHBOARD_URL,
-    MOVA_DOWNLOAD_URL,
-    MOVA_TRANSFER_URL,
-    MOVA_URL,
+    RECEIVER_DASHBOARD_URL,
+    RECEIVER_DOWNLOAD_URL,
+    RECEIVER_TRANSFER_URL,
+    RECEIVER_URL,
     REPORT_SHOW_URL,
     RESULT_LIMIT,
     SHOW_DOWNLOAD_OPTIONS,
@@ -61,8 +61,8 @@ def main():
         params={"RisReport": "*"},
         indexed_start_date=indexed_start_date,
         indexed_end_date=indexed_end_date,
-        mova_url=MOVA_URL,
-        mova_dashboard_url=MOVA_DASHBOARD_URL,
+        receiver_url=RECEIVER_URL,
+        receiver_dashboard_url=RECEIVER_DASHBOARD_URL,
     )
 
 
@@ -132,8 +132,8 @@ def search():
             show_download_options=SHOW_DOWNLOAD_OPTIONS,
             show_transfer_targets=SHOW_TRANSFER_TARGETS,
             transfer_targets=TRANSFER_TARGETS,
-            mova_url=MOVA_URL,
-            mova_dashboard_url=MOVA_DASHBOARD_URL,
+            receiver_url=RECEIVER_URL,
+            receiver_dashboard_url=RECEIVER_DASHBOARD_URL,
         )
 
 
@@ -180,7 +180,7 @@ def download_all():
             "dir": q["download-dir"],
             "image_type": q["imageType"],
         }
-        return download_or_transfer(MOVA_DOWNLOAD_URL, download_data)
+        return download_or_transfer(RECEIVER_DOWNLOAD_URL, download_data)
     return ("", 204)
 
 
@@ -189,7 +189,7 @@ def download():
     """Ajax post to download series of images."""
     app.logger.info("download called")
     data = request.get_json(force=True)
-    return download_or_transfer(MOVA_DOWNLOAD_URL, data)
+    return download_or_transfer(RECEIVER_DOWNLOAD_URL, data)
 
 
 @app.route("/transfer-all", methods=["POST"])
@@ -207,7 +207,7 @@ def transfer_all():
         if t:
             destination = t[0]["AE_TITLE"]
             transfer_data["target"] = destination
-            return download_or_transfer(MOVA_TRANSFER_URL, transfer_data)
+            return download_or_transfer(RECEIVER_TRANSFER_URL, transfer_data)
         else:
             return f"Error: Could not find destination AE_TITLE for {t}"
     return ("", 204)
@@ -224,7 +224,7 @@ def transfer():
     if t:
         destination = t[0]["AE_TITLE"]
         data["target"] = destination
-        return download_or_transfer(MOVA_TRANSFER_URL, data)
+        return download_or_transfer(RECEIVER_TRANSFER_URL, data)
     else:
         return "Error: Could not find destination AE_TITLE"
 

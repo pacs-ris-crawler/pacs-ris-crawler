@@ -203,7 +203,7 @@ $(function () {
         } else if (this.status >= 400 || this.status == 500) {
           $('#loading').addClass('d-none');
           noty({
-            text: 'Can\'t get connection to MOVA. Download failed!',
+            text: 'Can\'t get connection to RECEIVER. Download failed!',
             layout: 'centerRight',
             timeout: '3000',
             closeWith: ['click', 'hover'],
@@ -235,7 +235,7 @@ $(function () {
         console.log(error);
         console.error("Post failed");
         noty({
-          text: 'Can\'t get connection to MOVA',
+          text: 'Can\'t get connection to RECEIVER',
           layout: 'centerRight',
           timeout: '3000',
           closeWith: ['click', 'hover'],
@@ -286,7 +286,7 @@ $(function () {
         } else if (this.status >= 400 || this.status == 500) {
           $('#loading').addClass('d-none');
           noty({
-            text: 'Can\'t get connection to MOVA. Download failed!',
+            text: 'Can\'t get connection to RECEIVER. Download failed!',
             layout: 'centerRight',
             timeout: '3000',
             closeWith: ['click', 'hover'],
@@ -319,7 +319,7 @@ $(function () {
         console.log(error);
         console.error("Post failed");
         noty({
-          text: 'Can\'t get connection to MOVA. Download failed!',
+          text: 'Can\'t get connection to RECEIVER. Download failed!',
           layout: 'centerRight',
           timeout: '3000',
           closeWith: ['click', 'hover'],
