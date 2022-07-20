@@ -12,7 +12,7 @@ from flask_assets import Bundle, Environment
 from receiver.job import download_series, transfer_series
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_object("mova.default_config")
+app.config.from_object("receiver.default_config")
 app.config.from_pyfile("config.cfg")
 version = app.config["VERSION"] = "1.3.1"
 

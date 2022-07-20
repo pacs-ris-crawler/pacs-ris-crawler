@@ -3,25 +3,11 @@ from requests import post
 data = {
     "data": [
         {
-            "patient_id": "MF-0000012",
-            "study_id": "1.3.6.1.4.1.5962.1.2.5012.1166546115.14677",
-            "series_id": "1.3.6.1.4.1.5962.1.3.5012.2.1166546115.14677",
-            "accession_number": "9995012",
-            "series_number": "2",
-        },
-        {
-            "patient_id": "MF-0000008",
-            "study_id": "1.3.6.1.4.1.5962.1.2.5008.1166546115.14677",
-            "series_id": "1.3.6.1.4.1.5962.1.3.5008.1.1166546115.14677",
-            "accession_number": "9995008",
-            "series_number": "1",
-        },
-        {
-            "patient_id": "MF-0000008",
-            "study_id": "1.3.6.1.4.1.5962.1.2.5008.1166546115.14677",
-            "series_id": "1.3.6.1.4.1.5962.1.3.5008.1.1166546115.1467700",
-            "accession_number": "9995008",
-            "series_number": "1",
+            "study_uid": "1.2.840.113619.6.95.31.0.3.4.1.4285.13.30196292",
+            "series_uid": "1.3.12.2.1107.5.1.4.76100.30000022070602280046600129887",
+            "patient_id": "USB0002314883",
+            "accession_number": "30196292",
+            "series_number": "5"
         },
     ],
     "dir": "foo",
@@ -34,7 +20,7 @@ def run():
     headers = {
         "content-type": "application/json",
     }
-    x = post("http://localhost:5001/receive", json=data, headers=headers)
+    x = post("http://localhost:9001/download", json=data, headers=headers)
     print(x)
 
 

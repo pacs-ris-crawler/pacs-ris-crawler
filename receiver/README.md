@@ -1,4 +1,4 @@
-# Mova
+# Receiver
 
 A system for getting studies from a PACS. Needs dcmtk for dicom communication.
 

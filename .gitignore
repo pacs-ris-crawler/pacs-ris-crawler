@@ -106,7 +106,7 @@ venv.bak/
 
 
 crawler/data/*
-
+receiver/image_data/*
 
 .DS_Store
 
