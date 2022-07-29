@@ -11,6 +11,7 @@ $(function () {
     var url = form.attr('action');
 
     var acc_numbers = $("#accession_numbers").val().split(" ").filter(Boolean)
+    var dicom_node = $("#dicom_node_upload").val()
 
     if (acc_numbers.length > 0) {
       for (let index = 0; index < acc_numbers.length; index++) {
@@ -18,7 +19,7 @@ $(function () {
         $.ajax({
           type: "GET",
           url: url,
-          data: {"accession_number": element},
+          data: {"accession_number": element, "dicom_node": dicom_node},
           success: function (data) {
             console.log(data);
             noty({

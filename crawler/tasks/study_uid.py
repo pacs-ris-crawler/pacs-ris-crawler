@@ -1,21 +1,17 @@
-import configparser
-from itertools import chain
-
+import ast
 import luigi
 from crawler.query import query_for_study_uid
-
+from tasks.util import load_dicom_config
 
 class StudyUIDTask(luigi.Task):
     # example run command
     # python -m tasks.study_uid StudyUIDTask --accession-number 1234 --local-scheduler
     accession_number = luigi.Parameter()
+    dicom_node = luigi.Parameter()
 
     def run(self):
-        config = configparser.ConfigParser()
-        filename = "./instance/config.cfg"
-        with open(filename) as fp:
-            config.read_file(chain(["[PACS]"], fp), source=filename)
-        study_uids = query_for_study_uid(config, self.accession_number)
+        dicom_config = load_dicom_config(self.dicom_node)
+        study_uids = query_for_study_uid(dicom_config, self.accession_number)
         with self.output().open("w") as outfile:
             for i in study_uids:
                 outfile.write(i + "\n")

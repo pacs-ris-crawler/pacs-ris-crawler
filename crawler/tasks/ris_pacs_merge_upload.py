@@ -19,7 +19,7 @@ class ConvertPacsFile(luigi.Task):
 
     def requires(self):
         if "acc" in self.query:
-            return AccessionTask(self.query["acc"])
+            return AccessionTask(self.query["acc"], self.query["dicom_node"])
         if "day" in self.query:
             return StudyDescription("", self.query["day"], self.query["day"])
 

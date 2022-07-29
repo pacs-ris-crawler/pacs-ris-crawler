@@ -48,19 +48,23 @@ def to_date(date_as_int):
 @app.route("/")
 def main():
     return render_template(
-        "index.html", luigi_scheduler=luigi_scheduler, version=app.config["VERSION"]
+        "index.html",
+        luigi_scheduler=luigi_scheduler,
+        dicom_nodes=list(app.config["DICOM_NODES"].keys()),
+        version=app.config["VERSION"],
     )
 
 
 @app.route("/search")
 def search():
     accession_number = request.args.get("accession_number", "")
+    dicom_node = request.args.get("dicom_node", "")
     day = request.args.get("day", "")
     if not any([accession_number, day]):
         return "no accession number or day given", 400
     w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = MergePacsRis({"acc": accession_number})
+        task = MergePacsRis({"acc": accession_number, "dicom_node": dicom_node})
     elif day:
         task = MergePacsRis({"day": day})
     w.add(task)
@@ -79,6 +83,8 @@ def search():
             accession_number=accession_number,
             day=day,
             luigi_scheduler=luigi_scheduler,
+            dicom_nodes=list(app.config["DICOM_NODES"].keys()),
+            dicom_node=dicom_node,
             version=app.config["VERSION"],
             results=results,
         )
@@ -88,6 +94,7 @@ def search():
             accession_number=accession_number,
             day=day,
             luigi_scheduler=luigi_scheduler,
+            dicom_nodes=list(app.config["DICOM_NODES"].keys()),
             version=app.config["VERSION"],
             results={},
         )
@@ -120,12 +127,10 @@ def batch():
     from_date = request.args.get("from-date", "")
     to_date = request.args.get("to-date", "")
     accession_number = request.args.get("accession_number")
+    dicom_node = request.args.get("dicom_node")
     if accession_number:
         logging.debug(f"Running upload for acc {accession_number}")
-        cmd = (
-            'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{"acc": "%s"}\''
-            % accession_number
-        )
+        cmd = f'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}\''
         cmds = shlex.split(cmd)
         subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
