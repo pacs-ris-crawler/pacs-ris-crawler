@@ -218,7 +218,6 @@ def transfer():
     """Ajax post to transfer series of images to <target> PACS node."""
     data = request.get_json(force=True)
     target = data.get("target", "")
-    series_list = data.get("data", "")
     app.logger.info(f"Transfer called and sending to AE_TITLE {target}")
     t = [t for t in TRANSFER_TARGETS if t["DISPLAY_NAME"] == target]
     if t:
