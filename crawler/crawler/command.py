@@ -8,7 +8,7 @@ def study_uid_query(configuration, accession_number):
     """It is not possible to query by accession number therefore we need
     to first fetch the studyinstanceuid.
     """
-    return f"""findscu -to 6000 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
+    return f"""findscu -to 60 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
            -k StudyInstanceUID
            -k AccessionNumber={accession_number}"""
     
@@ -18,14 +18,14 @@ def accs_per_day(configuration, day):
     """
     Query for all studyinstanceuids for a given day.
     """
-    return f"""findscu -to 6000 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
+    return f"""findscu -to 60 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
            -k AccessionNumber
            -k StudyDate={day}"""
 
 
 def basic_query(configuration):
     """Returns a basic findscu command with no query parameters set."""
-    return f"""findscu -to 6000 -v -S -k 0008,0052=SERIES {pacs_settings(configuration)}
+    return f"""findscu -to 60 -v -S -k 0008,0052=SERIES {pacs_settings(configuration)}
            -k PatientName
            -k PatientBirthDate
            -k PatientID
