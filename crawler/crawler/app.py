@@ -151,7 +151,7 @@ def batch():
                     )
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
-        return json.dumps({"status": "ok", "acc": r})
+        return json.dumps({"status": "ok"})
 
 
 @app.route("/debug")
