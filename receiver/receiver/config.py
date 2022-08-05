@@ -2,6 +2,7 @@
     can be accessed from here.
 """
 from collections import namedtuple
+from flask import Flask
 
 PacsConfig = namedtuple(
     "PacsConfig",
@@ -9,6 +10,22 @@ PacsConfig = namedtuple(
 )
 
 DcmtkConfig = namedtuple("DcmtkConfig", ["dcmtk_bin", "dcmin"])
+
+
+def old_pacs():
+    """Returns the old pacs configuration parameters."""
+    app = Flask(__name__)
+    app.config.from_pyfile(filename="../instance/config.cfg")
+    node = app.config["DICOM_NODES"]["GE_ARCHIVE"]
+    return f'-aec {node["AE_CALLED"]} {node["PEER_ADDRESS"]} {node["PEER_PORT"]} -aet {node["AE_TITLE"]} +P {node["INCOMING_PORT"]}'
+
+
+def new_pacs():
+    """Returns the new pacs configuration parameters."""
+    app = Flask(__name__)
+    app.config.from_pyfile(filename="../instance/config.cfg")
+    node = app.config["DICOM_NODES"]["SECTRA"]
+    return f'-aec {node["AE_CALLED"]} {node["PEER_ADDRESS"]} {node["PEER_PORT"]} -aet {node["AE_TITLE"]} +P {node["INCOMING_PORT"]}'
 
 
 def pacs_config(config):

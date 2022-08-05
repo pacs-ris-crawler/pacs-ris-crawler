@@ -5,7 +5,7 @@ import shlex
 from redis import Redis
 from rq import Queue
 
-from receiver.config import dcmtk_config, pacs_config
+from receiver.config import dcmtk_config, new_pacs, pacs_config, old_pacs
 from receiver.executor import run, run_many
 
 logger = logging.getLogger("job")
@@ -60,6 +60,22 @@ def base_command(dcmtk_config, pacs_config):
         )
     )
 
+def base_command_old_pacs(dcmtk_config):
+    """Constructs the first part of a dcmtk command."""
+    return (
+        dcmtk_config.dcmtk_bin
+        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
+        + old_pacs()
+    )
+
+def base_command_new_pacs(dcmtk_config):
+    """Constructs the first part of a dcmtk command."""
+    return (
+        dcmtk_config.dcmtk_bin
+        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
+        + new_pacs()
+    )
+
 
 def download_series(config, series_list, dir_name, image_type):
     """Download the series. The folder structure is as follows:
@@ -67,10 +83,10 @@ def download_series(config, series_list, dir_name, image_type):
     """
     output_dir = config["IMAGE_FOLDER"]
     dcmtk = dcmtk_config(config)
-    pacs = pacs_config(config)
     for entry in series_list:
         image_folder = _create_image_dir(output_dir, entry, dir_name)
         study_uid = entry["study_uid"]
+        accession_number = entry["accession_number"]
         series_uid = entry["series_uid"]
         if not all([study_uid, series_uid]):
             print("Error missing either study_uid or series_uid")
@@ -78,20 +94,33 @@ def download_series(config, series_list, dir_name, image_type):
             print("series_uid:", series_uid)
             print("accession number:", entry.get("accession_number"))
             continue
-        command = (
-            base_command(dcmtk, pacs)
-            + " --output-directory "
-            + image_folder
-            + " -k StudyInstanceUID="
-            + study_uid
-            + " -k SeriesInstanceUID="
-            + series_uid
-            + " "
-            + dcmtk.dcmin
-        )
-        args = shlex.split(command)
-        queue(args, config, image_folder, image_type)
-        logger.debug("Running download command %s", args)
+
+        # very dummy assumpution let's if this hold true for USB
+        if accession_number.startswith("3"):
+            command = (
+                base_command_new_pacs(dcmtk)
+                + " --output-directory "
+                + image_folder
+                + " -k StudyInstanceUID="
+                + study_uid
+                + " -k SeriesInstanceUID="
+                + series_uid
+            )
+        else:
+            command = (
+                base_command_old_pacs(dcmtk)
+                + " --output-directory "
+                + image_folder
+                + " -k StudyInstanceUID="
+                + study_uid
+                + " -k SeriesInstanceUID="
+                + series_uid
+                + " "
+                + dcmtk.dcmin
+            )
+            args = shlex.split(command)
+            queue(args, config, image_folder, image_type)
+            logger.debug("Running download command %s", args)
     return len(series_list)
 
 
