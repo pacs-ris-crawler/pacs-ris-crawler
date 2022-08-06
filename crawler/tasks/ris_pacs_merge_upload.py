@@ -83,11 +83,12 @@ class DailyUpConvertedMerged(luigi.Task):
 
 
 class DailyUpAccConvertedMerged(luigi.WrapperTask):
-    accession_number = luigi.Parameter()
+    acc = luigi.Parameter()
+    node = luigi.Parameter()
 
     def requires(self):
-        yield DailyUpConvertedMerged({"acc": self.accession_number})
-        yield AccessionStoreTask(self.accession_number)
+        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
+        yield AccessionStoreTask(self.acc)
 
 
 # example usage:

@@ -137,18 +137,15 @@ def batch():
     else:
         if not (any([from_date, to_date])):
             return "From date or to date is missing", 400
-
         from_date_as_date = datetime.strptime(from_date, "%Y-%m-%d")
         to_date_as_date = datetime.strptime(to_date, "%Y-%m-%d")
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
-            r = query_day_accs(app.config, day)
+            r = query_day_accs(app.config["DICOM_NODES"][dicom_node], day)
             for i in r:
                 if "AccessionNumber" in i:
-                    cmd = (
-                        "python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --accession-number %s"
-                        % i["AccessionNumber"]
-                    )
+                    acc = i["AccessionNumber"] 
+                    cmd = f'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --acc {acc} --node {dicom_node}'
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
