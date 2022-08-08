@@ -11,15 +11,6 @@ from receiver.executor import run, run_many
 logger = logging.getLogger("job")
 
 
-def transfer_command(dcmtk_config, pacs_config, target, study_uid, series_uid):
-    """Constructs the first part of the transfer command to a PACS node."""
-    return (
-        dcmtk_config.dcmtk_bin
-        + "/movescu -v -S "
-        + _transfer(dcmtk_config, pacs_config, target, study_uid, series_uid)
-    )
-
-
 def transfer_old_pacs_command(dcmtk_config, target, study_uid, series_uid):
     """Constructs the first part of the transfer command to a PACS node."""
     return (
