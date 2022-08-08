@@ -21,7 +21,3 @@ jobs:
     - name: web tests
       working-directory: web
       run: python -m pytest
-    - name: crawler tests
-      working-directory: receiver
-      run: python -m pytest
-       
