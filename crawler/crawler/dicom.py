@@ -1,6 +1,6 @@
 """ A simple regex based parser for DICOM (DCMTK output to be more precise). """
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 PATIENT_NAME = "PatientName"
 PATIENT_BIRTHDATE = "PatientBirthDate"
@@ -101,10 +101,6 @@ def _is_valid(line: str) -> bool:
     )
 
 
-def _get_tag_value(line: str) -> Tuple[str, str]:
-    return _get_tag(line), _get_value(line)
-
-
 def _get_tag(line: str) -> str:
     """
     Returns the resolved tag value of the line. It first gets the content
@@ -114,8 +110,8 @@ def _get_tag(line: str) -> str:
         I: (0010,0040) CS [F ]
     tag value would be (0010,0040) and resolved would be 'Modality'.
     """
-    start = line.find("(") 
-    end = line.rfind(")") +1 # () needs to be included
+    start = line.find("(")
+    end = line.find(")") + 1  # () needs to be included
     return TAGS[line[start:end].strip(" \t\r\n\0")]
 
 
