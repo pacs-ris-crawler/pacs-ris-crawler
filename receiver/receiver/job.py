@@ -5,7 +5,7 @@ import shlex
 from redis import Redis
 from rq import Queue
 
-from receiver.config import dcmtk_config, new_pacs, pacs_config, old_pacs
+from receiver.config import dcmtk_config, new_pacs, old_pacs, pacs_config
 from receiver.executor import run, run_many
 
 logger = logging.getLogger("job")
@@ -20,13 +20,29 @@ def transfer_command(dcmtk_config, pacs_config, target, study_uid, series_uid):
     )
 
 
-def _transfer(dcmtk_config, pacs_config, target, study_uid, series_uid):
-    return "-aem {} -aet {} -aec {} {} {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
+def transfer_old_pacs_command(dcmtk_config, target, study_uid, series_uid):
+    """Constructs the first part of the transfer command to a PACS node."""
+    return (
+        dcmtk_config.dcmtk_bin
+        + "/movescu -v -S "
+        + old_pacs()
+        + _transfer(dcmtk_config, target, study_uid, series_uid)
+    )
+
+
+def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
+    """Constructs the first part of the transfer command to a PACS node."""
+    return (
+        dcmtk_config.dcmtk_bin
+        + "/movescu -v -S "
+        + new_pacs()
+        + _transfer(dcmtk_config, target, study_uid, series_uid)
+    )
+
+
+def _transfer(dcmtk_config, target, study_uid, series_uid):
+    return "-aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
         target,
-        pacs_config.ae_title,
-        pacs_config.ae_called,
-        pacs_config.peer_address,
-        pacs_config.peer_port,
         study_uid,
         series_uid,
         dcmtk_config.dcmin,
@@ -39,7 +55,14 @@ def transfer_series(config, series_list, target):
     for entry in series_list:
         study_uid = entry["study_uid"]
         series_uid = entry["series_uid"]
-        command = transfer_command(dcmtk, pacs, target, study_uid, series_uid)
+        accession_number = entry["accession_number"]
+        # very dummy assumpution let's if this hold true for USB
+        # because new data is only in the new pacs
+        # and not all old data is on the new pacs
+        if accession_number.startswith("3"):
+            command = transfer_new_pacs_command(dcmtk, target, study_uid, series_uid)
+        else:
+            command = transfer_old_pacs_command(dcmtk, target, study_uid, series_uid)
         args = shlex.split(command)
         queue_transfer(args)
         logger.debug("Running transfer command %s", args)
@@ -60,6 +83,7 @@ def base_command(dcmtk_config, pacs_config):
         )
     )
 
+
 def base_command_old_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
     return (
@@ -67,6 +91,7 @@ def base_command_old_pacs(dcmtk_config):
         + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
         + old_pacs()
     )
+
 
 def base_command_new_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
@@ -96,6 +121,8 @@ def download_series(config, series_list, dir_name, image_type):
             continue
 
         # very dummy assumpution let's if this hold true for USB
+        # because new data is only in the new pacs
+        # and not all old data is on the new pacs
         if accession_number.startswith("3"):
             command = (
                 base_command_new_pacs(dcmtk)
@@ -141,14 +168,14 @@ def delete_dicom_cmd(image_folder):
 
 def queue_transfer(cmd):
     redis_conn = Redis()
-    q = Queue(connection=redis_conn)  # no args implies the default queue
+    q = Queue(connection=redis_conn)
     j = q.enqueue(run, cmd)
     return
 
 
 def queue(cmd, config, image_folder, image_type):
     redis_conn = Redis()
-    q = Queue(connection=redis_conn)  # no args implies the default queue
+    q = Queue(connection=redis_conn)
     download_job = q.enqueue(run, cmd)
     if image_type == "nifti":
         nifti_job = q.enqueue(
