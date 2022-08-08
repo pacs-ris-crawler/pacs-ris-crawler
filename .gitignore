@@ -90,6 +90,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv-rewrite/
 
 # Spyder project settings
 .spyderproject

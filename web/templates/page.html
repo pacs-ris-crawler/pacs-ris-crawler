@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>PACS RIS Crawler</title>
+  <link rel="stylesheet" type="text/css" href="{{url_for('web_bp.static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('web_bp.static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('web_bp.static', filename='css/open-iconic-bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('web_bp.static', filename='css/style.css') }}">
+  <script async defer data-website-id="68c66d07-4330-4363-9a28-822169ffb219" src="http://analytics.ict-mscc.uhbs.ch/umami.js"></script>
+</head>
+
+<body>
+  <div id="loading" class="loading d-none">Loading&#8230;</div>
+  {% block content %}
+  {% endblock %}
+  <script src="{{ url_for('web_bp.static', filename='gen/packaged.js') }}" type="text/javascript"></script>
+ 
+</body>
+</html>

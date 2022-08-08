@@ -5,41 +5,47 @@ import os
 
 import pandas as pd
 import requests
-from flask import render_template, request, send_file
+from flask import Blueprint, render_template, request, send_file, current_app
 from requests import RequestException, get, post
+from .convert import convert
+from .paging import calc
+from .query import query_body, query_indexed_dates
+from .query_all import query_all
+from .solr import solr_url
+from .statistics import calculate
+from .terms import get_terms_data
+from flask_assets import Bundle
 
-from web.app import (
-    RECEIVER_DASHBOARD_URL,
-    RECEIVER_DOWNLOAD_URL,
-    RECEIVER_TRANSFER_URL,
-    RECEIVER_URL,
-    REPORT_SHOW_URL,
-    RESULT_LIMIT,
-    SHOW_DOWNLOAD_OPTIONS,
-    SHOW_TRANSFER_TARGETS,
-    TRANSFER_TARGETS,
-    VERSION,
-    ZFP_VIEWER,
-    app,
+web_bp = Blueprint(
+    "web_bp", __name__, template_folder="templates", static_folder="static"
 )
-from web.convert import convert
-from web.paging import calc
-from web.query import query_body, query_indexed_dates
-from web.query_all import query_all
-from web.solr import solr_url
-from web.statistics import calculate
-from web.terms import get_terms_data
-
-if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
 
 
-@app.route("/")
+web_bundles = {
+    "web_js": Bundle(
+        "js/jquery-3.1.0.min.js",
+        "js/tether.min.js",
+        "js/popper.min.js",
+        "js/bootstrap.min.js",
+        "js/moment.min.js",
+        "js/pikaday.js",
+        "js/pikaday.jquery.js",
+        "js/jquery.noty.packaged.min.js",
+        "js/jszip.min.js",
+        "js/FileSaver.js",
+        "js/intercooler.js",
+        "js/script.js",
+        filters="jsmin",
+        output="gen/packed.js",
+    )
+}
+
+
+
+@web_bp.route("/")
 def main():
     """Renders the initial page."""
-    url = query_indexed_dates(solr_url(app.config))
+    url = query_indexed_dates(solr_url(current_app.config))
     try:
         response = get(url)
     except RequestException:
@@ -47,7 +53,7 @@ def main():
             "search.html",
             params={},
             error="No response from Solr, is it running?",
-            trace=solr_url(app.config),
+            trace=solr_url(current_app.config),
         )
     stats = response.json()["stats"]
     indexed_start_date = stats["stats_fields"]["StudyDate"]["min"]
@@ -55,31 +61,31 @@ def main():
 
     return render_template(
         "search.html",
-        version=VERSION,
+        version=current_app.config["VERSION"],
         page=0,
         offset=0,
         params={"RisReport": "*"},
         indexed_start_date=indexed_start_date,
         indexed_end_date=indexed_end_date,
-        receiver_url=RECEIVER_URL,
-        receiver_dashboard_url=RECEIVER_DASHBOARD_URL,
+        receiver_url=current_app.config["RECEIVER_URL"],
+        receiver_dashboard_url=current_app.config["RECEIVER_DASHBOARD_URL"],
     )
 
 
-@app.route("/search", methods=["POST", "GET"])
+@web_bp.route("/search", methods=["POST", "GET"])
 def search():
     """Renders the search results."""
     params = request.form
-    payload = query_body(params, RESULT_LIMIT)
+    payload = query_body(params, current_app.config["RESULT_LIMIT"])
     headers = {"content-type": "application/json"}
     try:
-        response = get(solr_url(app.config), data=json.dumps(payload), headers=headers)
+        response = get(solr_url(current_app.config), data=json.dumps(payload), headers=headers)
     except RequestException:
         return render_template(
             "search.html",
             params=params,
             error="No response from Solr, is it running?",
-            trace=solr_url(app.config),
+            trace=solr_url(current_app.config),
         )
     if response.status_code >= 400 and response.status_code < 500:
         logging.error(response.text)
@@ -106,14 +112,14 @@ def search():
             trace=trace,
         )
     else:
-        app.logger.debug("Calling Solr with url %s", response.url)
+        current_app.logger.debug("Calling Solr with url %s", response.url)
         data = response.json()
         docs = data["grouped"]["PatientID"]
         results = data["grouped"]["PatientID"]["ngroups"]
         studies_result = data["grouped"]["PatientID"]["matches"]
         page = params.get("page", 0)
         offset = params.get("offset", 0)
-        paging = calc(results, page, RESULT_LIMIT)
+        paging = calc(results, page, current_app.config["RESULT_LIMIT"])
         return render_template(
             "result.html",
             docs=docs,
@@ -123,21 +129,21 @@ def search():
             facet_url=request.url,
             params=params,
             paging=paging,
-            version=VERSION,
-            report_show_url=REPORT_SHOW_URL,
-            zfp_viewer=ZFP_VIEWER,
+            version=current_app.config["VERSION"],
+            report_show_url=current_app.config["REPORT_SHOW_URL"],
+            zfp_viewer=current_app.config["ZFP_VIEWER"],
             modalities=params.getlist("Modality"),
             page=page,
             offset=0,
-            show_download_options=SHOW_DOWNLOAD_OPTIONS,
-            show_transfer_targets=SHOW_TRANSFER_TARGETS,
-            transfer_targets=TRANSFER_TARGETS,
-            receiver_url=RECEIVER_URL,
-            receiver_dashboard_url=RECEIVER_DASHBOARD_URL,
+            #show_download_options=current_app.config["SHOW_DOWNLOAD_OPTIONS"],
+            #show_transfer_targets=current_app.config["SHOW_TRANSFER_TARGETS"],
+            transfer_targets=current_app.config["TRANSFER_TARGETS"],
+            receiver_url=current_app.config["RECEIVER_URL"],
+            receiver_dashboard_url=current_app.config["RECEIVER_DASHBOARD_URL"],
         )
 
 
-@app.route("/export_anon", methods=["POST"])
+@web_bp.route("/export_anon", methods=["POST"])
 def export_anon():
     q = request.form
     df = query_all(q, solr_url(app.config))
@@ -153,7 +159,7 @@ def export_anon():
     return ("", 204)
 
 
-@app.route("/export", methods=["POST"])
+@web_bp.route("/export", methods=["POST"])
 def export():
     q = request.form
     df = query_all(q, solr_url(app.config))
@@ -168,7 +174,7 @@ def export():
     return ("", 204)
 
 
-@app.route("/download-all", methods=["POST"])
+@web_bp.route("/download-all", methods=["POST"])
 def download_all():
     app.logger.info("download all called")
     q = request.form
@@ -184,7 +190,7 @@ def download_all():
     return ("", 204)
 
 
-@app.route("/download", methods=["POST"])
+@web_bp.route("/download", methods=["POST"])
 def download():
     """Ajax post to download series of images."""
     app.logger.info("download called")
@@ -192,7 +198,7 @@ def download():
     return download_or_transfer(RECEIVER_DOWNLOAD_URL, data)
 
 
-@app.route("/transfer-all", methods=["POST"])
+@web_bp.route("/transfer-all", methods=["POST"])
 def transfer_all():
     """Ajax post to transfer series of images to <target> PACS node."""
     app.logger.info("transfer all called")
@@ -213,7 +219,7 @@ def transfer_all():
     return ("", 204)
 
 
-@app.route("/transfer", methods=["POST"])
+@web_bp.route("/transfer", methods=["POST"])
 def transfer():
     """Ajax post to transfer series of images to <target> PACS node."""
     data = request.get_json(force=True)
@@ -244,19 +250,19 @@ def download_or_transfer(url, data):
         return ("Is pacs_ris_crawler-receiver running? Can't get a connection", 400)
 
 
-@app.route("/terms")
+@web_bp.route("/terms")
 def terms():
     """Renders a page about term information. Only internal use."""
     data = get_terms_data(app.config)
     return render_template("terms.html", terms=data)
 
 
-@app.route("/statistics")
+@web_bp.route("/statistics")
 def statistics():
     return render_template("statistics.html")
 
 
-@app.route("/statistics/month")
+@web_bp.route("/statistics/month")
 def month_statistics():
     data = get_statistics_per_month(request.args["month"])
     df = pd.DataFrame.from_dict(data["response"]["docs"])
@@ -266,7 +272,7 @@ def month_statistics():
     return df.to_json(orient="records")
 
 
-@app.route("/statistics/data.csv")
+@web_bp.route("/statistics/data.csv")
 def statistics_data():
     years = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
     for year in years:

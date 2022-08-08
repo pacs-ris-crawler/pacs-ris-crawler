@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block search %}
-<form id="search-form" action="/search" method="POST">
+<form id="search-form" action="{{url_for('web_bp.search')}}" method="POST">
   <div class="row">
     <div class="col-sm-2">
       <a class="pl-3" href="/">PACS / RIS Crawler</a>
