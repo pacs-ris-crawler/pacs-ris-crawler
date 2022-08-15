@@ -104,11 +104,11 @@ def download_series(config, series_list, dir_name, image_type):
         study_uid = entry["study_uid"]
         accession_number = entry["accession_number"]
         series_uid = entry["series_uid"]
-        if not all([study_uid, series_uid]):
-            print("Error missing either study_uid or series_uid")
+        if not all([study_uid, series_uid, accession_number]):
+            print("Error missing either study_uid, series_uid or accession number")
             print("study_uid:", study_uid)
             print("series_uid:", series_uid)
-            print("accession number:", entry.get("accession_number"))
+            print("accession number:", accession_number)
             continue
 
         # very dummy assumpution let's if this hold true for USB
@@ -136,9 +136,9 @@ def download_series(config, series_list, dir_name, image_type):
                 + " "
                 + dcmtk.dcmin
             )
-            args = shlex.split(command)
-            queue(args, config, image_folder, image_type)
-            logger.debug("Running download command %s", args)
+        args = shlex.split(command)
+        queue(args, config, image_folder, image_type)
+        logger.debug("Running download command %s", args)
     return len(series_list)
 
 
