@@ -1,6 +1,6 @@
 import luigi
 from crawler.query import query_for_study_uid
-from tasks.util import load_dicom_config
+from crawler.tasks.util import load_dicom_config
 
 class StudyUIDTask(luigi.Task):
     # example run command

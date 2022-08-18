@@ -21,7 +21,7 @@ web_bp = Blueprint(
 )
 
 
-web_bundles = {
+web_bundle = {
     "web_js": Bundle(
         "js/jquery-3.1.0.min.js",
         "js/tether.min.js",

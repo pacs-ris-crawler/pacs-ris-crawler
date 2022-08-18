@@ -2,8 +2,8 @@ import crawler.writer as w
 import luigi
 from crawler.query import query_accession_number
 
-from tasks.study_uid import StudyUIDTask
-from tasks.util import load_dicom_config
+from crawler.tasks.study_uid import StudyUIDTask
+from  crawler.tasks.util import load_dicom_config
 
 
 class AccessionTask(luigi.Task):

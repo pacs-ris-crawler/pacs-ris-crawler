@@ -6,56 +6,49 @@ from datetime import datetime
 
 import luigi
 import pandas as pd
-from flask import Flask, render_template, request
-from flask_assets import Bundle, Environment
-from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+from flask import render_template, request, Blueprint, current_app
+from flask_assets import Bundle
+from crawler.tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
 
 from crawler.query import query_day_accs
 
-app = Flask(__name__, instance_relative_config=True)
-app.config.from_object("default_config")
-app.config.from_pyfile("config.cfg")
-version = app.config["VERSION"] = "1.3.1"
-
-luigi_scheduler = app.config["LUIGI_SCHEDULER"]
-
-assets = Environment(app)
-js = Bundle(
-    "js/jquery-3.3.1.min.js",
-    "js/bootstrap.bundle.min.js",
-    "js/jquery.noty.packaged.min.js",
-    "js/intercooler.js",
-    "js/script.js",
-    filters="jsmin",
-    output="gen/packed.js",
+crawler_bp = Blueprint(
+    "crawler_bp", __name__, template_folder="templates", static_folder="static"
 )
-assets.register("js_all", js)
 
 
-if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+crawler_bundle = {
+    "crawler_js": Bundle(
+        "js/jquery-3.3.1.min.js",
+        "js/bootstrap.bundle.min.js",
+        "js/jquery.noty.packaged.min.js",
+        "js/intercooler.js",
+        "js/script.js",
+        filters="jsmin",
+        output="gen/packed.js",
+    )
+}
 
 
-@app.template_filter("to_date")
+@crawler_bp.app_template_filter("to_date")
 def to_date(date_as_int):
     if date_as_int:
         return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
     return ""
 
 
-@app.route("/")
+@crawler_bp.route("/")
 def main():
+    luigi_scheduler = current_app.config["LUIGI_SCHEDULER"]
     return render_template(
         "index.html",
         luigi_scheduler=luigi_scheduler,
-        dicom_nodes=list(app.config["DICOM_NODES"].keys()),
-        version=app.config["VERSION"],
+        dicom_nodes=list(current_app.config["DICOM_NODES"].keys()),
+        version=current_app.config["VERSION"],
     )
 
 
-@app.route("/search")
+@crawler_bp.route("/search")
 def search():
     accession_number = request.args.get("accession_number", "")
     dicom_node = request.args.get("dicom_node", "")
@@ -100,7 +93,7 @@ def search():
         )
 
 
-@app.route("/upload", methods=["POST"])
+@crawler_bp.route("/upload", methods=["POST"])
 def upload():
     data = request.get_json(force=True)
     accession_number = data.get("acc", "")
@@ -122,7 +115,7 @@ def upload():
         return "Task error", 400
 
 
-@app.route("/batch-upload")
+@crawler_bp.route("/batch-upload")
 def batch():
     from_date = request.args.get("from-date", "")
     to_date = request.args.get("to-date", "")
@@ -144,19 +137,19 @@ def batch():
             r = query_day_accs(app.config["DICOM_NODES"][dicom_node], day)
             for i in r:
                 if "AccessionNumber" in i:
-                    acc = i["AccessionNumber"] 
-                    cmd = f'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --acc {acc} --node {dicom_node}'
+                    acc = i["AccessionNumber"]
+                    cmd = f"python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --acc {acc} --node {dicom_node}"
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
 
 
-@app.route("/debug")
+@crawler_bp.route("/debug")
 def debug():
     return render_template("debug.html", version=app.config["VERSION"])
 
 
-@app.route("/acc")
+@crawler_bp.route("/acc")
 def acc():
     acc = request.args.get("acc")
     cmd = "python -m tasks.accession AccessionTask --accession-number  %s" % acc
@@ -171,7 +164,7 @@ def acc():
     )
 
 
-@app.route("/execute")
+@crawler_bp.route("/execute")
 def execute():
     command = request.args.get("command")
     result = subprocess.run(

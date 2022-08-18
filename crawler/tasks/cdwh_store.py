@@ -3,8 +3,8 @@ import json
 import luigi
 import requests
 
-from tasks.accession import AccessionTask
-from tasks.util import load_config
+from crawler.tasks.accession import AccessionTask
+from crawler.tasks.util import load_config
 
 
 class AccessionStoreTask(luigi.Task):

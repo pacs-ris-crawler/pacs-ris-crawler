@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Crawler Admin Dashboard</title>
+  <link rel="stylesheet" type="text/css" href="{{url_for('crawler_bp.static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('crawler_bp.static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('crawler_bp.static', filename='css/open-iconic-bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{url_for('crawler_bp.static', filename='css/style.css') }}">
+</head>
+
+<body class="container">
+  {% include 'partials/crawler_header.html' %}
+  {% include 'partials/crawler_search.html' %}
+  {% block content %}
+  {% endblock %}
+  <div class="container py-3 mt-1 bg-info">
+
+    <div class="embed-responsive embed-responsive-1by1">
+      <iframe id="luigi" class="embed-responsive-item" frameborder="0" src="{{luigi_scheduler}}"></iframe>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="{{url_for('crawler_bp.static', filename='gen/packed.js')}}"></script>
+ 
+</body>
+
+</html>

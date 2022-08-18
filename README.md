@@ -12,3 +12,6 @@ The documentation can be found at: https://pacs-ris-crawler.github.io/
 ## Requirements
 * python 3.9
 * solr 7.7 (for now)
+
+## How to start cli
+* flask --debug --app app run --port 7777 --reload

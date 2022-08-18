@@ -1,7 +1,9 @@
 from flask import Flask
 from datetime import datetime
 from web.app import web_bp
-from web.app import web_bundles
+from web.app import web_bundle
+from crawler.app import crawler_bp
+from crawler.app import crawler_bundle
 #from web.app import bundles as web_bundles
 from flask_assets import Environment, Bundle
 from string import Template
@@ -41,7 +43,8 @@ def create_zfp_url(accession_number):
 
 
 app.register_blueprint(web_bp, url_prefix="/web")
+app.register_blueprint(crawler_bp, url_prefix="/crawler")
 assets = Environment(app)
-assets.register(web_bundles)
-
+assets.register(web_bundle)
+assets.register(crawler_bundle)
 

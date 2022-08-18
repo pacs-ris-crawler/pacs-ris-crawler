@@ -9,9 +9,9 @@ import requests
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 
-from tasks.accession import AccessionTask
-from tasks.cdwh_store import AccessionStoreTask
-from tasks.util import dict_to_str, load_config
+from crawler.tasks.accession import AccessionTask
+from crawler.tasks.cdwh_store import AccessionStoreTask
+from crawler.tasks.util import dict_to_str, load_config
 
 
 class ConvertPacsFile(luigi.Task):

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from requests import get
 from requests.auth import HTTPBasicAuth
-from tasks.util import load_config
+from crawler.tasks.util import load_config
 
 from crawler.config import get_report_show_url
 
