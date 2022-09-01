@@ -1,0 +1,55 @@
+# Application settings
+DEBUG = True
+RESULT_LIMIT = 100
+
+
+# Solr settings
+SOLR_HOSTNAME = 'localhost'
+SOLR_PORT = '8983'
+SOLR_CORE_NAME = 'ris_pacs_2'
+
+
+
+RECEIVER_URL = 'http://localhost:9001'
+RECEIVER_DASHBOARD_URL = 'http://localhost:9001/rq'
+RECEIVER_DOWNLOAD_URL = 'http://localhost:9001/download'
+RECEIVER_TRANSFER_URL = 'http://localhost:9001/transfer'
+
+TRANSFER_TARGETS = [{'AE_TITLE': 'SCHWARZHORN', 'DISPLAY_NAME': 'Schwarzhorn'},
+                    {'AE_TITLE': 'HERMES', 'DISPLAY_NAME':'Hermes DICOM Router'}]
+
+
+ZFP_VIEWER = ""
+
+LUIGI_SCHEDULER = 'http://meqpacscrllt01:9092'
+
+DICOM_NODES = {'One': { 
+                    'AE_TITLE' : 'A',
+                    'AE_CALLED' : 'B',
+                    'PEER_ADDRESS' : '10.10.130.1',
+                    'PEER_PORT' : 104,
+                    'INCOMING_PORT' : 105 },
+                'TWO': { 
+                    'AE_TITLE' : 'A',
+                    'AE_CALLED' : 'B',
+                    'PEER_ADDRESS' : '10.10.120.1',
+                    'PEER_PORT' : 104,
+                    'INCOMING_PORT' : 105 }
+                }
+         
+
+
+SOLR_UPLOAD_URL = ''
+
+REPORT_SHOW_URL = ''
+REPORT_USE = False
+
+REPORT_USES_BASIC_AUTH = False
+REPORT_USER = ""
+REPORT_PWD = ""
+
+
+SERIES_LIMIT = 500
+MODALITIES = ['CT', 'MR', 'PT', 'CR', 'XA', 'SR', 'NM', 'MG', 'US', 'DX', 'RF',
+              'OT', 'PR', 'KO', 'SC', 'SD', 'PX', 'DR']
+

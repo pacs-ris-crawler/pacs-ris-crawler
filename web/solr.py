@@ -1,3 +1,5 @@
+import os
+
 def solr_url(config):
     """Returns the solr url.
     Core name and host are taking from configuration which needs to be passed

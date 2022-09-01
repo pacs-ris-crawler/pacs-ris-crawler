@@ -5,9 +5,9 @@ from datetime import datetime
 
 from requests import get
 from requests.auth import HTTPBasicAuth
-from crawler.tasks.util import load_config
+from .tasks.util import load_config
 
-from crawler.config import get_report_show_url
+from .config import get_report_show_url
 
 
 def convert_pacs_file(json_in):
@@ -65,7 +65,7 @@ def convert_pacs_file(json_in):
             p_dict = acc_dict[entry["AccessionNumber"]]
             p_dict = add_child(p_dict, entry)
 
-    # pos processing
+    # post processing
     # all protocolnames (a list datatype) is concated to a single string
     # a dictionary with only keys (to filter out duplicates) is used 
     # https://stackoverflow.com/a/53657523
@@ -110,6 +110,7 @@ def merge_pacs_ris(pacs):
     user = config["REPORT_USER"]
     pwd = config["REPORT_PWD"]
     my_dict = []
+    
     print(f"Getting RisReport for {len(pacs)} studies")
     for entry in pacs:
         dic = {}
@@ -118,6 +119,7 @@ def merge_pacs_ris(pacs):
             dic["RisReport"] = ""
             my_dict.append(dic)
         elif "AccessionNumber" in entry:
+            print(user, pwd)
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
             if uses_basis_auth:

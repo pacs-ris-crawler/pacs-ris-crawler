@@ -5,8 +5,10 @@ import os
 
 import pandas as pd
 import requests
-from flask import Blueprint, render_template, request, send_file, current_app
+from flask import Blueprint, current_app, render_template, request, send_file
+from flask_assets import Bundle
 from requests import RequestException, get, post
+
 from .convert import convert
 from .paging import calc
 from .query import query_body, query_indexed_dates
@@ -14,7 +16,6 @@ from .query_all import query_all
 from .solr import solr_url
 from .statistics import calculate
 from .terms import get_terms_data
-from flask_assets import Bundle
 
 web_bp = Blueprint(
     "web_bp", __name__, template_folder="templates", static_folder="static"

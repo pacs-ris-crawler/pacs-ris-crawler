@@ -3,19 +3,28 @@ import logging
 import shlex
 import subprocess
 from datetime import datetime
+import click
+from flask.cli import with_appcontext
 
 import luigi
 import pandas as pd
 from flask import render_template, request, Blueprint, current_app
 from flask_assets import Bundle
-from crawler.tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+#from crawler.tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
 
-from crawler.query import query_day_accs
+#from crawler.query import query_day_accs
 
 crawler_bp = Blueprint(
     "crawler_bp", __name__, template_folder="templates", static_folder="static"
 )
+from .flows import query_acc
 
+@crawler_bp.cli.command('acc')
+@click.argument('dicom_node')
+@click.argument('acc')
+@with_appcontext
+def import_acc(dicom_node, acc):
+    query_acc(dicom_node, acc)
 
 crawler_bundle = {
     "crawler_js": Bundle(

@@ -2,16 +2,16 @@ from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (accs_per_day, add_study_uid, basic_query,
-                             study_uid_query, year_start_end)
-from crawler.executor import run
+from .command import (accs_per_day, add_study_uid, basic_query, study_uid_query,
+                     year_start_end)
+from .executor import run
 
 
 def query_for_study_uid(config, accession_number):
     """There could be different study_uids for a single accession number.
     An example would be GRASP sequences."""
     query = study_uid_query(config, accession_number)
-    result, _ = run(query)
+    result = run(query)
     if result:
         ids = []
         for r in result:
@@ -24,8 +24,8 @@ def query_for_study_uid(config, accession_number):
 def query_accession_number(config, study_uid):
     query = basic_query(config)
     query = add_study_uid(query, study_uid)
-    result, _ = run(query)
-    return [result]
+    result = run(query)
+    return result
 
 
 def get_months_of_year(year: str) -> List[Dict[str, str]]:
@@ -36,6 +36,6 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 
 def query_day_accs(config, day) -> List[Dict[str, str]]:
     query = accs_per_day(config, day.strftime("%Y%m%d"))
-    result, _ = run(query)
+    result = run(query)
     # not wrapping the result in a list is *no* mistake!
     return result

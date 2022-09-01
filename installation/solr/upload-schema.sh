@@ -40,7 +40,11 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true }, 
    {
      "name":"PatientAge",
-     "type":"int",
+     "type":"pint",
+     "docValues":true },
+   {
+     "name":"PatientConsent",
+     "type":"boolean",
      "docValues":true },
    {
      "name":"ReferringPhysicianName",
@@ -87,4 +91,4 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
       "name":"Category",
       "type":"string",
       "docValues":true }]
-}' http://localhost:8983/solr/$CORE/schema
+}' http://localhost:8984/solr/$CORE/schema

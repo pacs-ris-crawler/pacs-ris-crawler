@@ -2,7 +2,7 @@ import shlex
 import subprocess
 
 from typing import List, Dict, Tuple
-from crawler.dicom import get_results
+from .dicom import get_results
 
 
 def run(query: str) ->Tuple[List[Dict[str, str]], int]:
@@ -16,4 +16,4 @@ def run(query: str) ->Tuple[List[Dict[str, str]], int]:
     completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     lines = completed.stderr.decode('latin1').splitlines()
     result = get_results(lines)
-    return result, len(result)
+    return result

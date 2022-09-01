@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Tuple
 
-from crawler.config import pacs_settings
+from .config import pacs_settings
 
 
 def study_uid_query(configuration, accession_number):
