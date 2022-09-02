@@ -46,10 +46,10 @@
               </tr>
             </thead>
             <tbody>
-              {% for series in study['_childDocuments_'] %}
+              {% for series in study['series'] %}
               {% set d = series.update({'series_int': series.get('SeriesNumber') | int }) %}
               {% endfor %}
-              {% for child in study['_childDocuments_'] | sort(attribute='series_int') %}
+              {% for child in study['series'] | sort(attribute='series_int') %}
               <tr>
                 <td>
                   <input type="checkbox" name="series" data-patient-id="{{ doc['groupValue'] }}"

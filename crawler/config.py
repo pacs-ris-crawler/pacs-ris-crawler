@@ -13,16 +13,6 @@ def pacs_settings(config):
     return f"-aec {ae_called} {ae_peer_address} {ae_peer_port} -aet {ae_title}"
 
 
-def get_solr_upload_url(file="config.ini"):
-    """
-    Reads the configuration from the config.ini file
-    :param file: config file name (optional, default='config.ini')
-    :return: str: solr settings
-    """
-    solr_upload_url = file["SOLR_UPLOAD_URL"]
-    return solr_upload_url
-
-
 def get_report_show_url(file="config.ini"):
     """
     Reads the configuration from the config.ini file

@@ -1,7 +1,7 @@
 <div class="container px-0 border-bottom pb-1 pt-2">
   <div class="row">
     <div class="col">
-      <input type="checkbox" name="select-all-page"><span class="pl-1"> Patients found: </span><span class="badge badge-secondary mr-3">{{ results }}</span>  Studies found: <span class="badge badge-secondary" id="studies_result">{{ studies_result }}</span>
+      <input type="checkbox" name="select-all-page"><span class="pl-1"> Patients found: <span class="badge badge-secondary mr-3">{{ results }}</span>  Studies found: <span class="badge badge-secondary" id="studies_result">{{ studies_result }}</span></span>
     </div>
     <div class="col">
         {% include 'paging.html' %}
@@ -24,16 +24,16 @@
         data-patient-id="{{ doc['groupValue'] }}">
       <a data-toggle="collapse" data-target="#{{ doc['groupValue'] }}" href="#">
         <span class="oi oi-collapse-down float-sm-right"></span>
-        <span class="float-right pr-3">Studies <span class="badge badge-secondary">{{ doc.doclist.numFound }}</span>
-        </span>
+        <div class="float-right pr-3">Studies <span class="badge badge-secondary">{{ doc.doclist.numFound }}</span>
+        </div>
         <div class="col pl-0">
-          {{ doc.doclist.docs[0]['PatientID'] }}, {{ doc.doclist.docs[0]['PatientSex'] }}
+          {{ doc.doclist.docs[0]['PatientID'] }}, {{ doc.doclist.docs[0]['PatientSex'] }}, {{ doc.doclist.docs[0]['PatientConsent'] }}
         </div>
       </a>
     </div>
   </li>
   <div class="pl-3 collapse" id="{{ doc['groupValue'] }}">
-    {% for study in doc.doclist.docs %}
+    {% for study in doc.doclist.docs %} 
     {% include 'study.html' %}
     {% endfor %}
   </div>

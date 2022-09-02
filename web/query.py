@@ -59,7 +59,7 @@ def query_body(args, limit=100):
         )
         body["filter"] = _create_filter_query(args) + [filters1]
     else:
-        body["params"]["fl"] = "*,[child parentFilter=Category:parent limit=200]"
+        body["params"]["fl"] = "*,[child limit=200]"
         body["filter"] = _create_filter_query(args)
 
     body["offset"] = int(args.get("offset", "0"))
@@ -79,6 +79,7 @@ def _create_filter_query(args):
         _filter("AccessionNumber", args),
         _filter("ReferringPhysicianName", args),
         _filter("ProtocolName", args),
+        _filter("PatientConsent", args),
         _create_date("PatientBirthDate", args),
         _create_date("StudyDate", args),
         _create_date_range(args.get("StartDate"), args.get("EndDate")),

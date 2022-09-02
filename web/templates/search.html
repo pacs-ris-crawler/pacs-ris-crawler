@@ -61,6 +61,18 @@
           <input class="form-control form-control-sm" type="text" id="patientid-input" name="PatientID"
             value="{{ params.PatientID }}">
         </div>
+        <div class="col">
+          <label for="patientconsent-input" class="col-form-label"
+            title="Has patient given consent? Ja, Nein and NV (nicht verfügbar) are possible values">PatientConsent</label>
+            {% set c = params.PatientConsent %}
+            <select class="custom-select custom-select-sm" name="PatientConsent">
+              <option value="">Select PatientConsent</option>
+              <option value="Ja" title="Ja" {% if c == "Ja" %}selected{% endif %}>Ja</option>
+              <option value="Nein" title="Nein" {% if c == "Nein" %}selected{% endif %}>Nein</option>
+              <option value="NV" title="Nicht verfügbar" {% if c == "NV" %}selected{% endif %}>NV</option>
+            </select>
+         
+        </div>
       </div>
       <div class="form-group row mx-auto px-4 ">
         <div class="col">

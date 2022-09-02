@@ -387,6 +387,7 @@ $(function () {
   });
 
   $('input[name=select-all-patient').on('click', function (e) {
+    console.log("aaa")
     var value = $(this).prop("checked")
     var patientId = $(e.target).attr('data-patient-id');
     var selector = 'table[data-patient-id="' + patientId + '"]'
@@ -409,122 +410,6 @@ $(function () {
     // parent is in because user can click also on icon
     $(e.target).parent().find('span').first().toggleClass('oi-collapse-down oi-collapse-up');
   });
-
-  /**
-   * Pasting the names will escape them automatically. This means that a
-   * name like Jon Doe will be become "John\^Doe". In the PACS the whitespace
-   * is replace by a '^'. The usecase is that people are coming with lists of
-   * names and they don't need to remember how to escape it properly.
-   */
-  $('#patientname-input').on('paste', function (e) {
-    // cancel paste
-    e.preventDefault();
-    var data = e.originalEvent.clipboardData.getData('Text');
-    var names = data.split(/(?:\r\n|\r|\n)/g);
-    names = names.map(function (x) { return x.trim(); });
-    names = names.filter(function (x) { return x !== '' });
-    names = names.map(function (x) { return x.replace(/\s/g, "\^"); });
-    names = names.map(function (x) { return '"' + x.toUpperCase() + '"' });
-    value = names.join(',');
-    $('#patientname-input').val(value);
-  });
-
-  if ('statistics' == $('body').data('page')) {
-    
-    
-    var statistics_month = $('#statistics_month').pikaday({
-      format: 'YYYYMM',
-      firstDay: 1,
-      minDate: new Date(2012, 0, 1),
-      maxDate: new Date(),
-      yearRange: [2005, 2019]
-    });
-    
-    
-    function draw_statistics() {
-      // Assign the specification to a local variable vlSpec.
-      var vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-        "data": { "url": "statistics/data.csv" },
-        "mark": {
-          "type": "line",
-          "point": "true"
-        },
-        "title": "PACS Study Distribution",
-        "width": 420,
-        "height": 380,
-        "transform": [{
-          "filter": { "field": "year", "timeUnit": "year", "range": [2007, 2019] }
-        }],
-        "encoding": {
-          "x": {
-            "field": "year",
-            "type": "temporal",
-            "axis": {
-              "format": "%Y",
-              "title": "Years"
-            }
-          },
-          "y": {
-            "field": "InstitutionName",
-            "type": "quantitative",
-            "axis": {
-              "title": "Number of Studies"
-            }
-          },
-          "color": {
-            "field": "institution_type",
-            "type": "nominal",
-            "legend": { "title": "Type" }
-          }
-        }
-      }
-      // Embed the visualization in the container with id `vis`
-      vegaEmbed("#vis", vlSpec, { "actions": false });
-    };
-    
-    function draw_month_statistics(e) {
-      e.preventDefault();
-      var date = $("#statistics_month").val()
-      console.log(date)
-      // Assign the specification to a local variable vlSpec.
-      var vlSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-        "data": { "url": "statistics/month?month=" + date },
-        "mark": {
-          "type": "line",
-          "point": "true"
-        },
-        "title": "Exams",
-        "width": 420,
-        "height": 380,
-        "encoding": {
-          "x": {
-            "field": "date",
-            "type": "temporal",
-            "axis": {
-              "format": "%d",
-              "title": "Days"
-            }
-          },
-          "y": {
-            "field": "InstitutionName",
-            "type": "quantitative",
-            "axis": {
-              "title": "Number of Studies"
-            }
-          }
-        }
-      }
-      vegaEmbed("#month_vis", vlSpec, { "actions": false });
-    };
-    draw_statistics()
-  
-    $('#month_draw').on("click", draw_month_statistics)
-  
-  
-  }
-  
   
   
 });

@@ -33,7 +33,7 @@
               </thead>
               <tbody>
                 <tr>
-                    {% for child in study._childDocuments_ %}
+                    {% for child in study.series %}
                   <td>{{ child['Modality'] }} </td>
                   <td>{{ child['SeriesNumber'] }} </td>
                   <td>{{ child['SeriesDescription'] }} </td>

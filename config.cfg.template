@@ -48,8 +48,10 @@ REPORT_USES_BASIC_AUTH = False
 REPORT_USER = ""
 REPORT_PWD = ""
 
+CONSENT_URL = ''
 
 SERIES_LIMIT = 500
 MODALITIES = ['CT', 'MR', 'PT', 'CR', 'XA', 'SR', 'NM', 'MG', 'US', 'DX', 'RF',
               'OT', 'PR', 'KO', 'SC', 'SD', 'PX', 'DR']
+
 

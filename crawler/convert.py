@@ -58,7 +58,7 @@ def convert_pacs_file(json_in):
             if "ProtocolName" in entry and entry["ProtocolName"]:
                 p_dict["ProtocolName"] = []
                 p_dict["ProtocolName"].append(entry["ProtocolName"])
-            p_dict["_childDocuments_"] = []
+            p_dict["series"] = []
             p_dict = add_child(p_dict, entry)
             acc_dict[entry["AccessionNumber"]] = p_dict
         else:
@@ -98,7 +98,7 @@ def add_child(parent, entry):
         if not "ProtocolName" in parent:
             parent["ProtocolName"] = []
         parent["ProtocolName"].append(entry["ProtocolName"])
-    parent["_childDocuments_"].append(child_dict)
+    parent["series"].append(child_dict)
     return parent
 
 
@@ -119,7 +119,6 @@ def merge_pacs_ris(pacs):
             dic["RisReport"] = ""
             my_dict.append(dic)
         elif "AccessionNumber" in entry:
-            print(user, pwd)
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
             if uses_basis_auth:
@@ -129,5 +128,13 @@ def merge_pacs_ris(pacs):
             response.raise_for_status()
             data = response.text
             dic["RisReport"] = data
+            dic["PatientConsent"] = patient_consent(dic["PatientID"])
             my_dict.append(dic)
     return my_dict
+
+
+def patient_consent(patid):
+    config = load_config()
+    consent_url = config["CONSENT_URL"]
+    res = get(f"{consent_url}patid").json()
+    return res["consent"]

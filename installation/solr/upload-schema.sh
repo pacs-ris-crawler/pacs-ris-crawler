@@ -44,8 +44,7 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true },
    {
      "name":"PatientConsent",
-     "type":"boolean",
-     "docValues":true },
+     "type":"string" },
    {
      "name":"ReferringPhysicianName",
      "type":"text_de"},

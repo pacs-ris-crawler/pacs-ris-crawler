@@ -75,8 +75,8 @@ def search():
         with task.output().open("r") as r:
             results = json.load(r)
             for result in results:
-                result["_childDocuments_"] = sorted(
-                    result["_childDocuments_"],
+                result["search"] = sorted(
+                    result["search"],
                     key=lambda k: int(k["SeriesNumber"] or "0"),
                 )
 

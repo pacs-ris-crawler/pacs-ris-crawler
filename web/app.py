@@ -119,7 +119,6 @@ def search():
         results = data["grouped"]["PatientID"]["ngroups"]
         studies_result = data["grouped"]["PatientID"]["matches"]
         page = params.get("page", 0)
-        offset = params.get("offset", 0)
         paging = calc(results, page, current_app.config["RESULT_LIMIT"])
         return render_template(
             "result.html",

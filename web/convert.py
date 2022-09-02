@@ -13,7 +13,7 @@ def convert(df):
             "study_date": row.StudyDate,
             "accession_number": row.AccessionNumber,
         }
-        children = row["_childDocuments_"]
+        children = row["series"]
         if isinstance(children, str):
             children = ast.literal_eval(children)
 
