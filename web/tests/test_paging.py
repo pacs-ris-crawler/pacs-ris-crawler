@@ -1,6 +1,6 @@
 import unittest
 
-from web.paging import calc
+from paging import calc
 
 
 class TestPaging(unittest.TestCase):

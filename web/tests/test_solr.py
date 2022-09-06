@@ -1,6 +1,6 @@
 import unittest
 
-from web.solr import solr_terms_url, solr_url
+from solr import solr_terms_url, solr_url
 
 
 class TestSolr(unittest.TestCase):
