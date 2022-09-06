@@ -3,40 +3,41 @@ import logging
 import shlex
 import subprocess
 from datetime import datetime
-import click
-from flask.cli import with_appcontext
 
+import click
 import luigi
 import pandas as pd
-from flask import render_template, request, Blueprint, current_app
+from flask import Blueprint, current_app, render_template, request
+from flask.cli import with_appcontext
 from flask_assets import Bundle
-#from crawler.tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
 
-#from crawler.query import query_day_accs
+# from crawler.tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+
+# from crawler.query import query_day_accs
 
 crawler_bp = Blueprint(
     "crawler_bp", __name__, template_folder="templates", static_folder="static"
 )
-from .flows import query_acc
+from .flows import query_and_upload_acc, upload_acc, query_acc
 
-@crawler_bp.cli.command('acc')
-@click.argument('dicom_node')
-@click.argument('acc')
+
+@crawler_bp.cli.command("acc")
+@click.argument("dicom_node")
+@click.argument("acc")
 @with_appcontext
 def import_acc(dicom_node, acc):
-    query_acc(dicom_node, acc)
+    upload_acc(dicom_node, acc)
 
-crawler_bundle = {
-    "crawler_js": Bundle(
-        "js/jquery-3.3.1.min.js",
-        "js/bootstrap.bundle.min.js",
-        "js/jquery.noty.packaged.min.js",
-        "js/intercooler.js",
-        "js/script.js",
-        filters="jsmin",
-        output="gen/packed.js",
-    )
-}
+
+crawler_bundle = Bundle(
+    "crawler_bp/js/jquery-3.3.1.min.js",
+    "crawler_bp/js/bootstrap.bundle.min.js",
+    "crawler_bp/js/jquery.noty.packaged.min.js",
+    "crawler_bp/js/intercooler.js",
+    "crawler_bp/js/script.js",
+    filters="jsmin",
+    output="crawler_bp/gen/crawler_packed.js",
+)
 
 
 @crawler_bp.app_template_filter("to_date")
@@ -48,10 +49,10 @@ def to_date(date_as_int):
 
 @crawler_bp.route("/")
 def main():
-    luigi_scheduler = current_app.config["LUIGI_SCHEDULER"]
+    prefect_orion = current_app.config["PREFECT_ORION_URL"]
     return render_template(
-        "index.html",
-        luigi_scheduler=luigi_scheduler,
+        "crawler/index.html",
+        prefect_orion=prefect_orion,
         dicom_nodes=list(current_app.config["DICOM_NODES"].keys()),
         version=current_app.config["VERSION"],
     )
@@ -64,65 +65,48 @@ def search():
     day = request.args.get("day", "")
     if not any([accession_number, day]):
         return "no accession number or day given", 400
-    w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = MergePacsRis({"acc": accession_number, "dicom_node": dicom_node})
+        result = query_acc(dicom_node, accession_number)
     elif day:
         task = MergePacsRis({"day": day})
-    w.add(task)
-    w.run()
-    if task.complete():
-        with task.output().open("r") as r:
-            results = json.load(r)
-            for result in results:
-                result["search"] = sorted(
-                    result["search"],
-                    key=lambda k: int(k["SeriesNumber"] or "0"),
-                )
 
-        return render_template(
-            "result.html",
-            accession_number=accession_number,
-            day=day,
-            luigi_scheduler=luigi_scheduler,
-            dicom_nodes=list(app.config["DICOM_NODES"].keys()),
-            dicom_node=dicom_node,
-            version=app.config["VERSION"],
-            results=results,
-        )
-    else:
-        return render_template(
-            "error.html",
-            accession_number=accession_number,
-            day=day,
-            luigi_scheduler=luigi_scheduler,
-            dicom_nodes=list(app.config["DICOM_NODES"].keys()),
-            version=app.config["VERSION"],
-            results={},
-        )
+    print(result)
+    return render_template(
+        "crawler/result.html",
+        accession_number=accession_number,
+        day=day,
+        dicom_nodes=list(current_app.config["DICOM_NODES"].keys()),
+        dicom_node=dicom_node,
+        version=current_app.config["VERSION"],
+        results=result,
+    )
 
 
 @crawler_bp.route("/upload", methods=["POST"])
 def upload():
+    """Receiving data from the client is like this:
+    ```
+    {
+        'acc': 12233,
+        'dicom_node': 'node'
+    }
+    ```
+    Returns:
+        _type_: _description_
+    """
     data = request.get_json(force=True)
     accession_number = data.get("acc", "")
-    day = data.get("day", "")
-    logging.debug("Accession number to upload is: {}".format(accession_number))
-    if not any([accession_number, day]):
-        return "no accession number or day given", 400
+    dicom_node = data.get("dicom_node", "")
+    logging.debug(
+        f"Accession number to upload is: {accession_number} from dicom node: {dicom_node}"
+    )
+    if not any([accession_number, dicom_node]):
+        return "no accession number or dicom node given", 400
 
-    w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = DailyUpConvertedMerged({"acc": accession_number})
-    else:
-        task = DailyUpConvertedMerged({"day": day})
-    w.add(task)
-    w.run()
-    if task.complete():
-        return json.dumps({"status": "ok"})
-    else:
-        return "Task error", 400
-
+        res = query_and_upload_acc(dicom_node, accession_number)
+        if res:
+            return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 @crawler_bp.route("/batch-upload")
 def batch():

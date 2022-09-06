@@ -8,7 +8,7 @@ from flask_assets import Environment
 from string import Template
 
 app = Flask(__name__)
-app.config.from_pyfile('config.cfg', silent=False)
+app.config.from_pyfile("config.cfg", silent=False)
 
 VERSION = app.config["VERSION"] = "2.0.0-beta1"
 RESULT_LIMIT = app.config["RESULT_LIMIT"]
@@ -26,11 +26,13 @@ ZFP_VIEWER = app.config["ZFP_VIEWER"]
 
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
+
 @app.template_filter("to_date")
 def to_date(date_as_int):
     if date_as_int:
         return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
     return ""
+
 
 @app.template_filter("zfp_url")
 def create_zfp_url(accession_number):
@@ -42,6 +44,8 @@ def create_zfp_url(accession_number):
 app.register_blueprint(web_bp, url_prefix="/web")
 app.register_blueprint(crawler_bp, url_prefix="/crawler")
 assets = Environment(app)
-assets.register(web_bundle)
-assets.register(crawler_bundle)
+assets.register("web", web_bundle)
+assets.register("crawler", crawler_bundle)
 
+web_bundle.build(force=True)
+crawler_bundle.build(force=True)

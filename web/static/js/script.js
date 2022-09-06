@@ -158,7 +158,6 @@ $(function () {
     return false;
   });
   
-
   $("#download-ris-reports").on('click', function (e) {
     e.preventDefault();
     var data = getCheckedData();

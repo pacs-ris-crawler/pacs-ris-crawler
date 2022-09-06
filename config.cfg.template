@@ -21,7 +21,7 @@ TRANSFER_TARGETS = [{'AE_TITLE': 'SCHWARZHORN', 'DISPLAY_NAME': 'Schwarzhorn'},
 
 ZFP_VIEWER = ""
 
-LUIGI_SCHEDULER = 'http://meqpacscrllt01:9092'
+PREFECT_ORION_URL='http://localhost:4200'
 
 DICOM_NODES = {'One': { 
                     'AE_TITLE' : 'A',

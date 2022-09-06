@@ -30,15 +30,22 @@ def query_acc(dicom_node, accession_number):
         results = query_accession_number(config, uids[0])
     converted = convert_pacs_file(results)
     merged = merge_pacs_ris(converted)
-    upload(merged)
     return merged
 
 
 @flow 
-def upload(doc):
+def query_and_upload_acc(dicom_node, accession_number):
+    doc = query_acc(dicom_node, accession_number)
+    upload_acc(doc)
+    return True
+
+
+@flow
+def upload_acc(doc):
     config = load_config()
     upload_url = config["SOLR_UPLOAD_URL"]
     res = requests.post(url=upload_url, json=doc, params={"commit":"true"})
     if not res.ok:
+        print(res.text)
         res.raise_for_status()
     return res.ok

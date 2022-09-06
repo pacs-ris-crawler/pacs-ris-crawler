@@ -17,8 +17,9 @@ def query_for_study_uid(config, accession_number):
         for r in result:
             ids.append(r["StudyInstanceUID"])
         return ids
+    query_formatted = query.replace('\n', '')
     raise LookupError(
-        f"No result found for accession number: {accession_number}\nQuery was: {query}"
+        f"No StudyUID was found for accession number: {accession_number}\nQuery was: {query_formatted}"
     )
 
 def query_accession_number(config, study_uid):

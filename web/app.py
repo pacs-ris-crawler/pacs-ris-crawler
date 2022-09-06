@@ -22,25 +22,22 @@ web_bp = Blueprint(
 )
 
 
-web_bundle = {
-    "web_js": Bundle(
-        "js/jquery-3.1.0.min.js",
-        "js/tether.min.js",
-        "js/popper.min.js",
-        "js/bootstrap.min.js",
-        "js/moment.min.js",
-        "js/pikaday.js",
-        "js/pikaday.jquery.js",
-        "js/jquery.noty.packaged.min.js",
-        "js/jszip.min.js",
-        "js/FileSaver.js",
-        "js/intercooler.js",
-        "js/script.js",
-        filters="jsmin",
-        output="gen/packed.js",
-    )
-}
-
+web_bundle = Bundle(
+    "web_bp/js/jquery-3.1.0.min.js",
+    "web_bp/js/tether.min.js",
+    "web_bp/js/popper.min.js",
+    "web_bp/js/bootstrap.min.js",
+    "web_bp/js/moment.min.js",
+    "web_bp/js/pikaday.js",
+    "web_bp/js/pikaday.jquery.js",
+    "web_bp/js/jquery.noty.packaged.min.js",
+    "web_bp/js/jszip.min.js",
+    "web_bp/js/FileSaver.js",
+    "web_bp/js/intercooler.js",
+    "web_bp/js/script.js",
+    filters="jsmin",
+    output="web_bp/gen/web_packed.js",
+)
 
 
 @web_bp.route("/")
@@ -80,7 +77,9 @@ def search():
     payload = query_body(params, current_app.config["RESULT_LIMIT"])
     headers = {"content-type": "application/json"}
     try:
-        response = get(solr_url(current_app.config), data=json.dumps(payload), headers=headers)
+        response = get(
+            solr_url(current_app.config), data=json.dumps(payload), headers=headers
+        )
     except RequestException:
         return render_template(
             "search.html",
@@ -135,8 +134,8 @@ def search():
             modalities=params.getlist("Modality"),
             page=page,
             offset=0,
-            #show_download_options=current_app.config["SHOW_DOWNLOAD_OPTIONS"],
-            #show_transfer_targets=current_app.config["SHOW_TRANSFER_TARGETS"],
+            # show_download_options=current_app.config["SHOW_DOWNLOAD_OPTIONS"],
+            # show_transfer_targets=current_app.config["SHOW_TRANSFER_TARGETS"],
             transfer_targets=current_app.config["TRANSFER_TARGETS"],
             receiver_url=current_app.config["RECEIVER_URL"],
             receiver_dashboard_url=current_app.config["RECEIVER_DASHBOARD_URL"],

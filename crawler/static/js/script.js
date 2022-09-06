@@ -2,7 +2,7 @@ $(function () {
   console.log('ready');
 
   $('#reload-button').on('click', function(e) {
-    document.getElementById('luigi').contentWindow.location.reload();
+    document.getElementById('prefect').contentWindow.location.reload();
   });
 
 
@@ -58,10 +58,10 @@ $(function () {
   $('#upload-button').on('click', function (e) {
     e.preventDefault();
     var acc = $('#search-input').val();
-    var day = $('#day-input').val();
+    var dicom_node = $("#dicom_node_search").val();
     var data = {
       'acc': acc,
-      'day': day
+      'dicom_node':dicom_node
     }
     $.ajax({
       type: 'POST',
@@ -80,8 +80,8 @@ $(function () {
       noty({
         text: 'Upload failed: ' + error.responseText,
         layout: 'topRight',
-        timeout: '3000',
-        closeWith: ['click', 'hover'],
+        timeout: '6000',
+        closeWith: ['click'],
         type: 'error'
       });
       console.log(error);
