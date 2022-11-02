@@ -12,7 +12,7 @@ import requests
 def upload(host, port, day):
     print(f"Calling url: http://{host}:{port}")
     if not day:
-        today = datetime.date.today()
+        today = datetime.today()
         week_ago = today - datetime.timedelta(days=7)
         week_ago_str = week_ago.strftime("%Y-%m-%d")
     else:
