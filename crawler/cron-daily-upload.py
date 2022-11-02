@@ -17,7 +17,7 @@ def upload(host, port, day):
         week_ago_str = week_ago.strftime("%Y-%m-%d")
     else:
         week_ago_str = day
-    payload = {"from-date": week_ago_str, "to-date": week_ago_str}
+    payload = {"from-date": week_ago_str, "to-date": week_ago_str, "dicom_node": "SECTRA"}
     print(f"Payload is: {payload}")
     r = requests.get(f"http://{host}:{port}/batch-upload", params=payload)
     r.raise_for_status()
