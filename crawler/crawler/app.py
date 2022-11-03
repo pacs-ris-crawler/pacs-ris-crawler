@@ -142,6 +142,7 @@ def batch():
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
             r = query_day_accs(app.config["DICOM_NODES"][dicom_node], day)
+            logging.info(f"Got {len(r)} accession numbers for day: {day}")
             for i in r:
                 if "AccessionNumber" in i:
                     acc = i["AccessionNumber"] 
