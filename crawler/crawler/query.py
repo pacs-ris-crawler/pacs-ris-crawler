@@ -21,6 +21,7 @@ def query_for_study_uid(config, accession_number):
         f"No result found for accession number: {accession_number}\nQuery was: {query}"
     )
 
+
 def query_accession_number(config, study_uid):
     query = basic_query(config)
     query = add_study_uid(query, study_uid)
@@ -35,7 +36,10 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 
 
 def query_day_accs(config, day) -> List[Dict[str, str]]:
-    query = accs_per_day(config, day.strftime("%Y%m%d"))
-    result, _ = run(query)
-    # not wrapping the result in a list is *no* mistake!
-    return result
+    # needed to split because it was too many results for sectra, e.g. day = 2022-09-13
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "000000-120000")
+    result_am, _ = run(query_am)
+
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "120000-235999")
+    result_pm, _ = run(query_pm)
+    return result_am + result_pm

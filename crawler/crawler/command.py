@@ -14,13 +14,14 @@ def study_uid_query(configuration, accession_number):
     
 
 
-def accs_per_day(configuration, day):
+def accs_per_day(configuration, day, time):
     """
     Query for all studyinstanceuids for a given day.
     """
     return f"""findscu -to 60 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
            -k AccessionNumber
-           -k StudyDate={day}"""
+           -k StudyDate={day}
+           -k StudyTime={time}"""
 
 
 def basic_query(configuration):

@@ -7,6 +7,7 @@ PATIENT_BIRTHDATE = "PatientBirthDate"
 PATIENT_ID = "PatientID"
 PATIENT_SEX = "PatientSex"
 STUDY_DATE = "StudyDate"
+STUDY_TIME = "StudyTime"
 SERIES_DATE = "SeriesDate"
 SERIES_TIME = "SeriesTime"
 MODALITY = "Modality"
@@ -37,6 +38,7 @@ TAGS = {
     "(0010,0040)": PATIENT_SEX,
     "(0070,0080)": CONTENT_LABEL,
     "(0008,0020)": STUDY_DATE,
+    "(0008,0030)": STUDY_TIME,
     "(0008,0021)": SERIES_DATE,
     "(0008,0031)": SERIES_TIME,
     "(0008,0060)": MODALITY,
