@@ -1,6 +1,6 @@
 <div id="search-details" class="container py-3 show bg-light mt-1 form-inline">
     <form class="form-group pl-2 py-2" action="/search">
-        <label for="patientname-input" class="pr-2">Accession Number </label>
+        <label for="patientname-input" class="pr-2">Accession Number: </label>
         <input class="form-control form-control-sm" type="text" id="search-input" name="accession_number"
             value="{{accession_number}}" placeholder="A single accession number">
         <label for="exampleFormControlSelect1" class="pl-4 pr-2">Dicom Node</label>
@@ -11,13 +11,15 @@
         </select>
         <button type="submit" class="btn btn-primary btn-sm ml-3">Search</button>
     </form>
-    <form class="batch-upload" action="/batch-upload">
+    <form class="batch-upload" action="/batch-upload" class="pt-3">
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Accession Numbers:</label>
             <input class="form-control form-control-sm" name="accession_numbers" id="accession_numbers"
-                placeholder="Accession Numbers (separate by space)" style="width:280px">
-            <span class="px-3 bold"> or </span>
-            <label for="patientname-input" class="pl-4 pr-2">From Date:</label>
+                placeholder="Accession Numbers (separate by space)" style="width:280px"> 
+            <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Upload</button>
+        </div>
+        <div class="form-group form-row pl-3 py-2">
+            <label for="patientname-input" class="pr-2">From Date:</label>
             <input class="form-control form-control-sm" type="date" id="from-date" name="from-date" value="">
             <label for="patientid-input" class="pl-4 pr-2"
                 title="Patient ID to search for, multiples are separated by space">To Date: </label>

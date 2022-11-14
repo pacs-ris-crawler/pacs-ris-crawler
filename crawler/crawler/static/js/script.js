@@ -2,7 +2,8 @@ $(function () {
   console.log('ready');
 
   $('#reload-button').on('click', function(e) {
-    document.getElementById('luigi').contentWindow.location.reload();
+    var f = document.getElementById('luigi');
+    f.src = f.src;
   });
 
 
