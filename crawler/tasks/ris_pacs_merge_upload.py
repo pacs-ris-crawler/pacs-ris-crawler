@@ -10,7 +10,6 @@ from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 
 from tasks.accession import AccessionTask
-from tasks.cdwh_store import AccessionStoreTask
 from tasks.util import dict_to_str, load_config
 
 
@@ -20,8 +19,6 @@ class ConvertPacsFile(luigi.Task):
     def requires(self):
         if "acc" in self.query:
             return AccessionTask(self.query["acc"], self.query["dicom_node"])
-        if "day" in self.query:
-            return StudyDescription("", self.query["day"], self.query["day"])
 
     def run(self):
         with self.input().open("r") as daily:
@@ -80,15 +77,6 @@ class DailyUpConvertedMerged(luigi.Task):
     def output(self):
         name = dict_to_str(self.query)
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
-
-
-class DailyUpAccConvertedMerged(luigi.WrapperTask):
-    acc = luigi.Parameter()
-    node = luigi.Parameter()
-
-    def requires(self):
-        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
-        yield AccessionStoreTask(self.acc)
 
 
 # example usage:
