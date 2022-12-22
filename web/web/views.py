@@ -1,27 +1,25 @@
+import base64
 import io
 import json
 import logging
 import os
+from io import BytesIO
 
+import july
+import matplotlib
+
+matplotlib.use("Agg")
 import pandas as pd
 import requests
 from flask import render_template, request, send_file
+from matplotlib.figure import Figure
 from requests import RequestException, get, post
 
-from web.app import (
-    RECEIVER_DASHBOARD_URL,
-    RECEIVER_DOWNLOAD_URL,
-    RECEIVER_TRANSFER_URL,
-    RECEIVER_URL,
-    REPORT_SHOW_URL,
-    RESULT_LIMIT,
-    SHOW_DOWNLOAD_OPTIONS,
-    SHOW_TRANSFER_TARGETS,
-    TRANSFER_TARGETS,
-    VERSION,
-    ZFP_VIEWER,
-    app,
-)
+from web.app import (RECEIVER_DASHBOARD_URL, RECEIVER_DOWNLOAD_URL,
+                     RECEIVER_TRANSFER_URL, RECEIVER_URL, REPORT_SHOW_URL,
+                     RESULT_LIMIT, SHOW_DOWNLOAD_OPTIONS,
+                     SHOW_TRANSFER_TARGETS, TRANSFER_TARGETS, VERSION,
+                     ZFP_VIEWER, app)
 from web.convert import convert
 from web.paging import calc
 from web.query import query_body, query_indexed_dates
@@ -266,6 +264,44 @@ def month_statistics():
     return df.to_json(orient="records")
 
 
+@app.route("/stats_per_year", methods=["GET"])
+def stats_per_year():
+    year = request.args["year"]
+    payload = {
+        "q": "*",
+        "rows": "1000000",
+        "fq": ["Category:parent"],
+        "fq": [f"StudyDate:[{year}0101 TO {year}1231]"],
+        "fl": "InstitutionName, StudyDate",
+    }
+    headers = {"content-type": "application/json"}
+    response = get(solr_url(app.config), payload, headers=headers)
+    data = response.json()["response"]["docs"]
+    df = pd.DataFrame.from_dict(data)
+    df["date"] = pd.to_datetime(df["StudyDate"], format="%Y%m%d")
+    df = df.groupby("date").agg("count").reset_index()
+    fig = Figure(figsize=(13, 6))
+    ax = fig.subplots()
+    july.heatmap(
+        df["date"],
+        df["StudyDate"],
+        value_label=True,
+        fontsize=6,
+        fontfamily="monospace",
+        title="Yearly studies",
+        month_grid=True,
+        horizontal=True,
+        colorbar=True,
+        cmap="summer_r",
+        dpi=100,
+        ax=ax,
+    )
+    buf = BytesIO()
+    fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    return f"<img src='data:image/png;base64,{data}'/>"
+
+
 @app.route("/statistics/data.csv")
 def statistics_data():
     years = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019"]
@@ -308,7 +344,7 @@ def get_statistics_per_year(year):
         "q": "*",
         "rows": "10000000",
         "fq": ["Category:parent"],
-        "fq": [f"StudyDate:[{year}0101 TO {year}1241]"],
+        "fq": [f"StudyDate:[{year}0101 TO {year}1231]"],
         "fl": "InstitutionName, StudyDate",
     }
     headers = {"content-type": "application/json"}
