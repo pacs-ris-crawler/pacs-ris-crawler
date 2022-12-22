@@ -21,7 +21,7 @@
     <div id="search-details" class="container py-3 show bg-light mt-1 form-inline">
       <form class="form-group pl-2 py-2" hx-get="/stats_per_year" hx-target="#year_viz" hx-trigger="load delay:1s">
         <label for="patientname-input" class="pr-2">Year: </label>
-        <input class="form-control" type="number" min="2002" max="2099" step="1" value="2022" name="year" />
+        <input class="form-control" type="number" min="2002" max="2099" step="1" name="year" />
         <button type="submit" class="btn btn-primary btn-sm ml-3">Visualize</button>
       </form>
     </div>
