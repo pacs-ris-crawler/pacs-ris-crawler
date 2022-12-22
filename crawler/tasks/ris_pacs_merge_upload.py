@@ -79,32 +79,6 @@ class DailyUpConvertedMerged(luigi.Task):
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
 
 
-class DailyUpConvertedMerged(luigi.Task):
-    query = luigi.DictParameter()
-
-    def requires(self):
-        return MergePacsRis(self.query)
-
-    def run(self):
-        config = load_config()
-        upload_url = get_solr_upload_url(config)
-        logging.debug("Uploading to url %s", upload_url)
-        with self.input().open("r") as in_file:
-            file = {"file": (in_file.name, in_file, "application/json")}
-            update_response = requests.post(
-                url=upload_url, files=file, params={"commit": "true"}
-            )
-        if not update_response.ok:
-            update_response.raise_for_status()
-        else:
-            with self.output().open("w") as my_file:
-                my_file.write("Upload successful")
-
-    def output(self):
-        name = dict_to_str(self.query)
-        return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
-
-
 # example usage:
 # PYTHONPATH='.' luigi --module tasks.ris_pacs_merge_upload DailyUpConvertedMerged --local-scheduler --day yyyy-mm-dd
 if __name__ == "__main__":
