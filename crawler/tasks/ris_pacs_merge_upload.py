@@ -79,6 +79,14 @@ class DailyUpConvertedMerged(luigi.Task):
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
 
 
+class DailyUpAccConvertedMerged(luigi.WrapperTask):
+    acc = luigi.Parameter()
+    node = luigi.Parameter()
+
+    def requires(self):
+        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
+
+
 # example usage:
 # PYTHONPATH='.' luigi --module tasks.ris_pacs_merge_upload DailyUpConvertedMerged --local-scheduler --day yyyy-mm-dd
 if __name__ == "__main__":
