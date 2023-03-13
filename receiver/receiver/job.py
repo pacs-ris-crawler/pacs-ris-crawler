@@ -57,7 +57,7 @@ def transfer_series(config, series_list, target):
         args = shlex.split(command)
         queue_transfer(args)
         logger.debug("Running transfer command %s", args)
-    return len(series_list)
+    return len(series_list), command
 
 
 def base_command(dcmtk_config, pacs_config):

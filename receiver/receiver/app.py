@@ -84,7 +84,7 @@ def resend():
         target = data.get("target", "")
         series_list = data.get("data", "")
         app.logger.info("transfer called and sending to %s", target)
-        length = transfer_series(app.config, series_list, target)
+        length, _ = transfer_series(app.config, series_list, target)
         return render_template("success.html")
     else:
         return render_template("success.html")
@@ -117,5 +117,6 @@ def transfer():
     target = data.get("target", "")
     series_list = data.get("data", "")
     app.logger.info("transfer called and sending to %s", target)
-    length = transfer_series(app.config, series_list, target)
+    length, command = transfer_series(app.config, series_list, target)
+    app.logger.info("command was:\n {command}")
     return json.dumps({"status": "OK", "series_length": length})
