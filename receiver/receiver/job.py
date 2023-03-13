@@ -32,7 +32,7 @@ def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
 
 
 def _transfer(dcmtk_config, target, study_uid, series_uid):
-    return "-aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
+    return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
         target,
         study_uid,
         series_uid,
