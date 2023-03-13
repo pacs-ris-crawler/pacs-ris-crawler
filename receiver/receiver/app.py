@@ -118,5 +118,5 @@ def transfer():
     series_list = data.get("data", "")
     app.logger.info("transfer called and sending to %s", target)
     length, command = transfer_series(app.config, series_list, target)
-    app.logger.info("command was:\n {command}")
+    app.logger.info(f"command was:\n {command}")
     return json.dumps({"status": "OK", "series_length": length})
