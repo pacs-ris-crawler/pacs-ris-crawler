@@ -17,7 +17,7 @@ def transfer_old_pacs_command(dcmtk_config, target, study_uid, series_uid):
         dcmtk_config.dcmtk_bin
         + "/movescu -v -S "
         + old_pacs()
-        + _transfer(dcmtk_config, target, study_uid, series_uid)
+        + _transfer_old(dcmtk_config, target, study_uid, series_uid)
     )
 
 
@@ -27,11 +27,17 @@ def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
         dcmtk_config.dcmtk_bin
         + "/movescu -v -S "
         + new_pacs()
-        + _transfer(dcmtk_config, target, study_uid, series_uid)
+        + _transfer_new(target, study_uid, series_uid)
     )
 
+def _transfer_new(target, study_uid, series_uid):
+    return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
+        target,
+        study_uid,
+        series_uid
+    )
 
-def _transfer(dcmtk_config, target, study_uid, series_uid):
+def _transfer_old(dcmtk_config, target, study_uid, series_uid):
     return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={} {}".format(
         target,
         study_uid,
