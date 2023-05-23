@@ -2,7 +2,7 @@ pandas==1.4.2
 Flask==2.1.2
 Flask-Assets==2.0
 Jinja2==3.1.2
-requests==2.24.0
+requests==2.31.0
 schedule==1.1.0
 jsmin==3.0.1
 luigi==3.0.3
