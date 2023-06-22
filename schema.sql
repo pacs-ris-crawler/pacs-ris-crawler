@@ -1,60 +1,55 @@
-DROP TABLE IF EXISTS Patient;
-CREATE  TABLE IF NOT EXISTS Patient (
-  id_Patient INTEGER,
-  PatientID VARCHAR(50) NULL ,
-  PatientName VARCHAR(45) NULL ,
+
+-- inspiration from https://github.com/commontk/CTK/blob/aa4a717152052812627a020c7f4110ccb8f7bfc8/Libs/DICOM/Core/Resources/dicom-schema.sql#L2
+
+DROP TABLE IF EXISTS Patients;
+CREATE  TABLE IF NOT EXISTS Patients (
+  UID INTEGER PRIMARY KEY AUTOINCREMENT,
+  PatientID VARCHAR(255) NULL ,
+  PatientName VARCHAR(255) NULL ,
   PatientBirthDate DATE NULL ,
-  PatientSex VARCHAR(1),
-  PRIMARY KEY (id_Patient),
-  UNIQUE (id_Patient)
+  PatientSex VARCHAR(1) NULL,
+  InsertTimestamp VARCHAR(20) NOT NULL 
  );
 
-DROP TABLE IF EXISTS Study;
-CREATE  TABLE IF NOT EXISTS Study (
-  id_Study INTEGER ,
-  AccessionNumber VARCHAR(12) NOT NULL,
-  StudyDescription VARCHAR(45) NULL,
+DROP TABLE IF EXISTS Studies;
+CREATE TABLE IF NOT EXISTS Studies (
+  StudyInstanceUID VARCHAR(64) NOT NULL,
+  PatientsUID INT NOT NULL ,
+  StudyID VARCHAR(255),
+  AccessionNumber VARCHAR(255) NULL,
+  StudyDescription VARCHAR(255) NULL,
   StudyDate DATE NULL ,
   StudyTime TIME NULL ,
-  ModalitiesInStudy VARCHAR(45) NULL ,
-  InstitutionName VARCHAR(45) NULL ,
-  ReferringPhysicianName VARCHAR(45) NULL ,
-  FK_Patient_id_Patient INT,
-  FOREIGN KEY (FK_Patient_id_Patient) REFERENCES Patient (id_Patient)
-  PRIMARY KEY (id_Study))
+  ModalitiesInStudy VARCHAR(255) NULL ,
+  InstitutionName VARCHAR(255) NULL ,
+  ReferringPhysicianName VARCHAR(255) NULL ,
+  RadiologyReport TEXT,
+  InsertTimestamp VARCHAR(20) NOT NULL,
+  PRIMARY KEY (StudyInstanceUID))
 ;
 
-DROP TABLE IF EXISTS Report;
-CREATE VIRTUAL TABLE IF NOT EXISTS Report USING FTS5(acc, radiology_report);
+DROP TABLE IF EXISTS RadiologyReportSearch;
+CREATE VIRTUAL TABLE IF NOT EXISTS RadiologyReportSearch USING FTS5(AccessionNumber, RadiologyReport);
 
 DROP TABLE IF EXISTS Series;
 CREATE  TABLE IF NOT EXISTS Series (
-  id_Series INTEGER ,
-  StudyInstanceUID VARCHAR(64) NOT NULL,
   SeriesInstanceUID VARCHAR(64) NOT NULL ,
-  SeriesDescription VARCHAR(45) NULL , 
+  SeriesDescription VARCHAR(255) NULL , 
   Modality VARCHAR(45) NULL,
-  ProtocolName VARCHAR(32) NULL,
-  BodyPartExamined VARCHAR (12) NULL,
+  ProtocolName VARCHAR(255) NULL,
+  BodyPartExamined VARCHAR (255) NULL,
   SeriesDate DATE NULL ,
-  SeriesTime TIME NULL ,
-  SeriesNumber VARCHAR(4),
-  FK_Study_id_Study INT NOT NULL ,
-  FOREIGN KEY (FK_Study_id_Study ) REFERENCES Study (id_Study )
-  PRIMARY KEY (id_Series),
-  UNIQUE (SeriesInstanceUID))
+  SeriesTime VARCHAR(20) NULL,
+  SeriesNumber INT NULL,
+  InsertTimestamp VARCHAR(20) NOT NULL,
+  PRIMARY KEY (SeriesInstanceUID))
 ;
 DROP TABLE IF EXISTS Image;
 
-CREATE  TABLE IF NOT EXISTS Image (
-  id_Image INTEGER ,
+CREATE TABLE IF NOT EXISTS Image (
   SOPInstanceUID VARCHAR(64) NOT NULL ,
-  Number INT NULL ,
-  PatientPosition VARCHAR(64) NULL ,
   SliceThickness FLOAT NULL ,
-  FileName VARCHAR(4096) NULL ,
-  FK_Series_id_Series INT NOT NULL ,
-  FOREIGN KEY (FK_Series_id_Series ) REFERENCES Series (id_Series )
-  PRIMARY KEY (id_Image),
-  UNIQUE (SOPInstanceUID))
+  FileName VARCHAR(1024) NULL ,
+  InsertTimestamp VARCHAR(20) NOT NULL ,
+  PRIMARY KEY (SOPInstanceUID))
 ;
