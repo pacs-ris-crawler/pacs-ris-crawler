@@ -1,21 +1,12 @@
 import json
-import os
 from datetime import datetime
-from itertools import chain
-from math import ceil
+from timeit import default_timer as timer
 
 import click
-from click import get_current_context
-from click.types import DateTime
 from dotenv import load_dotenv
-from requests import get
-from requests.auth import HTTPBasicAuth
 from rich import print as rprint
 from rich.progress import track
-
-
-
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 
 @click.option("-i", "--input", type=click.Path(exists=True), help="import file")
@@ -29,12 +20,9 @@ def main(input):
 
     engine = create_engine("sqlite+pysqlite:///main.db")
 
-    
-
-   
-
     with engine.connect() as conn:
         for p in patients:
+            start = timer()
             patient_values = {
                 "patient_id": p["patient_id"],
                 "patient_birthdate": p["patient_birthdate"],
@@ -42,7 +30,7 @@ def main(input):
                 "patient_sex": p["patient_sex"],
                 "now": datetime.now()
             }
-            result = conn.execute(
+            conn.execute(text(
                 """
                 INSERT INTO 
                     Patients(PatientID, 
@@ -54,10 +42,10 @@ def main(input):
                         :patient_name, 
                         :patient_birthdate,
                         :patient_sex,
-                        :now)""",
+                        :now)"""),
                 patient_values,
-            )  
-
+            )
+            
             studies = p["studies"]
             for s in studies:
                 suid =  s["study_uid"]
@@ -77,8 +65,8 @@ def main(input):
                     "radiology_report": s["ris_report"],
                     "now": datetime.now()
                 }
-                #print(study_values)
-                conn.execute(
+                
+                conn.execute(text(
                     """
                     INSERT INTO 
                         Studies(StudyInstanceUID,
@@ -104,24 +92,24 @@ def main(input):
                             :instution_name,
                             :referring_physician_name,
                             :radiology_report,
-                            :now)""",
+                            :now)"""),
                     study_values,
                 )
                 
                 series = s["series"]
                 for s in series:
                     series_values = {
-                    "series_instance_uid": s["series_uid"],
-                    "series_description": s["series_description"],
-                    "modality": s["modality"],
-                    "protocol_name": s.get("protocol_name"),
-                    "bodypartexamined": s.get("bodypartexamined"),
-                    "series_date": s.get("series_date"),
-                    "series_time": s.get("series_time"),
-                    "series_number": s["series_number"],
-                    "now": datetime.now()
-                }
-                    conn.execute( 
+                        "series_instance_uid": s["series_uid"],
+                        "series_description": s["series_description"],
+                        "modality": s["modality"],
+                        "protocol_name": s.get("protocol_name"),
+                        "bodypartexamined": s.get("bodypartexamined"),
+                        "series_date": s.get("series_date"),
+                        "series_time": s.get("series_time"),
+                        "series_number": s["series_number"],
+                        "now": datetime.now()
+                    }
+                    conn.execute(text(
                     """
                     INSERT INTO 
                         Series(SeriesInstanceUID,
@@ -141,9 +129,13 @@ def main(input):
                             :series_date,
                             :series_time,
                             :series_number,
-                            :now)""",
+                            :now)"""),
                     series_values,
                 )
+        p_time = timer() - start
+        rprint(f"Insert patient took {p_time}")
+        conn.commit()
+                
 
 
 if __name__ == "__main__":
