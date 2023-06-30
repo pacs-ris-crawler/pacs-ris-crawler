@@ -94,7 +94,7 @@ def base_command_new_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
+        + "/movescu -v -S +xv -k QueryRetrieveLevel=SERIES "
         + new_pacs()
     )
 
@@ -120,16 +120,17 @@ def download_series(config, series_list, dir_name, image_type):
         # very dummy assumpution let's if this hold true for USB
         # because new data is only in the new pacs
         # and not all old data is on the new pacs
-        if accession_number.startswith("3"):
-            command = (
-                base_command_new_pacs(dcmtk)
-                + " --output-directory "
-                + image_folder
-                + " -k StudyInstanceUID="
-                + study_uid
-                + " -k SeriesInstanceUID="
-                + series_uid
-            )
+        #accession_number.startswith("3"):
+        command = (
+            base_command_new_pacs(dcmtk)
+            + " --output-directory "
+            + image_folder
+            + " -k StudyInstanceUID="
+            + study_uid
+            + " -k SeriesInstanceUID="
+            + series_uid
+        )
+        """
         else:
             command = (
                 base_command_old_pacs(dcmtk)
@@ -142,6 +143,7 @@ def download_series(config, series_list, dir_name, image_type):
                 + " "
                 + dcmtk.dcmin
             )
+        """
         args = shlex.split(command)
         queue(args, config, image_folder, image_type)
         logger.debug("Running download command %s", args)
