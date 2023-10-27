@@ -24,10 +24,15 @@ class AccessionTask(luigi.Task):
 
         results = []
         for study_uid in study_uids:
-            results.append(query_accession_number(config, study_uid))
+            result, command = query_accession_number(config, study_uid)
+            results.append(result)
         flat = [item for sublist in results for item in sublist]
         with self.output().open("w") as outfile:
             w.write_file(flat, outfile)
+        if self.output().exists():
+            with open("data/%s_command.txt" % self.accession_number, "w") as f:
+                f.write(command)
+            
 
     def output(self):
         return luigi.LocalTarget("data/%s_accession.json" % self.accession_number)

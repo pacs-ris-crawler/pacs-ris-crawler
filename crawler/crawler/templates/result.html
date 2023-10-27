@@ -1,7 +1,12 @@
 {% extends "index.html" %} {% block content %}
-<div class="container by-3 bg-white mt-3">
+<div class="container pl-0 pr-0 bg-white mt-3">
   <div class="pv3 pl-3">
     <button id="upload-button" class="btn btn-sm btn-info">Upload Result</button>
+    <div class="pt-3">
+      <div class="card small rounded-1 bg-light">
+      <div class="card-body pa-3" contenteditable="false" aria-multiline="true">{{command}}</div>
+    </div>
+    </div>
   </div>
 <div class="pl-3" >
   {% for study in results %}

@@ -26,7 +26,7 @@ def query_accession_number(config, study_uid):
     query = basic_query(config)
     query = add_study_uid(query, study_uid)
     result, _ = run(query)
-    return [result]
+    return [result], query
 
 
 def get_months_of_year(year: str) -> List[Dict[str, str]]:

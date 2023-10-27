@@ -77,9 +77,11 @@ def search():
                     result["_childDocuments_"],
                     key=lambda k: int(k["SeriesNumber"] or "0"),
                 )
-
+        with open(f"data/{accession_number}_command.txt", "r") as f:
+            command = " ".join(y.strip() for y in f.read().splitlines())
         return render_template(
             "result.html",
+            command=command,
             accession_number=accession_number,
             day=day,
             luigi_scheduler=luigi_scheduler,
