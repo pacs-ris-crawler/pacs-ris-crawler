@@ -13,10 +13,13 @@ class CleanTask(luigi.Task):
     accession_number = luigi.Parameter()
 
     def run(self):
-        print(os.getcwd())
         x = subprocess.run(f"rm data/*{self.accession_number}*", shell=True)
         with self.output().open("w") as f:
             f.write("cleaned")
+
+    # always run the clean task
+    def complete(self):
+        return False
 
     def output(self):
         return luigi.LocalTarget("data/%s_cleaned.txt" % self.accession_number)
