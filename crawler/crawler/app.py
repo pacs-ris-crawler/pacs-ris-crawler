@@ -131,7 +131,7 @@ def prefetch():
     accession_number = request.args.get("accession_number")
     if accession_number:
         logging.info(f"cleaning data dir for acc: {accession_number}")
-        r = subprocess.run(f"rm -f data/*{accession_number}*", shell=True, check=True, capture_output=True)
+        r = subprocess.run(f"rm -f data/*{accession_number}*", shell=True, check=True)
         print(r.stderr)
         print(r.stdout)
         logging.info(f"cleaned successfull for acc: {accession_number}")
