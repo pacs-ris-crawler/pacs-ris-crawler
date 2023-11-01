@@ -131,9 +131,10 @@ def prefetch():
     accession_number = request.args.get("accession_number")
     if accession_number:
         logging.info(f"cleaning data dir for acc: {accession_number}")
-        r = subprocess.run(f"rm -f data/*{accession_number}*", shell=True, check=True)
-        print(r.stderr)
-        print(r.stdout)
+        files = list(Path("data").glob(f"*{accession_number}*"))
+        print(f"Found {len(files)} for cleaning")
+        for f in files:
+            f.unlink()
         logging.info(f"cleaned successfull for acc: {accession_number}")
         logging.info(f"Running prefetch for acc {accession_number}")
         cmd = f'python -m tasks.accession PrefetchTask --accession-number {accession_number}'
