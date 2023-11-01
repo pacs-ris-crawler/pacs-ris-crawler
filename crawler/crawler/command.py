@@ -49,6 +49,11 @@ def basic_query(configuration):
            -k SeriesTime"""
 
 
+def prefetch_query(configuration, study_uid):
+    """This is a hack to force sectra to get exams to the online storage that afterwards seriesdescription can be retrieved"""
+    return f"""movescu -to 60 -v -S -k 0008,0052=SERIES {pacs_settings(configuration)} -k StudyInstanceUID={study_uid}"""
+
+
 def add_modality(query, modality):
     """Adds the modality to the query."""
     return query + " -k Modality=" + modality

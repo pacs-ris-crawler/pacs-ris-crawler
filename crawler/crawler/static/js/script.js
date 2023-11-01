@@ -7,6 +7,53 @@ $(function () {
   });
 
 
+  $('.prefetch-batch-upload').submit(function (e) {
+    var form = $(this);
+    var url = form.attr('action');
+
+    var acc_numbers = $("#prefetch_accession_numbers").val().split(" ").filter(Boolean)
+    console.log(acc_numbers)
+    if (acc_numbers.length > 0) {
+      for (let index = 0; index < acc_numbers.length; index++) {
+        const element = acc_numbers[index];
+        $.ajax({
+          type: "GET",
+          url: url,
+          data: {"accession_number": element},
+          success: function (data) {
+            console.log(data);
+            noty({
+              type: 'info',
+              text: 'Jobs submitted',
+              layout: 'centerRight',
+              timeout: '3000',
+              closeWith: ['click', 'hover'],
+              theme: 'metroui'
+            }).show();
+          }
+        })
+      }
+    } else {
+      $.ajax({
+        type: "GET",
+        url: url,
+        data: form.serialize(),
+        success: function (data) {
+          console.log(data);
+          noty({
+            type: 'info',
+            text: 'Jobs submitted',
+            layout: 'centerRight',
+            timeout: '3000',
+            closeWith: ['click', 'hover'],
+            theme: 'metroui'
+          }).show();
+        }
+      })
+    }
+    e.preventDefault();
+  });
+
   $('.batch-upload').submit(function (e) {
     var form = $(this);
     var url = form.attr('action');

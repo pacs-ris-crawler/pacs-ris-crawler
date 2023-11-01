@@ -9,7 +9,7 @@ import pandas as pd
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
 from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
-
+from pathlib import Path
 from crawler.query import query_day_accs
 
 app = Flask(__name__, instance_relative_config=True)
@@ -77,8 +77,10 @@ def search():
                     result["_childDocuments_"],
                     key=lambda k: int(k["SeriesNumber"] or "0"),
                 )
-        with open(f"data/{accession_number}_command.txt", "r") as f:
-            command = " ".join(y.strip() for y in f.read().splitlines())
+        command = ""
+        if Path(f"data/{accession_number}_command.txt").exists():        
+            with open(f"data/{accession_number}_command.txt", "r") as f:
+                command = " ".join(y.strip() for y in f.read().splitlines())
         return render_template(
             "result.html",
             command=command,
@@ -113,7 +115,7 @@ def upload():
 
     w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = DailyUpConvertedMerged({"acc": accession_number})
+        task = DailyUpConvertedMerged({"acc": accession_number, "dicom_node": "SECTRA"})
     else:
         task = DailyUpConvertedMerged({"day": day})
     w.add(task)
@@ -122,6 +124,20 @@ def upload():
         return json.dumps({"status": "ok"})
     else:
         return "Task error", 400
+
+
+@app.route("/prefetch")
+def prefetch():
+    accession_number = request.args.get("accession_number")
+    if accession_number:
+        logging.debug(f"Running prefetch for acc {accession_number}")
+        cmd = f'python -m tasks.accession PrefetchTask --accession-number {accession_number}'
+        cmds = shlex.split(cmd)
+        r = subprocess.run(cmds, shell=False, check=False)
+        print(r)
+        return json.dumps({"status": "ok"})
+    else:
+        return json.dumps({"status": "error, no accession number given"})
 
 
 @app.route("/batch-upload")

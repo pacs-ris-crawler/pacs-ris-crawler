@@ -11,6 +11,17 @@
         </select>
         <button type="submit" class="btn btn-primary btn-sm ml-3">Search</button>
     </form>
+    <form class="prefetch-batch-upload" action="/prefetch" class="pt-3">
+        <div class="form-group form-row pl-3 py-2">
+            <label for="access_numbers" class="pr-2">Accession Numbers:</label>
+            <input class="form-control form-control-sm" name="accession_numbers" id="prefetch_accession_numbers"
+                placeholder="Accession Numbers (separate by space)" style="width:280px">
+            
+            <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Prefetch</button>
+            <label>On some older exams the Series Description is missing. To resolve this, first prefetch the exams and then upload again.</label>
+        </div>
+        <div class="pt-3"></div>
+    </form>
     <form class="batch-upload" action="/batch-upload" class="pt-3">
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Accession Numbers:</label>

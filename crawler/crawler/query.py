@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from crawler.command import (accs_per_day, add_study_uid, basic_query,
+from crawler.command import (accs_per_day, add_study_uid, basic_query, prefetch_query,
                              study_uid_query, year_start_end)
 from crawler.executor import run
 
@@ -27,6 +27,12 @@ def query_accession_number(config, study_uid):
     query = add_study_uid(query, study_uid)
     result, _ = run(query)
     return [result], query
+
+
+def prefetch_accession_number(config, study_uid):
+    query = prefetch_query(config, study_uid)
+    run(query, parse_results=False)
+    return query
 
 
 def get_months_of_year(year: str) -> List[Dict[str, str]]:

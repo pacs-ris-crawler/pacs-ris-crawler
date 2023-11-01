@@ -1,10 +1,49 @@
 import crawler.writer as w
 import luigi
-from crawler.query import query_accession_number
+from crawler.query import query_accession_number, prefetch_accession_number
 
 from tasks.study_uid import StudyUIDTask
-from tasks.util import load_dicom_config
+from tasks.util import load_prefetch_node, load_dicom_config
+import subprocess
+import os
 
+class CleanTask(luigi.Task):
+    # example run command
+    # python -m tasks.accession CleanTask --accession-number 1234 --local-scheduler
+    accession_number = luigi.Parameter()
+
+    def run(self):
+        print(os.getcwd())
+        x = subprocess.run(f"rm data/*{self.accession_number}*", shell=True)
+        with self.output().open("w") as f:
+            f.write("cleaned")
+
+    def output(self):
+        return luigi.LocalTarget("data/%s_cleaned.txt" % self.accession_number)
+   
+
+class PrefetchTask(luigi.Task):
+    # example run command
+    # python -m tasks.accession PrefetchTask --accession-number 1234 --local-scheduler
+    accession_number = luigi.Parameter()
+
+    def requires(self):
+        return [CleanTask(self.accession_number), StudyUIDTask(self.accession_number, "SECTRA")]
+
+    def run(self):
+        config = load_prefetch_node()
+        study_uids = []
+        with self.input()[1].open("r") as f:
+            for line in f:
+                study_uids.append(line.strip())
+
+        for study_uid in study_uids:
+            cmd = prefetch_accession_number(config, study_uid)
+        with self.output().open("w") as f:
+            f.write(cmd)
+
+    def output(self):
+        return luigi.LocalTarget("data/%s_prefetch_command.txt" % self.accession_number)
 
 class AccessionTask(luigi.Task):
     # example run command
@@ -27,8 +66,9 @@ class AccessionTask(luigi.Task):
             result, command = query_accession_number(config, study_uid)
             results.append(result)
         flat = [item for sublist in results for item in sublist]
-        with self.output().open("w") as outfile:
-            w.write_file(flat, outfile)
+        w.write_file(flat, self.output().path)
+        #with self.output().open("w") as outfile:
+        #   w.write_file(flat, outfile)
         if self.output().exists():
             with open("data/%s_command.txt" % self.accession_number, "w") as f:
                 f.write(command)
