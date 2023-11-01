@@ -130,7 +130,10 @@ def upload():
 def prefetch():
     accession_number = request.args.get("accession_number")
     if accession_number:
-        logging.debug(f"Running prefetch for acc {accession_number}")
+        logging.info(f"cleaning data dir for acc: {accession_number}")
+        r = subprocess.run(f"rm data/*{accession_number}*", shell=True, check=True)
+        logging.info(f"cleaned successfull for acc: {accession_number}")
+        logging.info(f"Running prefetch for acc {accession_number}")
         cmd = f'python -m tasks.accession PrefetchTask --accession-number {accession_number}'
         cmds = shlex.split(cmd)
         r = subprocess.run(cmds, shell=False, check=False)

@@ -4,26 +4,7 @@ from crawler.query import query_accession_number, prefetch_accession_number
 
 from tasks.study_uid import StudyUIDTask
 from tasks.util import load_prefetch_node, load_dicom_config
-import subprocess
-import os
 
-class CleanTask(luigi.Task):
-    # example run command
-    # python -m tasks.accession CleanTask --accession-number 1234 --local-scheduler
-    accession_number = luigi.Parameter()
-
-    def run(self):
-        x = subprocess.run(f"rm data/*{self.accession_number}*", shell=True)
-        with self.output().open("w") as f:
-            f.write("cleaned")
-
-    # always run the clean task
-    def complete(self):
-        return False
-
-    def output(self):
-        return luigi.LocalTarget("data/%s_cleaned.txt" % self.accession_number)
-   
 
 class PrefetchTask(luigi.Task):
     # example run command
@@ -31,12 +12,12 @@ class PrefetchTask(luigi.Task):
     accession_number = luigi.Parameter()
 
     def requires(self):
-        return [CleanTask(self.accession_number), StudyUIDTask(self.accession_number, "SECTRA")]
+        return StudyUIDTask(self.accession_number, "SECTRA")
 
     def run(self):
         config = load_prefetch_node()
         study_uids = []
-        with self.input()[1].open("r") as f:
+        with self.input().open("r") as f:
             for line in f:
                 study_uids.append(line.strip())
 
