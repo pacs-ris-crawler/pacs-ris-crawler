@@ -8,7 +8,7 @@ def study_uid_query(configuration, accession_number):
     """It is not possible to query by accession number therefore we need
     to first fetch the studyinstanceuid.
     """
-    return f"""findscu -to 60 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
+    return f"""findscu -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)}
            -k StudyInstanceUID
            -k AccessionNumber={accession_number}"""
     
@@ -18,7 +18,7 @@ def accs_per_day(configuration, day, time):
     """
     Query for all studyinstanceuids for a given day.
     """
-    return f"""findscu -to 60 -v -S -k 0008,0052=STUDY {pacs_settings(configuration)}
+    return f"""findscu -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)}
            -k AccessionNumber
            -k StudyDate={day}
            -k StudyTime={time}"""
@@ -26,7 +26,7 @@ def accs_per_day(configuration, day, time):
 
 def basic_query(configuration):
     """Returns a basic findscu command with no query parameters set."""
-    return f"""findscu -to 60 -v -S -k 0008,0052=SERIES {pacs_settings(configuration)}
+    return f"""findscu -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)}
            -k PatientName
            -k PatientBirthDate
            -k PatientID
@@ -51,7 +51,7 @@ def basic_query(configuration):
 
 def prefetch_query(configuration, study_uid):
     """This is a hack to force sectra to get exams to the online storage that afterwards seriesdescription can be retrieved"""
-    return f"""movescu -to 60 -v -S -k 0008,0052=SERIES {pacs_settings(configuration)} -k StudyInstanceUID={study_uid}"""
+    return f"""movescu -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)} -k StudyInstanceUID={study_uid}"""
 
 
 def add_modality(query, modality):
