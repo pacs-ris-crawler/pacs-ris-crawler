@@ -15,7 +15,7 @@ def transfer_old_pacs_command(dcmtk_config, target, study_uid, series_uid):
     """Constructs the first part of the transfer command to a PACS node."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S "
+        + "/movescu -S "
         + old_pacs()
         + _transfer_old(dcmtk_config, target, study_uid, series_uid)
     )
@@ -25,7 +25,7 @@ def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
     """Constructs the first part of the transfer command to a PACS node."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S "
+        + "/movescu -S "
         + new_pacs()
         + _transfer_new(target, study_uid, series_uid)
     )
@@ -70,7 +70,7 @@ def base_command(dcmtk_config, pacs_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
+        + "/movescu -S -k QueryRetrieveLevel=SERIES "
         + "-aet {} -aec {} {} {} +P {}".format(
             pacs_config.ae_title,
             pacs_config.ae_called,
@@ -85,7 +85,7 @@ def base_command_old_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
+        + "/movescu -S -k QueryRetrieveLevel=SERIES "
         + old_pacs()
     )
 
@@ -94,7 +94,7 @@ def base_command_new_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S +xv -k QueryRetrieveLevel=SERIES "
+        + "/movescu -S +xv -k QueryRetrieveLevel=SERIES "
         + new_pacs()
     )
 
