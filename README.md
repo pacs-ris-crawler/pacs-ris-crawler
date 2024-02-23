@@ -12,3 +12,7 @@ The documentation can be found at: https://pacs-ris-crawler.github.io/
 ## Requirements
 * python 3.9
 * solr 7.7 (for now)
+
+## How is the data populated?
+Via cron and root account (that is questionable)
+`0 1 * * * /var/www/env3.6_meta/bin/python /var/www/pacs-ris-crawler/crawler/cron-daily-upload.py --host localhost --port 5009 > /var/log/cron-daily-upload.log 2>&1`
