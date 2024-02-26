@@ -126,7 +126,6 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
             + series_uid
         )
         args = shlex.split(command)
-        print(command)
         queue(args, config, image_folder, image_type, queue_prio)
         logger.debug("Running download command %s", args)
     return len(series_list)
@@ -156,12 +155,9 @@ def queue_transfer(cmd):
 
 def queue(cmd, config, image_folder, image_type, queue_prio):
     redis_conn = Redis()
-    print(queue_prio, queue_prio=='queue-high')
     if queue_prio == 'queue-high':
-        print("putting it to the high queue")
         q = Queue(name='high', connection=redis_conn)
     else:
-        print("putting it to the medium queue")
         q = Queue(name='medium', connection=redis_conn)
     download_job = q.enqueue(run, cmd)
     if image_type == "nifti":
