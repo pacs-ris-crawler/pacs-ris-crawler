@@ -99,7 +99,7 @@ def base_command_new_pacs(dcmtk_config):
     )
 
 
-def download_series(config, series_list, dir_name, image_type):
+def download_series(config, series_list, dir_name, image_type, queue_prio):
     """Download the series. The folder structure is as follows:
     MAIN_DOWNLOAD_DIR / USER_DEFINED / PATIENTID / ACCESSION_NUMBER / SERIES_NUMER
     """
@@ -116,11 +116,6 @@ def download_series(config, series_list, dir_name, image_type):
             print("series_uid:", series_uid)
             print("accession number:", accession_number)
             continue
-
-        # very dummy assumpution let's if this hold true for USB
-        # because new data is only in the new pacs
-        # and not all old data is on the new pacs
-        #accession_number.startswith("3"):
         command = (
             base_command_new_pacs(dcmtk)
             + " --output-directory "
@@ -130,22 +125,9 @@ def download_series(config, series_list, dir_name, image_type):
             + " -k SeriesInstanceUID="
             + series_uid
         )
-        """
-        else:
-            command = (
-                base_command_old_pacs(dcmtk)
-                + " --output-directory "
-                + image_folder
-                + " -k StudyInstanceUID="
-                + study_uid
-                + " -k SeriesInstanceUID="
-                + series_uid
-                + " "
-                + dcmtk.dcmin
-            )
-        """
         args = shlex.split(command)
-        queue(args, config, image_folder, image_type)
+        print(command)
+        queue(args, config, image_folder, image_type, queue_prio)
         logger.debug("Running download command %s", args)
     return len(series_list)
 
@@ -167,14 +149,20 @@ def delete_dicom_cmd(image_folder):
 
 def queue_transfer(cmd):
     redis_conn = Redis()
-    q = Queue(connection=redis_conn)
+    q = Queue(name="transfer", connection=redis_conn)
     j = q.enqueue(run, cmd)
     return
 
 
-def queue(cmd, config, image_folder, image_type):
+def queue(cmd, config, image_folder, image_type, queue_prio):
     redis_conn = Redis()
-    q = Queue(connection=redis_conn)
+    print(queue_prio, queue_prio=='queue-high')
+    if queue_prio == 'queue-high':
+        print("putting it to the high queue")
+        q = Queue(name='high', connection=redis_conn)
+    else:
+        print("putting it to the medium queue")
+        q = Queue(name='medium', connection=redis_conn)
     download_job = q.enqueue(run, cmd)
     if image_type == "nifti":
         nifti_job = q.enqueue(
@@ -185,7 +173,6 @@ def queue(cmd, config, image_folder, image_type):
         )
         return delete_dicom_job
     if image_type == "anon-dicom":
-
         dicom_anonymize_job = q.enqueue(
             run_many, config, image_folder, depends_on=download_job
         )

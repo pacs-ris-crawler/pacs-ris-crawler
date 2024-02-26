@@ -17,6 +17,8 @@ app.config.from_pyfile("config.cfg")
 version = app.config["VERSION"] = "1.3.1"
 
 app.config.from_object(rq_dashboard.default_settings)
+app.config["RQ_DASHBOARD_REDIS_URL"] = "redis://127.0.0.1:6379"
+rq_dashboard.web.setup_rq_connection(app)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
 
@@ -77,8 +79,9 @@ def resend():
     if parts[1] == "download":
         series_list = data.get("data")
         dir_name = data.get("dir")
+        queue_prio = data.get("queue_prio")
         app.logger.info("download called and saving to %s", dir_name)
-        length = download_series(app.config, series_list, dir_name)
+        length = download_series(app.config, series_list, dir_name, queue_prio)
         return render_template("success.html")
     elif parts[1] == "transfer":
         target = data.get("target", "")
@@ -101,8 +104,9 @@ def download():
     series_list = data.get("data")
     dir_name = data.get("dir")
     image_type = data.get("image_type", "dicom")
+    queue_prio = data.get("queue_prio")
     app.logger.info("download called and saving to %s", dir_name)
-    length = download_series(app.config, series_list, dir_name, image_type)
+    length = download_series(app.config, series_list, dir_name, image_type, queue_prio)
     return json.dumps({"status": "OK", "series_length": length})
 
 

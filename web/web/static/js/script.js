@@ -252,6 +252,7 @@ $(function () {
     var regex = /^[a-zA-Z0-9_-]+$/
     var selection = $("input[name='download-selection']:checked", "#download-form").val();
     var imageType = $("input[name='download-type']:checked", "#download-form").val();
+    var queue_prio = $("input[name='queue']:checked", "#download-form").val();
     if (!dirName) {
       setError('Please put in folder name, allowed characters are: a-Z, 0-9,_,-');
       return
@@ -267,7 +268,7 @@ $(function () {
 
     if ("all" === selection) {
       $('#loading').removeClass('d-none');
-      q = $('#search-form').serialize() + "&download-dir=" + dirName + "&selection=" + selection + "&imageType=" + imageType;
+      q = $('#search-form').serialize() + "&download-dir=" + dirName + "&selection=" + selection + "&imageType=" + imageType + "&queue_prio=" + queue_prio;
       var xhr = new XMLHttpRequest();
       xhr.open('POST', '/download-all', true);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -300,6 +301,7 @@ $(function () {
       var data = {
         'data': checkedData,
         'dir': dirName,
+        'queue_prio': queue_prio,
         'image_type': imageType
       }
       $.ajax({

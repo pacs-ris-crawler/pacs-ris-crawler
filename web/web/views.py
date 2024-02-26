@@ -177,6 +177,7 @@ def download_all():
             "data": data,
             "dir": q["download-dir"],
             "image_type": q["imageType"],
+            "queue_prio": q["queue"]
         }
         return download_or_transfer(RECEIVER_DOWNLOAD_URL, download_data)
     return ("", 204)
@@ -234,7 +235,7 @@ def download_or_transfer(url, data):
             return json.dumps(response.json())
         else:
             app.logger.error(f"POST to url {url} failed")
-            logging.error(f"Error posting to f{url}")
+            logging.error(f"Error posting to: {url}")
             logging.error(response.reason)
             return json.dumps({"status": "error", "message": "POST failed"})
     except requests.exceptions.ConnectionError:
