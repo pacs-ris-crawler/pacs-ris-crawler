@@ -10,7 +10,7 @@ from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 
 from tasks.accession import AccessionTask
-from tasks.util import dict_to_str, load_config
+from tasks.util import dict_to_str, load_config, store_to_sqlite
 
 
 class ConvertPacsFile(luigi.Task):
@@ -79,12 +79,27 @@ class DailyUpConvertedMerged(luigi.Task):
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
 
 
+class SQLiteStore(luigi.Task):
+    query = luigi.DictParameter()
+
+    def requires(self):
+        return DailyUpConvertedMerged(self.query)
+    
+    def run(self):
+        with self.input().open("r") as in_file:
+            data = json.loads(in_file.read())
+            store_to_sqlite(data)
+    
+    def output(self):
+        name = dict_to_str(self.query)
+        return luigi.LocalTarget("data/%s_sqlite_stored.txt" % name)
+
 class DailyUpAccConvertedMerged(luigi.WrapperTask):
     acc = luigi.Parameter()
     node = luigi.Parameter()
 
     def requires(self):
-        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
+        yield SQLiteStore({"acc": self.acc, "dicom_node": self.node})
 
 
 # example usage:
