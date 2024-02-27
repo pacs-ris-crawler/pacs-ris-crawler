@@ -104,7 +104,7 @@ def download():
     series_list = data.get("data")
     dir_name = data.get("dir")
     image_type = data.get("image_type", "dicom")
-    queue_prio = data.get("queue_prio")
+    queue_prio = data.get("queue_prio", "queue-medium")
     app.logger.info("download called and saving to %s", dir_name)
     length = download_series(app.config, series_list, dir_name, image_type, queue_prio)
     return json.dumps({"status": "OK", "series_length": length})
