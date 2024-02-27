@@ -115,3 +115,5 @@ receiver/jobs/*
 .vscode
 
 institute_statistics*.csv
+
+main.db
