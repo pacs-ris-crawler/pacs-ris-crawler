@@ -3,13 +3,14 @@ import logging
 import shlex
 import subprocess
 from datetime import datetime
+from pathlib import Path
 
 import luigi
 import pandas as pd
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
 from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
-from pathlib import Path
+
 from crawler.query import query_day_accs
 
 app = Flask(__name__, instance_relative_config=True)
