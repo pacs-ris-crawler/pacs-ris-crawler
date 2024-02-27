@@ -1,13 +1,11 @@
 [Unit]
-Description=PACS RIS Crawler Receiver
+Description=PACS RIS Crawler web frontend
 After=network.target
 
 [Service]
-User=cyriacj
-Group=www-data
 WorkingDirectory=/var/www/pacs-ris-crawler/receiver
 Environment="PATH=<python virtual env path>:/usr/bin"
-ExecStart=/var/www/pacs-ris-crawler/.venv/bin/gunicorn -b localhost:5005 -w 4 --log-level=info receiver.app:app
+ExecStart=/var/www/pacs-ris-crawler/.venv/bin/rq worker transfer
 
 [Install]
 WantedBy=multi-user.target
