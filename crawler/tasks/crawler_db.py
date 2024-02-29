@@ -12,9 +12,11 @@ class DBStoreTask(luigi.Task):
     # example run command
     # python -m tasks.crawler_db DBStoreTask --accession-number 1234 --local-scheduler
     accession_number = luigi.Parameter()
+    dicom_node = luigi.Parameter()
+
 
     def requires(self):
-        return AccessionTask(self.accession_number)
+        return AccessionTask(self.accession_number, self.dicom_node)
 
 
     def run(self):
