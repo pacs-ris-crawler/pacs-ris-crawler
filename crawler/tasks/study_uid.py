@@ -4,7 +4,7 @@ from tasks.util import load_dicom_config
 
 class StudyUIDTask(luigi.Task):
     # example run command
-    # python -m tasks.study_uid StudyUIDTask --accession-number 1234 --local-scheduler
+    # python -m tasks.study_uid StudyUIDTask --accession-number 1234 --dicom-node SECTRA --local-scheduler
     accession_number = luigi.Parameter()
     dicom_node = luigi.Parameter()
 

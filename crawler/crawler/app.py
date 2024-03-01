@@ -170,7 +170,7 @@ def batch():
             for i in r:
                 if "AccessionNumber" in i:
                     acc = i["AccessionNumber"] 
-                    cmd = f'python -m tasks.ris_pacs_merge_upload DailyUpAccConvertedMerged --acc {acc} --node {dicom_node}'
+                    cmd = f'python -m tasks.ris_pacs_merge_upload TriggerTask --acc {acc} --node {dicom_node}'
                     cmds = shlex.split(cmd)
                     subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})

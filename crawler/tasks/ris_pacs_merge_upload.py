@@ -83,7 +83,7 @@ class SQLiteStore(luigi.Task):
     query = luigi.DictParameter()
 
     def requires(self):
-        return DailyUpConvertedMerged(self.query)
+        return MergePacsRis(self.query)
     
     def run(self):
         with self.input().open("r") as in_file:
@@ -94,12 +94,18 @@ class SQLiteStore(luigi.Task):
         name = dict_to_str(self.query)
         return luigi.LocalTarget("data/%s_sqlite_stored.txt" % name)
 
-class DailyUpAccConvertedMerged(luigi.WrapperTask):
+# example run command
+# python -m tasks.ris_pacs_merge_upload TriggerTask --acc 1234 --node SECTRA --local-scheduler
+class TriggerTask(luigi.WrapperTask):
     acc = luigi.Parameter()
     node = luigi.Parameter()
 
-    def requires(self):
-        yield SQLiteStore({"acc": self.acc, "dicom_node": self.node})
+    def requires(self): 
+        d = {"acc": self.acc, "node": self.node}
+        return [DailyUpConvertedMerged(d), SQLiteStore(d)]
+
+    def run(self):
+        print("All tasks completed successfully.")
 
 
 # example usage:
