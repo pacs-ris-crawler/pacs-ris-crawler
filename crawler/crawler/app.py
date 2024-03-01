@@ -141,7 +141,6 @@ def prefetch():
         cmd = f'python -m tasks.accession PrefetchTask --accession-number {accession_number}'
         cmds = shlex.split(cmd)
         r = subprocess.run(cmds, shell=False, check=False)
-        print(r)
         return json.dumps({"status": "ok"})
     else:
         return json.dumps({"status": "error, no accession number given"})
