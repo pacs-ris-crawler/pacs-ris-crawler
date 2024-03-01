@@ -49,9 +49,9 @@ def store_to_sqlite(data):
                     :patient_name, 
                     :patient_birthdate,
                     :patient_sex,
-                    :now)""",
+                    :now)"""),
             patient_values,
-        ))
+        )
         patient_id = result.lastrowid   
         print(f"last rowid: {patient_id}")
         print(data[0]["_childDocuments_"][0]["StudyInstanceUID"])
@@ -96,9 +96,9 @@ def store_to_sqlite(data):
                     :instution_name,
                     :referring_physician_name,
                     :radiology_report,
-                    :now)""",
+                    :now)"""),
             study_values,
-        ))
+        )
         study_id = result.lastrowid 
         series = data[0]["_childDocuments_"]
         for s in series:
@@ -133,6 +133,6 @@ def store_to_sqlite(data):
                     :series_date,
                     :series_time,
                     :series_number,
-                    :now)""",
+                    :now)"""),
             series_values,
-        ))
+        )
