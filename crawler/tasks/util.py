@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask import Flask
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 engine = create_engine("sqlite+pysqlite:///data/main.db")
 
@@ -37,7 +37,7 @@ def store_to_sqlite(data):
             "patient_sex": data[0]["PatientSex"],
             "now": datetime.now()
         }
-        result = conn.execute(
+        result = conn.execute(text(
             """
             INSERT INTO 
                 Patients(PatientID, 
@@ -51,7 +51,7 @@ def store_to_sqlite(data):
                     :patient_sex,
                     :now)""",
             patient_values,
-        )
+        ))
         patient_id = result.lastrowid   
         print(f"last rowid: {patient_id}")
         print(data[0]["_childDocuments_"][0]["StudyInstanceUID"])
@@ -70,7 +70,7 @@ def store_to_sqlite(data):
             "now": datetime.now()
         }
         print(study_values)
-        result = conn.execute(
+        result = conn.execute(text(
             """
             INSERT INTO 
                 Studies(StudyInstanceUID,
@@ -98,7 +98,7 @@ def store_to_sqlite(data):
                     :radiology_report,
                     :now)""",
             study_values,
-        )
+        ))
         study_id = result.lastrowid 
         series = data[0]["_childDocuments_"]
         for s in series:
@@ -113,7 +113,7 @@ def store_to_sqlite(data):
             "series_number": s["SeriesNumber"],
             "now": datetime.now()
         }
-            conn.execute( 
+            conn.execute(text(
             """
             INSERT INTO 
                 Series(SeriesInstanceUID,
@@ -135,4 +135,4 @@ def store_to_sqlite(data):
                     :series_number,
                     :now)""",
             series_values,
-        )
+        ))
