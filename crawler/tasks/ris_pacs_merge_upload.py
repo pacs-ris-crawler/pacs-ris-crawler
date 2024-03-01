@@ -101,7 +101,7 @@ class TriggerTask(luigi.WrapperTask):
     node = luigi.Parameter()
 
     def requires(self): 
-        d = {"acc": self.acc, "node": self.node}
+        d = {"acc": self.acc, "dicom_node": self.node}
         return [DailyUpConvertedMerged(d), SQLiteStore(d)]
 
     def run(self):
