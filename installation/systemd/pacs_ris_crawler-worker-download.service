@@ -1,5 +1,5 @@
 [Unit]
-Description=PACS RIS Crawler web frontend
+Description=PACS RIS Crawler Download worker
 After=network.target
 
 [Service]

@@ -1,0 +1,11 @@
+[Unit]
+Description=PACS RIS Crawler transfer worker
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/pacs-ris-crawler/receiver
+Environment="PATH=<python virtual env path>:/usr/bin"
+ExecStart=/var/www/pacs-ris-crawler/.venv/bin/rq worker transfer
+
+[Install]
+WantedBy=multi-user.target
