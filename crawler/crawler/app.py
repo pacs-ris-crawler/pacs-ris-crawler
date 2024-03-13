@@ -9,7 +9,7 @@ import luigi
 import pandas as pd
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
-from tasks.ris_pacs_merge_upload import DailyUpConvertedMerged, MergePacsRis
+from tasks.ris_pacs_merge_upload import TriggerTask, DailyUpConvertedMerged, MergePacsRis
 
 from crawler.query import query_day_accs
 
@@ -116,9 +116,9 @@ def upload():
 
     w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = DailyUpConvertedMerged({"acc": accession_number, "dicom_node": "SECTRA"})
+        task = TriggerTask({"acc": accession_number, "dicom_node": "SECTRA"})
     else:
-        task = DailyUpConvertedMerged({"day": day})
+        task = TriggerTask({"day": day})
     w.add(task)
     w.run()
     if task.complete():
@@ -154,7 +154,7 @@ def batch():
     dicom_node = request.args.get("dicom_node")
     if accession_number:
         logging.debug(f"Running upload for acc {accession_number}")
-        cmd = f'python -m tasks.ris_pacs_merge_upload DailyUpConvertedMerged --query \'{{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}\''
+        cmd = f'python -m tasks.ris_pacs_merge_upload TriggerTask --query \'{{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}\''
         cmds = shlex.split(cmd)
         subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})

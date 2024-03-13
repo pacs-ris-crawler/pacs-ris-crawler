@@ -1,6 +1,7 @@
 """ This file contains the tasks to downlad the json files from
     the ris as well as the routines to upload these files to solr
 """
+
 import json
 import logging
 
@@ -79,33 +80,39 @@ class DailyUpConvertedMerged(luigi.Task):
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
 
 
+# python -m tasks.ris_pacs_merge_upload SQLiteStore --query '{"acc": "123456", "dicom_node":"SECTRA"}' --local-scheduler
 class SQLiteStore(luigi.Task):
     query = luigi.DictParameter()
 
     def requires(self):
         return MergePacsRis(self.query)
-    
+
     def run(self):
         with self.input().open("r") as in_file:
             data = json.loads(in_file.read())
-            store_to_sqlite(data)
-    
+            print("///////////////////////////////////////////////////////")
+            print(data)
+            print("///////////////////////////////////////////////////////")
+        store_to_sqlite(data)
+        print("-------- storing done --------")
+
     def output(self):
         name = dict_to_str(self.query)
-        return luigi.LocalTarget("data/%s_sqlite_stored.txt" % name)
+        return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
+
 
 # example run command
 # python -m tasks.ris_pacs_merge_upload TriggerTask --acc 1234 --node SECTRA --local-scheduler
-class TriggerTask(luigi.WrapperTask):
+class TriggerTask(luigi.Task):
     acc = luigi.Parameter()
     node = luigi.Parameter()
 
-    def requires(self): 
-        d = {"acc": self.acc, "dicom_node": self.node}
-        return [DailyUpConvertedMerged(d), SQLiteStore(d)]
+    def requires(self):
+        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
+        yield SQLiteStore({"acc": self.acc, "dicom_node": self.node})
 
     def run(self):
-        print("All tasks completed successfully.")
+        print("running the trigger task")
 
 
 # example usage:

@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS Studies (
   StudyDescription VARCHAR(255) NULL,
   StudyDate DATE NULL ,
   StudyTime TIME NULL ,
-  ModalitiesInStudy VARCHAR(255) NULL ,
   InstitutionName VARCHAR(255) NULL ,
   ReferringPhysicianName VARCHAR(255) NULL ,
   RadiologyReport TEXT,

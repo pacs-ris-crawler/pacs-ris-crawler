@@ -33,6 +33,7 @@ def basic_query(configuration):
            -k PatientSex
            -k StudyID
            -k StudyDate
+           -k StudyTime
            -k Modality
            -k AccessionNumber
            -k BodyPartExamined
