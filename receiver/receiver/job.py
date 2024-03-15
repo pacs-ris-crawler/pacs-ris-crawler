@@ -102,7 +102,7 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
 def create_nifti_cmd(image_folder):
     nifti_output_dir = os.path.join(image_folder, "nifti")
     os.makedirs(nifti_output_dir, exist_ok=True)
-    print("dcm2niix -f %i_%g_%s -z y -o " + nifti_output_dir + " " + image_folder)
+    print("/usr/local/bin/dcm2niix/dcm2niix -f %i_%g_%s -z y -o " + nifti_output_dir + " " + image_folder)
     return shlex.split(
         "/usr/local/bin/dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
     )
