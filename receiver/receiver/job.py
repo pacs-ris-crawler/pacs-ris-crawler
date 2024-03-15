@@ -104,7 +104,7 @@ def create_nifti_cmd(image_folder):
     os.makedirs(nifti_output_dir, exist_ok=True)
     print("dcm2niix -f %i_%g_%s -z y -o " + nifti_output_dir + " " + image_folder)
     return shlex.split(
-        "dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
+        "/usr/local/bin/dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
     )
 
 
