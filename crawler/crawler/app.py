@@ -131,13 +131,13 @@ def upload():
 def prefetch():
     accession_number = request.args.get("accession_number")
     if accession_number:
-        logging.info(f"cleaning data dir for acc: {accession_number}")
+        app.logger.info(f"Cleaning data dir for acc: {accession_number}")
         files = list(Path("data").glob(f"*{accession_number}*"))
         print(f"Found {len(files)} for cleaning")
         for f in files:
             f.unlink()
-        logging.info(f"cleaned successfull for acc: {accession_number}")
-        logging.info(f"Running prefetch for acc {accession_number}")
+        app.logger.info(f"Cleaned successfull for acc: {accession_number}")
+        app.logger.info(f"Running prefetch for acc {accession_number}")
         cmd = f'python -m tasks.accession PrefetchTask --accession-number {accession_number}'
         cmds = shlex.split(cmd)
         r = subprocess.run(cmds, shell=False, check=False)
@@ -150,10 +150,11 @@ def prefetch():
 def batch():
     from_date = request.args.get("from-date", "")
     to_date = request.args.get("to-date", "")
+    app.logger.debug(f"Got date params: {from_date} to {to_date}")
     accession_number = request.args.get("accession_number")
-    dicom_node = request.args.get("dicom_node")
+    dicom_node = request.args.get("dicom_node", "SECTRA")
     if accession_number:
-        logging.debug(f"Running upload for acc {accession_number}")
+        app.logger.debug(f"Running upload for acc {accession_number}")
         cmd = f'python -m tasks.ris_pacs_merge_upload TriggerTask --query \'{{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}\''
         cmds = shlex.split(cmd)
         subprocess.run(cmds, shell=False, check=False)
@@ -166,7 +167,7 @@ def batch():
         range = pd.date_range(from_date_as_date, to_date_as_date)
         for day in range:
             r = query_day_accs(app.config["DICOM_NODES"][dicom_node], day)
-            logging.info(f"Got {len(r)} accession numbers for day: {day}")
+            app.logger.info(f"Got {len(r)} accession numbers for day: {day}")
             for i in r:
                 if "AccessionNumber" in i:
                     acc = i["AccessionNumber"] 
