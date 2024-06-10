@@ -116,7 +116,7 @@ def upload():
 
     w = luigi.worker.Worker(no_install_shutdown_handler=True)
     if accession_number:
-        task = TriggerTask({"acc": accession_number, "dicom_node": "SECTRA"})
+        task = TriggerTask(acc=accession_number, dicom_node="SECTRA")
     else:
         task = TriggerTask({"day": day})
     w.add(task)
