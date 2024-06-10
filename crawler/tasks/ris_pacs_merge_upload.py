@@ -90,11 +90,7 @@ class SQLiteStore(luigi.Task):
     def run(self):
         with self.input().open("r") as in_file:
             data = json.loads(in_file.read())
-            print("///////////////////////////////////////////////////////")
-            print(data)
-            print("///////////////////////////////////////////////////////")
         store_to_sqlite(data)
-        print("-------- storing done --------")
 
     def output(self):
         name = dict_to_str(self.query)
@@ -105,7 +101,7 @@ class SQLiteStore(luigi.Task):
 # python -m tasks.ris_pacs_merge_upload TriggerTask --acc 1234 --node SECTRA --local-scheduler
 class TriggerTask(luigi.Task):
     acc = luigi.Parameter()
-    node = luigi.Parameter()
+    dicom_node = luigi.Parameter()
 
     def requires(self):
         yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
