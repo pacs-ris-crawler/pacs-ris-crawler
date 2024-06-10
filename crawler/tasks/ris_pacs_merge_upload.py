@@ -105,7 +105,7 @@ class TriggerTask(luigi.Task):
 
     def requires(self):
         yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.dicom_node})
-        yield SQLiteStore({"acc": self.acc, "dicom_node": self.node})
+        yield SQLiteStore({"acc": self.acc, "dicom_node": self.dicom_node})
 
     def run(self):
         print("running the trigger task")
