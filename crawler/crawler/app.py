@@ -155,7 +155,7 @@ def batch():
     dicom_node = request.args.get("dicom_node", "SECTRA")
     if accession_number:
         app.logger.debug(f"Running upload for acc {accession_number}")
-        cmd = f'python -m tasks.ris_pacs_merge_upload TriggerTask --query \'{{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}\''
+        cmd = f'python -m tasks.ris_pacs_merge_upload TriggerTask --acc {accession_number} --dicom-node {dicom_node} '
         cmds = shlex.split(cmd)
         subprocess.run(cmds, shell=False, check=False)
         return json.dumps({"status": "ok"})
