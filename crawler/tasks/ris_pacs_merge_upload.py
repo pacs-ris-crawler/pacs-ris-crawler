@@ -104,7 +104,7 @@ class TriggerTask(luigi.Task):
     dicom_node = luigi.Parameter()
 
     def requires(self):
-        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.node})
+        yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.dicom_node})
         yield SQLiteStore({"acc": self.acc, "dicom_node": self.node})
 
     def run(self):
