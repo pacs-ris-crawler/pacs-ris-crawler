@@ -8,10 +8,8 @@
         {{study['StudyDescription']}}
 
       </a>
-      {% if zfp_viewer %}
-      <a class="text-success pl-2" target="_blank" href="{{ study['AccessionNumber'] | zfp_url }}">Open images in ZFP
+      <a class="text-success pl-2" target="_blank" href="{{ study['PatientID'], study['AccessionNumber'] | sectra_uniview_url }}">Open images in Sectra Uniview
         <span class="oi oi-external-link small"></span></a>
-      {% endif %}
     </h5>
     {% if study['ProtocolName']|length %}
     <div class="h6" style="font-size:0.8rem">

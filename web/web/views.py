@@ -19,7 +19,7 @@ from web.app import (RECEIVER_DASHBOARD_URL, RECEIVER_DOWNLOAD_URL,
                      RECEIVER_TRANSFER_URL, RECEIVER_URL, REPORT_SHOW_URL,
                      RESULT_LIMIT, SHOW_DOWNLOAD_OPTIONS,
                      SHOW_TRANSFER_TARGETS, TRANSFER_TARGETS, VERSION,
-                     ZFP_VIEWER, app)
+                     SECTRA_UNIVIEW, app)
 from web.convert import convert
 from web.paging import calc
 from web.query import query_body, query_indexed_dates
@@ -123,10 +123,10 @@ def search():
             paging=paging,
             version=VERSION,
             report_show_url=REPORT_SHOW_URL,
-            zfp_viewer=ZFP_VIEWER,
+            sectra_uniview=SECTRA_UNIVIEW,
             modalities=params.getlist("Modality"),
             page=page,
-            offset=0,
+            offset=offset,
             show_download_options=SHOW_DOWNLOAD_OPTIONS,
             show_transfer_targets=SHOW_TRANSFER_TARGETS,
             transfer_targets=TRANSFER_TARGETS,

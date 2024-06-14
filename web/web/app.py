@@ -23,7 +23,7 @@ RECEIVER_URL = app.config["RECEIVER_URL"]
 RECEIVER_DASHBOARD_URL = app.config["RECEIVER_DASHBOARD_URL"]
 RECEIVER_DOWNLOAD_URL = app.config["RECEIVER_DOWNLOAD_URL"]
 RECEIVER_TRANSFER_URL = app.config["RECEIVER_TRANSFER_URL"]
-ZFP_VIEWER = app.config["ZFP_VIEWER"]
+SECTRA_UNIVIEW = app.config["SECTRA_UNIVIEW"]
 
 
 @app.template_filter("to_date")
@@ -33,12 +33,11 @@ def to_date(date_as_int):
     return ""
 
 
-@app.template_filter("zfp_url")
-def create_zfp_url(accession_number):
-    s = Template(ZFP_VIEWER)
-    x = s.substitute(accession_number=accession_number)
+@app.template_filter("sectra_uniview_url")
+def sectra_uniview_url(patid, accession_number):
+    s = Template(SECTRA_UNIVIEW)
+    x = s.substitute(patid=patid).substitute(accession_number=accession_number)
     return x
-
 
 # JS Assets part
 assets = Environment(app)
