@@ -40,7 +40,7 @@ def sectra_uniview_url():
             output_string = patid[3:]
         elif patid.startswith("FPS"):
             output_string = patid[3:]
-        elif patid.startwith("UKBB"):
+        elif patid.startswith("UKBB"):
             output_string = patid[3:]
         return SECTRA_UNIVIEW.format(output_string,accession_number)
     return dict(sectra_uniview_url=_sectra_uniview_url)
