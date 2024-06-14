@@ -34,10 +34,12 @@ def to_date(date_as_int):
 
 
 @app.context_processor
-def sectra_uniview_url(patid, accession_number):
-    s = Template(SECTRA_UNIVIEW)
-    x = s.substitute(patid=patid).substitute(accession_number=accession_number)
-    return x
+def sectra_uniview_url():
+    def _sectra_uniview_url(patid, accession_number):
+        s = Template(SECTRA_UNIVIEW)
+        x = s.substitute(patid=patid).substitute(accession_number=accession_number)
+        return x
+    return dict(sectra_uniview_url=_sectra_uniview_url)
 
 # JS Assets part
 assets = Environment(app)
