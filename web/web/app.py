@@ -33,7 +33,7 @@ def to_date(date_as_int):
     return ""
 
 
-@app.template_filter("sectra_uniview_url")
+@app.context_processor
 def sectra_uniview_url(patid, accession_number):
     s = Template(SECTRA_UNIVIEW)
     x = s.substitute(patid=patid).substitute(accession_number=accession_number)
