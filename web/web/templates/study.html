@@ -8,8 +8,10 @@
         {{study['StudyDescription']}}
 
       </a>
+      
       <a class="text-success pl-2" target="_blank" href="{{  sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">Open images in Sectra Uniview
-        <span class="oi oi-external-link small"></span></a>
+        <span class="oi oi-external-link small"></span>
+      </a>
     </h5>
     {% if study['ProtocolName']|length %}
     <div class="h6" style="font-size:0.8rem">
