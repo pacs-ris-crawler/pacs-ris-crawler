@@ -36,6 +36,7 @@ def to_date(date_as_int):
 @app.context_processor
 def sectra_uniview_url():
     def _sectra_uniview_url(patid, accession_number):
+        output_string = patid
         if patid.startswith("USB"):
             output_string = patid[3:]
         elif patid.startswith("FPS"):
