@@ -5,7 +5,6 @@ from datetime import datetime
 
 import rq_dashboard
 from flask import Flask, render_template, request
-from flask_assets import Bundle, Environment
 
 from receiver.job import download_series, transfer_series
 
@@ -18,19 +17,6 @@ app.config.from_object(rq_dashboard.default_settings)
 app.config["RQ_DASHBOARD_REDIS_URL"] = "redis://127.0.0.1:6379"
 rq_dashboard.web.setup_rq_connection(app)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
-
-
-assets = Environment(app)
-js = Bundle(
-    "js/jquery-3.3.1.min.js",
-    "js/bootstrap.bundle.min.js",
-    "js/jquery.noty.packaged.min.js",
-    "js/intercooler.js",
-    "js/script.js",
-    filters="jsmin",
-    output="gen/packed.js",
-)
-assets.register("js_all", js)
 
 
 if __name__ != "__main__":
