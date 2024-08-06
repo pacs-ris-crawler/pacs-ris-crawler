@@ -18,22 +18,6 @@
         <a class="btn btn-sm mr-1 text-white" target="_blank" href="/rq" style="background-color: #526880;border-color: #526880;">Transfer &amp;
           Download progress <span class="oi oi-external-link small"></span></a>
       </div>
-
-      <ul class="px-3 list-group row d-flex pt-5">
-        {% for f in files %}
-        {% set filename = f.split('_') %}
-        <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0 rounded mb-3 border-right-0 border-left-0">
-          <div class="col-3">Created at: <p class="text-monospace font-weight-bold">{{filename[0] | to_date}}</p>
-          </div>
-          <div class="col-2">Type: <p class="text-monospace font-weight-bold">{{filename[1]}}</p>
-          </div>
-          <div class="col">View Job: <p class=""><a class="btn btn-primary btn-sm text-monospace"
-                href="/show?filename={{f}}">{{f}}</a>
-            </p>
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
     </div>
   </div>
   {% assets "js_all" %}

@@ -1,9 +1,7 @@
 import json
 import logging
-import os
-import time
 from datetime import datetime
-from pathlib import Path
+
 
 import rq_dashboard
 from flask import Flask, render_template, request
@@ -34,9 +32,6 @@ js = Bundle(
 )
 assets.register("js_all", js)
 
-if not os.path.exists("jobs"):
-    os.makedirs("jobs")
-
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -53,44 +48,7 @@ def to_date(timestamp):
 
 @app.route("/")
 def main():
-    files = [i.stem for i in Path("jobs").glob("*.json")]
-    return render_template("index.html", version=version, files=files)
-
-
-@app.route("/show")
-def show():
-    filename = request.args.get("filename")
-    with app.open_resource(f"../jobs/{filename}.json") as f:
-        content = json.load(f)
-    return render_template(
-        "show.html",
-        version=version,
-        filename=filename,
-        content=json.dumps(content, indent=4),
-    )
-
-
-@app.route("/resend")
-def resend():
-    filename = request.args.get("filename")
-    parts = filename.split("_")
-    with app.open_resource(f"../jobs/{filename}.json") as f:
-        data = json.load(f)
-    if parts[1] == "download":
-        series_list = data.get("data")
-        dir_name = data.get("dir")
-        queue_prio = data.get("queue_prio")
-        app.logger.info("download called and saving to %s", dir_name)
-        length = download_series(app.config, series_list, dir_name, queue_prio)
-        return render_template("success.html")
-    elif parts[1] == "transfer":
-        target = data.get("target", "")
-        series_list = data.get("data", "")
-        app.logger.info("transfer called and sending to %s", target)
-        length, _ = transfer_series(app.config, series_list, target)
-        return render_template("success.html")
-    else:
-        return render_template("success.html")
+    return render_template("index.html", version=version)
 
 
 @app.route("/download", methods=["POST"])
@@ -98,9 +56,6 @@ def download():
     """Post to download series of images."""
     app.logger.info("Download request received")
     data = request.get_json(force=True)
-    timestamp = int(time.time())
-    with open(f"jobs/{timestamp}_download.json", "w") as f:
-        json.dump(data, f)
     series_list = data.get("data")
     dir_name = data.get("dir")
     image_type = data.get("image_type", "dicom")
@@ -115,9 +70,6 @@ def transfer():
     """Post to transfer series of images to another PACS node."""
     app.logger.info("Transfer request received")
     data = request.get_json(force=True)
-    timestamp = int(time.time())
-    with open(f"jobs/{timestamp}_transfer.json", "w") as f:
-        json.dump(data, f)
     target = data.get("target", "")
     series_list = data.get("data", "")
     app.logger.info("transfer called and sending to %s", target)

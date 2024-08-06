@@ -20,13 +20,11 @@ def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
         + _transfer_new(target, study_uid, series_uid)
     )
 
+
 def _transfer_new(target, study_uid, series_uid):
     return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
-        target,
-        study_uid,
-        series_uid
+        target, study_uid, series_uid
     )
-
 
 
 def transfer_series(config, series_list, target):
@@ -55,7 +53,6 @@ def base_command(dcmtk_config, pacs_config):
             pacs_config.incoming_port,
         )
     )
-
 
 
 def base_command_new_pacs(dcmtk_config):
@@ -94,7 +91,15 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
             + series_uid
         )
         args = shlex.split(command)
-        queue(args, config, image_folder, image_type, queue_prio)
+        queue(
+            args,
+            config,
+            image_folder,
+            image_type,
+            queue_prio,
+            accession_number,
+            series_uid,
+        )
         logger.debug("Running download command %s", args)
     return len(series_list)
 
@@ -102,9 +107,17 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
 def create_nifti_cmd(image_folder):
     nifti_output_dir = os.path.join(image_folder, "nifti")
     os.makedirs(nifti_output_dir, exist_ok=True)
-    print("/usr/local/bin/dcm2niix/dcm2niix -f %i_%g_%s -z y -o " + nifti_output_dir + " " + image_folder)
+    print(
+        "/usr/local/bin/dcm2niix/dcm2niix -f %i_%g_%s -z y -o "
+        + nifti_output_dir
+        + " "
+        + image_folder
+    )
     return shlex.split(
-        "/usr/local/bin/dcm2niix -f %i_%g_%s_%z -z y -o " + nifti_output_dir + " " + image_folder
+        "/usr/local/bin/dcm2niix -f %i_%g_%s_%z -z y -o "
+        + nifti_output_dir
+        + " "
+        + image_folder
     )
 
 
@@ -121,13 +134,21 @@ def queue_transfer(cmd):
     return
 
 
-def queue(cmd, config, image_folder, image_type, queue_prio):
+def queue(
+    cmd, config, image_folder, image_type, queue_prio, accession_number, series_uid
+):
     redis_conn = Redis()
-    if queue_prio == 'queue-high':
-        q = Queue(name='high', connection=redis_conn)
+    if queue_prio == "queue-high":
+        q = Queue(name="high", connection=redis_conn)
     else:
-        q = Queue(name='medium', connection=redis_conn)
-    download_job = q.enqueue(run, cmd)
+        q = Queue(name="medium", connection=redis_conn)
+    download_job = q.enqueue(
+        run,
+        cmd,
+        kwargs={
+            "description": f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}"
+        },
+    )
     if image_type == "nifti":
         nifti_job = q.enqueue(
             run, create_nifti_cmd(image_folder), depends_on=download_job
