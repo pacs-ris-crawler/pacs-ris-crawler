@@ -24,7 +24,7 @@ class PrefetchTask(luigi.Task):
         cmds = []
         for study_uid in study_uids:
             cmd = prefetch_accession_number(config, study_uid)
-            cmds.append(cmd)
+            cmds.append(cmd + "\n")
         with self.output().open("w") as f:
             for c in cmds:
                 f.write(c)
