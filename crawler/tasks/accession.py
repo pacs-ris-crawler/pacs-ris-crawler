@@ -10,6 +10,7 @@ class PrefetchTask(luigi.Task):
     # example run command
     # python -m tasks.accession PrefetchTask --accession-number 1234 --local-scheduler
     accession_number = luigi.Parameter()
+    resources = {'prefetch': 1}
 
     def requires(self):
         return StudyUIDTask(self.accession_number, "SECTRA")
