@@ -21,13 +21,17 @@ class PrefetchTask(luigi.Task):
             for line in f:
                 study_uids.append(line.strip())
 
+        cmds = []
         for study_uid in study_uids:
             cmd = prefetch_accession_number(config, study_uid)
+            cmds.append(cmd)
         with self.output().open("w") as f:
-            f.write(cmd)
+            for c in cmds:
+                f.write(c)
 
     def output(self):
         return luigi.LocalTarget("data/%s_prefetch_command.txt" % self.accession_number)
+
 
 class AccessionTask(luigi.Task):
     # example run command
@@ -51,12 +55,11 @@ class AccessionTask(luigi.Task):
             results.append(result)
         flat = [item for sublist in results for item in sublist]
         w.write_file(flat, self.output().path)
-        #with self.output().open("w") as outfile:
+        # with self.output().open("w") as outfile:
         #   w.write_file(flat, outfile)
         if self.output().exists():
             with open("data/%s_command.txt" % self.accession_number, "w") as f:
                 f.write(command)
-            
 
     def output(self):
         return luigi.LocalTarget("data/%s_accession.json" % self.accession_number)
