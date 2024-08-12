@@ -11,7 +11,7 @@ from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 
 from tasks.accession import AccessionTask
-from tasks.util import dict_to_str, load_config, store_to_sqlite
+from tasks.util import dict_to_str, load_config
 
 
 class ConvertPacsFile(luigi.Task):
@@ -80,22 +80,6 @@ class DailyUpConvertedMerged(luigi.Task):
         return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
 
 
-# python -m tasks.ris_pacs_merge_upload SQLiteStore --query '{"acc": "123456", "dicom_node":"SECTRA"}' --local-scheduler
-class SQLiteStore(luigi.Task):
-    query = luigi.DictParameter()
-
-    def requires(self):
-        return MergePacsRis(self.query)
-
-    def run(self):
-        with self.input().open("r") as in_file:
-            data = json.loads(in_file.read())
-        store_to_sqlite(data)
-
-    def output(self):
-        name = dict_to_str(self.query)
-        return luigi.LocalTarget("data/%s_solr_uploaded.txt" % name)
-
 
 # example run command
 # python -m tasks.ris_pacs_merge_upload TriggerTask --acc 1234 --node SECTRA --local-scheduler
@@ -105,7 +89,6 @@ class TriggerTask(luigi.Task):
 
     def requires(self):
         yield DailyUpConvertedMerged({"acc": self.acc, "dicom_node": self.dicom_node})
-        yield SQLiteStore({"acc": self.acc, "dicom_node": self.dicom_node})
 
     def run(self):
         print("running the trigger task")
