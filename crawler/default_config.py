@@ -16,8 +16,7 @@ REPORT_USES_BASIC_AUTH = False
 REPORT_USER = ""
 REPORT_PWD = ""
 
-# Luigi central scheduler
-LUIGI_SCHEDULER = "http://localhost:8082"
+# Prefect scheduler
 PREFECT_SERVER = "http://localhost:4200"
 
 
