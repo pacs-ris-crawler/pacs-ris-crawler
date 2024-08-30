@@ -5,15 +5,11 @@ import subprocess
 from datetime import datetime
 from pathlib import Path
 
-import sys
-
-from prefect import flow
-from prefect.deployments import run_deployment
 
 import pandas as pd
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
-from tasks.ris_pacs_merge_upload import trigger_task_flow, daily_up_converted_merged_task, merge_pacs_ris_task
+
 
 from crawler.query import query_day_accs
 
@@ -23,7 +19,6 @@ app.config.from_object("default_config")
 app.config.from_pyfile("config.cfg")
 version = app.config["VERSION"] = "1.3.1"
 
-luigi_scheduler = app.config["LUIGI_SCHEDULER"]
 prefect_server = app.config["PREFECT_SERVER"]
 
 assets = Environment(app)
@@ -72,25 +67,7 @@ def search():
     try:
         # Trigger the Prefect deployment or flow
         if accession_number:
-            # result = run_deployment(
-            #     name="MergePacsRis Deployment",
-            #     parameters={"acc": accession_number, "dicom_node": dicom_node}
-            # )
-            # flow_run = run_deployment(
-            #     name="merge-pacs-ris-flow/MergePacsRis Deployment",
-            #     parameters={"query": {"acc": accession_number, "dicom_node": dicom_node}}
-            # )
-            # # Wait for the flow to complete and retrieve the result
-            # flow_run.wait_for_completion()
-            # output_path = flow_run.state.result().get("output")
-            # result = subprocess.run(shlex.split(f'prefect deployment run "merge-pacs-ris-flow/MergePacsRis Deployment" --params \'{{"query": {{"acc": "{accession_number}", "dicom_node": "{dicom_node}"}}}}\''), capture_output=True, text=True)
-            # result = subprocess.run(shlex.split(f'prefect deployment run "merge-pacs-ris-flow/MergePacsRis Deployment" --params \'{{"query": {{"acc": "{acc}", "dicom_node": "{dicom_node}"}}}}\''), capture_output=True, text=True)
             result = subprocess.run(shlex.split(f'python -m tasks.ris_pacs_merge_upload "MergePacsRis" --acc "{accession_number}" --dicom-node "{dicom_node}"'), capture_output=True)
-            print("//////////------------///////////")
-            print(result)
-            print("//////////------------///////////")
-
-
         elif day:
             # result = run_deployment(
             #     name="MergePacsRis Deployment",
@@ -117,16 +94,6 @@ def search():
         # Read and load the JSON results from the output file
         with open(output_path, "r") as merged_file:
             results = json.load(merged_file)
-        
-        print("//////////////////##")
-        print("//////////////////##")
-        print("//////////////////##")
-        print("//////////////////##")
-        print(results)
-        print("//////////////////##")
-        print("//////////////////##")
-        print("//////////////////##")
-        print("//////////////////##")
 
         for result in results:
             result["_childDocuments_"] = sorted(

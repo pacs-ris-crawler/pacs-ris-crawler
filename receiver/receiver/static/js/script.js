@@ -1,10 +1,6 @@
 $(function () {
   console.log('ready');
 
-  $('#reload-button').on('click', function(e) {
-    document.getElementById('luigi').contentWindow.location.reload();
-  });
-
 
   $('#batch-upload').submit(function (e) {
     var form = $(this);
