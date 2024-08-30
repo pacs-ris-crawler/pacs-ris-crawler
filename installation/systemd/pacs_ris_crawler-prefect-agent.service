@@ -1,0 +1,11 @@
+[Unit]
+Description=PACS RIS Prefect Agent
+Requires=pacs_ris_crawler-prefect.service
+After=pacs_ris_crawler-prefect.service
+
+[Service]
+WorkingDirectory=/var/www/pacs-ris-crawler/crawler
+ExecStart=/var/www/pacs-ris-crawler/.venv/bin/prefect agent start -q 'default' --limit 7
+
+[Install]
+WantedBy=multi-user.target
