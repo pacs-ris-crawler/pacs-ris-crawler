@@ -1,0 +1,10 @@
+[Unit]
+Description=PACS RIS Prefect Server
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/pacs-ris-crawler/crawler
+ExecStart=/var/www/pacs-ris-crawler/.venv/bin/prefect server start
+
+[Install]
+WantedBy=multi-user.target
