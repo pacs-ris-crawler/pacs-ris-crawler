@@ -164,7 +164,6 @@ def search():
 
 @app.route("/upload", methods=["POST"])
 def upload():
-    subprocess.run(["ls", "-l"])
     data = request.get_json(force=True)
     accession_number = data.get("acc", "")
     day = data.get("day", "")
