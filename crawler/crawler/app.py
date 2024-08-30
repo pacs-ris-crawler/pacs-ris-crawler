@@ -196,7 +196,6 @@ def upload():
 
 @app.route("/prefetch")
 def prefetch():
-    subprocess.run(["ls", "-l"])
     accession_number = request.args.get("accession_number")
     if accession_number:
         app.logger.info(f"Cleaning data dir for acc: {accession_number}")
