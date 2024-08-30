@@ -2,7 +2,7 @@ $(function () {
   console.log('ready');
 
   $('#reload-button').on('click', function(e) {
-    var f = document.getElementById('luigi');
+    var f = document.getElementById('prefect');
     f.src = f.src;
   });
 

@@ -18,6 +18,7 @@ REPORT_PWD = ""
 
 # Luigi central scheduler
 LUIGI_SCHEDULER = "http://localhost:8082"
+PREFECT_SERVER = "http://localhost:4200"
 
 
 MODALITIES = ['CT', 'MR', 'PT', 'CR', 'XA', 'SR', 'NM', 'MG', 'US', 'DX', 'RF',
