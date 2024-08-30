@@ -2,8 +2,7 @@ import argparse
 import sys
 
 from prefect import task, flow
-from prefect.task_runners import SequentialTaskRunner, ConcurrentTaskRunner
-import luigi
+from prefect.task_runners import ConcurrentTaskRunner
 
 import crawler.writer as w
 from crawler.query import query_accession_number, prefetch_accession_number

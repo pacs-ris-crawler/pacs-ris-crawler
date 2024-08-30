@@ -1,4 +1,3 @@
-import luigi
 from prefect import task, flow
 
 import argparse
