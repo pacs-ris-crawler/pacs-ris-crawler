@@ -1,12 +1,5 @@
 #!/bin/bash
 
-# Check if the script is run as root
-if [ "$EUID" -ne 0 ]
-then 
-  echo "Please run as root"
-  exit
-fi
-
 # Define the full path to the prefect command
 PREFECT_PATH="/var/www/pacs-ris-crawler/.venv/bin/prefect"
 
