@@ -7,7 +7,7 @@ from prefect.task_runners import ConcurrentTaskRunner
 import crawler.writer as w
 from crawler.query import query_accession_number, prefetch_accession_number
 from prefect.concurrency.sync import concurrency
-from tasks.study_uid import study_uid_flow  # Import the Prefect flow
+from tasks.study_uid import study_uid_flow
 from tasks.util import load_prefetch_node, load_dicom_config
 
 
@@ -56,7 +56,7 @@ def PrefetchTask(accession_number: str) -> None:
 @flow(task_runner=ConcurrentTaskRunner())
 def AccessionTask(accession_number: str, dicom_node: str) -> None:
     # python -m tasks.accession AccessionTask --accession-number 1234
-    study_uid_flow(accession_number, dicom_node)  # Replace Luigi task with Prefect flow
+    study_uid_flow(accession_number, dicom_node) 
     run_accession_task(accession_number, dicom_node)
 
 

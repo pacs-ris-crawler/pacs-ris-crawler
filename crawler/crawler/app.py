@@ -13,7 +13,6 @@ from flask_assets import Bundle, Environment
 
 from crawler.query import query_day_accs
 
-
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("default_config")
 app.config.from_pyfile("config.cfg")
@@ -69,23 +68,8 @@ def search():
         if accession_number:
             result = subprocess.run(shlex.split(f'python -m tasks.ris_pacs_merge_upload "MergePacsRis" --acc "{accession_number}" --dicom-node "{dicom_node}"'), capture_output=True)
         elif day:
-            # result = run_deployment(
-            #     name="MergePacsRis Deployment",
-            #     parameters={"day": day}
-            # )
             result = subprocess.run(shlex.split(f'prefect deployment run "merge-pacs-ris-flow/MergePacsRis Deployment" --params \'{{"query": {{"day": "{day}"}}}}\''), capture_output=True, text=True)
-            
-        # # Access the results directly from Prefect's flow return value
-        # results = result.state.result().get("output")
-
-        # Capture the output file path returned by the Prefect deployment
-        print("//////////////////##")
-        print("//////////////////##")
-        # print(f"abc-{result.stdout}-cba")
         output_path = result.stdout.decode('utf-8').strip().splitlines()[-1]
-        print("//////////////////##")
-        print(f"abc-{output_path}-cba")
-        print("//////////////////##")
 
         # Verify that the output file exists
         if not Path(output_path).exists():
@@ -140,19 +124,8 @@ def upload():
 
     try:
         if accession_number:
-            # Trigger the Prefect flow using run_deployment
-            # run_deployment(
-            #     # must make sure that 
-            #     name="TriggerTask Deployment", 
-            #     parameters={"acc": accession_number, "dicom_node": "SECTRA"}
-            # )
             subprocess.run(shlex.split(f'prefect deployment run "trigger-task-flow/TriggerTask Deployment" --params \'{{"acc": "{accession_number}", "dicom_node": "SECTRA"}}\''))
         else:
-            # If you had a day parameter option, you would handle it similarly here
-            # run_deployment(
-            #     name="TriggerTask Deployment", 
-            #     parameters={"day": day}
-            # )
             subprocess.run(shlex.split(f'prefect deployment run "trigger-task-flow/TriggerTask Deployment" --params \'{{"day": "{day}"}}\''))
 
         return json.dumps({"status": "ok"})
@@ -167,13 +140,10 @@ def prefetch():
     if accession_number:
         app.logger.info(f"Cleaning data dir for acc: {accession_number}")
         files = list(Path("data").glob(f"*{accession_number}*"))
-        print(f"Found {len(files)} for cleaning")
         for f in files:
             f.unlink()
         app.logger.info(f"Cleaned successfully for acc: {accession_number}")
-        
         subprocess.run(shlex.split(f"prefect deployment run \"PrefetchTask/PrefetchTask Deployment\" --params '{{\"accession_number\": \"{accession_number}\"}}'"))
-    
         return json.dumps({"status": "ok"})
     else:
         return json.dumps({"status": "error, no accession number given"})
@@ -186,8 +156,6 @@ def batch():
     app.logger.debug(f"Got date params: {from_date} to {to_date}")
     accession_number = request.args.get("accession_number")
     dicom_node = request.args.get("dicom_node", "SECTRA")
-    
-    print(accession_number)
 
     if accession_number:
         app.logger.debug(f"Running upload for acc {accession_number}")
@@ -222,15 +190,8 @@ def debug():
 @app.route("/acc")
 def acc():
     accession_number = request.args.get("acc")
-    
-    # Run the Prefect flow directly
-    # run_deployment(
-    #     name="AccessionTask Deployment",
-    #     parameters={"accession_number": accession_number}
-    # )
     subprocess.run(shlex.split(f"prefect deployment run \"AccessionTask/AccessionTask Deployment\" --params '{{\"accession_number\": \"{accession_number}\"}}'"))
 
-    
     return render_template(
         "execute-result.html",
         stdout="Execution started successfully",
