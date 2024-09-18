@@ -324,8 +324,7 @@ def stats_per_year():
         + geom_text(aes(label='count', color='text_color'), size=6)
         # Add day labels in the lower right corner
         + geom_text(aes(label='day_of_month', color='text_color'),
-                    size=4,
-                    position=position_nudge(x=0.4, y=-0.35))
+                    size=4, position=position_nudge(x=0.4, y=-0.35))
         + scale_x_continuous(
             breaks=range(7),
             labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -342,7 +341,9 @@ def stats_per_year():
             panel_grid_major=element_blank(),  # Remove major grid lines
             panel_grid_minor=element_blank(),  # Remove minor grid lines
             figure_size=(4, 25),  # Adjust figure size
-            panel_spacing=0.1
+            panel_spacing=0.1,
+            strip_text_x=element_text(size=6),
+            plot_title=element_text(size=7, ha='left'),
         )
         + facet_wrap('~month', ncol=1)
     )
