@@ -331,7 +331,7 @@ def stats_per_year():
             labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         )
         + scale_y_reverse()
-        + scale_fill_gradient(low='white', high='blue')  # Remove colorbar
+        + scale_fill_gradient(low='white', high='blue')
         + scale_color_identity()
         + theme_minimal()
         + labs(title=f'Studies / day for {year}', x='', y='')
