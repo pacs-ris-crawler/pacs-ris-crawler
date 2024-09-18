@@ -1,11 +1,12 @@
 from typing import Dict, List
-
+import logging
 import pandas as pd
 
 from crawler.command import (accs_per_day, add_study_uid, basic_query, prefetch_query,
                              study_uid_query, year_start_end)
 from crawler.executor import run
 
+log = logging.getLogger("crawler.app")
 
 def query_for_study_uid(config, accession_number):
     """There could be different study_uids for a single accession number.
@@ -43,9 +44,9 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 
 def query_day_accs(config, day) -> List[Dict[str, str]]:
     # needed to split because it was too many results for sectra, e.g. day = 2022-09-13
-    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "000000-120000")
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-12000")
     result_am, _ = run(query_am)
 
-    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "120000-235999")
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1200-2359")
     result_pm, _ = run(query_pm)
     return result_am + result_pm

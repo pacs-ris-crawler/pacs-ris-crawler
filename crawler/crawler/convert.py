@@ -114,7 +114,6 @@ def merge_pacs_ris(pacs):
     user = config["REPORT_USER"]
     pwd = config["REPORT_PWD"]
     my_dict = []
-    print(f"Getting RisReport for {len(pacs)} studies")
     for entry in pacs:
         dic = {}
         dic = entry.copy()
