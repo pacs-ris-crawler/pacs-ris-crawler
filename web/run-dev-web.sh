@@ -1,3 +1,3 @@
 #!/bin/sh
 
-nodemon -e py,html,js --exec "python" runweb.py
+flask --app web.app:app --debug run --host 0.0.0.0 --port 8082

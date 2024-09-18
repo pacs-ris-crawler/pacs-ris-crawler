@@ -3,23 +3,30 @@ import io
 import json
 import logging
 import os
-from io import BytesIO
 
-import july
 import matplotlib
+from plotnine import *
 
 matplotlib.use("Agg")
 import pandas as pd
 import requests
 from flask import render_template, request, send_file
-from matplotlib.figure import Figure
 from requests import RequestException, get, post
 
-from web.app import (RECEIVER_DASHBOARD_URL, RECEIVER_DOWNLOAD_URL,
-                     RECEIVER_TRANSFER_URL, RECEIVER_URL, REPORT_SHOW_URL,
-                     RESULT_LIMIT, SHOW_DOWNLOAD_OPTIONS,
-                     SHOW_TRANSFER_TARGETS, TRANSFER_TARGETS, VERSION,
-                     SECTRA_UNIVIEW, app)
+from web.app import (
+    RECEIVER_DASHBOARD_URL,
+    RECEIVER_DOWNLOAD_URL,
+    RECEIVER_TRANSFER_URL,
+    RECEIVER_URL,
+    REPORT_SHOW_URL,
+    RESULT_LIMIT,
+    SECTRA_UNIVIEW,
+    SHOW_DOWNLOAD_OPTIONS,
+    SHOW_TRANSFER_TARGETS,
+    TRANSFER_TARGETS,
+    VERSION,
+    app,
+)
 from web.convert import convert
 from web.paging import calc
 from web.query import query_body, query_indexed_dates
@@ -268,37 +275,79 @@ def month_statistics():
 @app.route("/stats_per_year", methods=["GET"])
 def stats_per_year():
     year = request.args["year"]
-    payload = {
-        "q": "*",
-        "rows": "1000000",
-        "fq": ["Category:parent"],
-        "fq": [f"StudyDate:[{year}0101 TO {year}1231]"],
-        "fl": "InstitutionName, StudyDate",
-    }
+    payload = [
+        ("q", "*"),
+        ("rows", "1000000"),
+        ("fq", ["Category:parent"]),
+        ("fq", [f"StudyDate:[{year}0101 TO {year}1231]"]),
+        ("fl", "InstitutionName, StudyDate"),
+    ]
     headers = {"content-type": "application/json"}
     response = get(solr_url(app.config), payload, headers=headers)
     data = response.json()["response"]["docs"]
     df = pd.DataFrame.from_dict(data)
     df["date"] = pd.to_datetime(df["StudyDate"], format="%Y%m%d")
-    df = df.groupby("date").agg("count").reset_index()
-    fig = Figure(figsize=(13, 6))
-    ax = fig.subplots()
-    july.heatmap(
-        df["date"],
-        df["StudyDate"],
-        value_label=True,
-        fontsize=6,
-        fontfamily="monospace",
-        title="Yearly studies",
-        month_grid=True,
-        horizontal=True,
-        colorbar=True,
-        cmap="summer_r",
-        dpi=100,
-        ax=ax,
+    df = df.groupby("date").agg(count=('date', 'count')).reset_index()
+    df['day_of_week'] = df['date'].dt.weekday  # Monday=0, Sunday=6
+    df['day_of_month'] = df['date'].dt.day
+    df['month'] = df['date'].dt.month_name()
+    df['month_num'] = df['date'].dt.month
+    df['year'] = df['date'].dt.year
+
+    # Create an ordered categorical variable for 'month'
+    month_order = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December']
+    df['month'] = pd.Categorical(df['month'], categories=month_order, ordered=True)
+
+    # Calculate the first weekday of each month
+    df['first_day_of_month'] = df['date'].values.astype('datetime64[M]')
+    df['first_weekday'] = pd.to_datetime(df['first_day_of_month']).dt.weekday
+
+    # Calculate week of the month to align with calendar weeks
+    df['week_of_month'] = ((df['date'].dt.day + df['first_weekday'] - 1) // 7)
+
+    # 3. Define Dynamic Text Colors Based on Counts for Each Month
+    # Calculate the maximum count per month
+    df['max_count'] = df.groupby('month')['count'].transform('max')
+
+    # Define text color based on the count threshold per month
+    def text_color(row):
+        threshold = row['max_count'] * 0.6  # Set threshold at 60% of max count
+        return 'white' if row['count'] >= threshold else 'black'
+
+    df['text_color'] = df.apply(text_color, axis=1)
+
+    # 4. Create the Plot Using Facet Wrap
+    p = (ggplot(df, aes(x='day_of_week', y='week_of_month', fill='count'))
+        + geom_tile(color='white', show_legend=False)
+        # Add count labels in the center of the tile
+        + geom_text(aes(label='count', color='text_color'), size=6)
+        # Add day labels in the lower right corner
+        + geom_text(aes(label='day_of_month', color='text_color'),
+                    size=4,
+                    position=position_nudge(x=0.4, y=-0.35))
+        + scale_x_continuous(
+            breaks=range(7),
+            labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        )
+        + scale_y_reverse()
+        + scale_fill_gradient(low='white', high='blue')  # Remove colorbar
+        + scale_color_identity()
+        + theme_minimal()
+        + labs(title=f'Studies / day for {year}', x='', y='')
+        + theme(
+            axis_text_x=element_text(rotation=0, hjust=0.5, size=7),
+            axis_text_y=element_blank(),  # Hide y-axis labels
+            axis_ticks_major_y=element_blank(),
+            panel_grid_major=element_blank(),  # Remove major grid lines
+            panel_grid_minor=element_blank(),  # Remove minor grid lines
+            figure_size=(4, 25),  # Adjust figure size
+            panel_spacing=0.1
+        )
+        + facet_wrap('~month', ncol=1)
     )
-    buf = BytesIO()
-    fig.savefig(buf, format="png", bbox_inches="tight", pad_inches=0)
+    buf = io.BytesIO()
+    p.save(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=300)
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     return f"<img src='data:image/png;base64,{data}'/>"
 
@@ -328,13 +377,13 @@ def statistics_data():
 
 
 def get_statistics_per_month(date):
-    payload = {
-        "q": "*",
-        "rows": "10000000",
-        "fq": ["Category:parent"],
-        "fq": [f"StudyDate:[{date}01 TO {date}31]"],
-        "fl": "InstitutionName, StudyDate",
-    }
+    payload = [
+        ("q", "*"),
+        ("rows", "10000000"),
+        ("fq", ["Category:parent"]),
+        ("fq", [f"StudyDate:[{date}01 TO {date}31]"]),
+        ("fl", "InstitutionName, StudyDate"),
+    ]
     headers = {"content-type": "application/json"}
     response = get(solr_url(app.config), payload, headers=headers)
     return response.json()
