@@ -15,7 +15,7 @@ def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
     """Constructs the first part of the transfer command to a PACS node."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -S -P -k QueryRetrieveLevel=SERIES "
+        + "/movescu -v -S -k QueryRetrieveLevel=SERIES "
         + transfer_pacs()
         + _transfer_new(target, study_uid, series_uid)
     )

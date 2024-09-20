@@ -26,7 +26,7 @@ def transfer_pacs():
     app = Flask(__name__)
     app.config.from_pyfile(filename="../instance/config.cfg")
     node = app.config["TRANSFER_NODE"]
-    return f'-aec {node["AE_CALLED"]} {node["PEER_ADDRESS"]} {node["PEER_PORT"]} -aet {node["AE_TITLE"]} +P {node["INCOMING_PORT"]}'
+    return f'-aec {node["AE_CALLED"]} {node["PEER_ADDRESS"]} {node["PEER_PORT"]} -aet {node["AE_TITLE"]} '
 
 
 def pacs_config(config):
