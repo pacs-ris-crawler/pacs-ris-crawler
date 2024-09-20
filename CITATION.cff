@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "PACS-RIS Crawler"
+description: "A unified search for PACS metadata and RIS report."
+version: "1.4.0"
+authors:
+  - family-names: "Cyriac"
+    given-names: "Joshy"
+    orcid: "https://orcid.org/0000-0002-4584-0623"
+  - family-names: "Indrakanti"
+    given-names: "Ashraya Kumar"
+    orcid: "https://orcid.org/0009-0001-3623-2271"
+  - family-names: "Santini"
+    given-names: "Francesco"
+    orcid: "https://orcid.org/0000-0001-6984-4816"
+date-released: "2024-09-20"
+url: "https://github.com/pacs-ris-crawler/pacs-ris-crawler/"
+license: "GPL-3.0"
