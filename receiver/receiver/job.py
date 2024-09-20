@@ -130,7 +130,7 @@ def delete_dicom_cmd(image_folder):
 def queue_transfer(cmd):
     redis_conn = Redis()
     q = Queue(name="transfer", connection=redis_conn)
-    q.enqueue(run, cmd)
+    q.enqueue(run, cmd, timeout="12m")
     return
 
 
