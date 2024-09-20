@@ -33,7 +33,6 @@ def transfer_series(config, series_list, target):
         study_uid = entry["study_uid"]
         series_uid = entry["series_uid"]
         command = transfer_new_pacs_command(dcmtk, target, study_uid, series_uid)
-        print(command)
         args = shlex.split(command)
         queue_transfer(args)
         logger.debug("Running transfer command %s", args)
@@ -130,7 +129,7 @@ def delete_dicom_cmd(image_folder):
 def queue_transfer(cmd):
     redis_conn = Redis()
     q = Queue(name="transfer", connection=redis_conn)
-    q.enqueue(run, cmd, timeout="12m")
+    q.enqueue(run, cmd, job_timeout="12m")
     return
 
 
