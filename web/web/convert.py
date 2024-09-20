@@ -32,7 +32,6 @@ def convert(df):
                 )
                 logging.error(p)
                 logging.error("Accession number is: " + p.get("accession_number"))
-                print(p, s)
             else:
                 data.append(p)
     return data
