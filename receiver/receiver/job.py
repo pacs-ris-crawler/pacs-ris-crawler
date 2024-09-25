@@ -143,7 +143,7 @@ def queue(
         q = Queue(name="medium", connection=redis_conn)
     download_job = q.enqueue(
         run,
-        cmd,
+        args=(cmd),
         kwargs={
             "description": f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}"
         },
