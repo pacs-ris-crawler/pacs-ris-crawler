@@ -144,9 +144,7 @@ def queue(
     download_job = q.enqueue(
         run,
         args=(cmd),
-        kwargs={
-            "description": f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}"
-        },
+        description=f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}",
     )
     if image_type == "nifti":
         nifti_job = q.enqueue(
