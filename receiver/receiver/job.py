@@ -143,9 +143,9 @@ def queue(
         q = Queue(name="medium", connection=redis_conn)
     download_job = q.enqueue(
         run,
-        cmd,
+        args=(cmd,),
         # not working right now therefore commented out
-        #description=f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}",
+        description=f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}",
     )
     if image_type == "nifti":
         nifti_job = q.enqueue(
