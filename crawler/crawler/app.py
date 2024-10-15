@@ -136,7 +136,7 @@ def prefetch():
         for f in files:
             f.unlink()
         app.logger.info(f"Cleaned successfully for acc: {accession_number}")
-        q_p.enqueue(prefetch_task, accession_number, job_timeout="6m")
+        q_p.enqueue(prefetch_task, accession_number, job_timeout="12m")
         return json.dumps({"status": "ok"})
     else:
         return json.dumps({"status": "error, no accession number given"})
