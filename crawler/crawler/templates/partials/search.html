@@ -3,22 +3,16 @@
         <label for="patientname-input" class="pr-2">Accession Number: </label>
         <input class="form-control form-control-sm" type="text" id="search-input" name="accession_number"
             value="{{accession_number}}" placeholder="A single accession number">
-        <label for="exampleFormControlSelect1" class="pl-4 pr-2">Dicom Node</label>
-        <select class="custom-select custom-select-sm my-1 mr-sm-2" id="dicom_node_search" name="dicom_node" required>
-            {% for node in dicom_nodes %}
-            <option value="{{node}}" {%if node == dicom_node %} selected="selected" {% endif%}>{{node}}</option>
-            {% endfor %}
-        </select>
         <button type="submit" class="btn btn-primary btn-sm ml-3">Search</button>
     </form>
-    <form class="prefetch-batch-upload" action="/prefetch" class="pt-3">
+    <form class="prefetch-batch-upload" action="/prefetch" >
+        <label class="pl-2 pt-3">On some older exams the SeriesDescription is missing. To resolve this, first prefetch the
+            exams and then upload again (see below).</label>
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Accession Numbers:</label>
             <input class="form-control form-control-sm" name="accession_numbers" id="prefetch_accession_numbers"
                 placeholder="Accession Numbers (separate by space)" style="width:280px">
-            
             <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Prefetch</button>
-            <label>On some older exams the Series Description is missing. To resolve this, first prefetch the exams and then upload again.</label>
         </div>
         <div class="pt-3"></div>
     </form>
@@ -26,7 +20,7 @@
         <div class="form-group form-row pl-3 py-2">
             <label for="access_numbers" class="pr-2">Accession Numbers:</label>
             <input class="form-control form-control-sm" name="accession_numbers" id="accession_numbers"
-                placeholder="Accession Numbers (separate by space)" style="width:280px"> 
+                placeholder="Accession Numbers (separate by space)" style="width:280px">
             <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Upload</button>
         </div>
         <div class="form-group form-row pl-3 py-2">
@@ -35,12 +29,6 @@
             <label for="patientid-input" class="pl-4 pr-2"
                 title="Patient ID to search for, multiples are separated by space">To Date: </label>
             <input class="form-control form-control-sm" type="date" id="to-date" name="to-date" value="">
-            <label for="exampleFormControlSelect1" class="pl-4 pr-2">Dicom Node</label>
-            <select class="custom-select custom-select-sm my-1 mr-sm-2" id="dicom_node_upload" name="dicom_node" required>
-                {% for node in dicom_nodes %}
-                <option value="{{node}}" {%if node == dicom_node %} selected="selected" {% endif%}>{{node}}</option>
-                {% endfor %}
-            </select>
             <button type="submit" class="btn btn-primary btn-sm align-self-end ml-3">Upload</button>
         </div>
     </form>
