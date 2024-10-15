@@ -26,7 +26,8 @@ rq_dashboard.web.setup_rq_connection(app)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
 
-q = Queue("indexer", connection=Redis())
+q = Queue("index", connection=Redis())
+q_prefetch = Queue("prefetch", connection=Redis())
 
 assets = Environment(app)
 js = Bundle(
@@ -135,7 +136,7 @@ def prefetch():
         for f in files:
             f.unlink()
         app.logger.info(f"Cleaned successfully for acc: {accession_number}")
-        q.enqueue(prefetch_task, accession_number, job_timeout="6m")
+        q_prefetch.enqueue(prefetch_task, accession_number, job_timeout="6m")
         return json.dumps({"status": "ok"})
     else:
         return json.dumps({"status": "error, no accession number given"})
