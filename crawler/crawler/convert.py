@@ -99,7 +99,7 @@ def add_child(parent, entry):
     # add protocolname to set
     if "ProtocolName" in entry and entry["ProtocolName"]:
         # if first series does not contain "ProtocolName" and e.g. second one does
-        if not "ProtocolName" in parent:
+        if "ProtocolName" not in parent:
             parent["ProtocolName"] = []
         parent["ProtocolName"].append(entry["ProtocolName"])
     parent["_childDocuments_"].append(child_dict)
