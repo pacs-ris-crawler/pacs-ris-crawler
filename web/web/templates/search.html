@@ -2,44 +2,39 @@
 
 {% block search %}
 <form id="search-form" action="/search" method="POST">
-  <div class="row">
-    <div class="col-auto">
-      <a class="pl-3" href="/">PACS / RIS Crawler</a>
-      
-      {% if indexed_start_date %}
-      <div class="pl-3">
-        <small>Indexed: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</small>
-      
-      {% endif %}
-      <a class="d-inline primary-link pl-3 small" target="_blank" href="{{receiver_dashboard_url}}">Transfer &amp; Download progress <span class="oi oi-external-link small"></span></a>
-    </div>
-    </div>
-
+  <div class="row px-1">
     <div class="col">
-      <div class="alert alert-danger small {% if not error %} d-none {% endif %}" role="alert">
-        <strong>Error:</strong> {{error}}
-        <br>
-        <small>{{trace}}</small>
-      </div>
-      <input type="hidden" name="offset" value="{{offset}}">
-      <input type="hidden" name="page" value="{{page}}">
+      <a class="pl-3" href="/">PACS / RIS Crawler</a>
+      {% if indexed_start_date %}
+        <div class="pl-3 small">Indexed: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</div>
+      {% endif %}
     </div>
-
     <div class="col-auto">
       <img src="/static/images/logo.svg" alt="Universitätsspital Basel" style="height:34px">
       <small>
           <p class="mt-2" style="padding-left: 50px;">Klinik für Radiologie und Nuklearmedizin</p>
       </small>
     </div>
-    <div id="search-details" class="w-100 pb-2 small">
-      <div class="row mx-auto px-3">
-        <p class="h6 px-3">Filters</p>
+  </div>
+    <div class="row px-5">
+      <div class="col alert alert-danger small {% if not error %} d-none {% endif %}" role="alert">
+        <strong>Error:</strong> {{error}}
+        <br>
+        <small>{{trace}}</small>
       </div>
-      <div class="form-group row mx-auto px-3">
+    </div>
+    <div id="search-details" class="w-100 pb-2 small">
+      <div class="row mx-auto px-1">
+        <p class="h6 col">Filters</p>
+      <div class="col-auto">
+        <a class="" target="_blank" href="{{receiver_dashboard_url}}">Transfer &amp; Download progress <span class="oi oi-external-link small"></span></a>
+      </div>  
+      </div>
+      <div class="form-group row mx-auto px-1">
         <div class="col">
           <label for="patientid-input" class="col-form-label"
             title="Patient ID to search for, multiples are separated by space">Report Text</label>
-            <div class="input-group input-group-sm mb-3">
+            <div class="input-group input-group-sm">
               <input type="text" class="form-control form-control-sm" id="search-input" name="RisReport"
                 value="{{ params.RisReport }}" autofocus>
             </div>
@@ -51,7 +46,7 @@
             value="{{ params.PatientID }}">
         </div>
       </div>
-      <div class="form-group row mx-auto px-3 ">
+      <div class="form-group row mx-auto px-1 ">
         <div class="col">
           <label for="accessionnumber-input" class="col-form-label"
             title="Accession Number to search for, multiples are separated by space">Accession Number</label>
@@ -66,12 +61,12 @@
             value="{{ params.StudyDescription }}">
         </div>
       </div>
-      <div class="form-group row mx-auto px-3">
+      <div class="form-group row mx-auto px-1">
         <a data-toggle="collapse" data-target="#more-search-details" href="#" class="ml-3" aria-expanded="true">Show more
           filter options</a>  
     </div>
       <div id="more-search-details" class="collapse">
-      <div class="form-group row mx-auto px-3 ">
+      <div class="form-group row mx-auto px-1 ">
         <div class="col">
           <label for="protocolname-input" class="col-form-label" title="ProtocolName">Protocol Name</label>
           <input class="form-control form-control-sm" type="text" id="protocolname-input" name="ProtocolName"
@@ -84,7 +79,7 @@
             name="ReferringPhysicianName" value="{{ params.ReferringPhysicianName }}">
         </div>
       </div>
-      <div class="form-group row mx-auto px-3">
+      <div class="form-group row mx-auto px-1">
         <div class="col">
           <label class="col-form-label" for="start-date-picker" title="Start date of exam">StudyDate: Start</label>
           <input class="form-control form-control-sm" type="text" id="start-date-picker" name="StartDate"
@@ -106,10 +101,10 @@
             value="{{ params.AgeTo }}">
         </div>
       </div>
-      <div class="row mx-auto px-3 pt-3">
-        <p class="h6 px-3">Series Filters</p>
+      <div class="row mx-auto px-1 pt-3">
+        <p class="h6 col">Series Filters</p>
       </div>
-      <div class="form-group row mx-auto px-3">
+      <div class="form-group row mx-auto px-1">
         <div class="col-sm-6">
           <label for="seriesdescription-input" class="col-form-label"
             title="Series Description to search for, AND is *not* supported">Series Description</label>
@@ -119,12 +114,12 @@
         <div class="col-sm-6">
         </div>
       </div>
-      <div class="form-group row mx-auto px-3 mb-0">
+      <div class="form-group row mx-auto px-1 mb-0">
         <div class="col">
           <label for="modality1" class="col-form-label" title="Modality to search for">Modality</label>
         </div>
       </div>
-      <div class="form-group row mx-auto px-3">
+      <div class="form-group row mx-auto px-1">
         <div class="col">
           <div class="form-check form-check-inline">
             <input class="form-check-input modality" type="checkbox" id="modality1" name="Modality" value="CT"
@@ -194,7 +189,7 @@
         </div>
       </div>
       </div>
-      <div class="form-group row mx-auto px-3 border-top border-white">
+      <div class="form-group row mx-auto px-1 border-top border-white">
         <div class="col-sm-6">
           <label for="sort-field" class="col-form-label" title="On which field to sort the results">Sort results by field:
           </label>
@@ -221,6 +216,7 @@
         </div>
       </div>
     </div>
-  </div>
+    <input type="hidden" name="offset" value="{{offset}}">
+    <input type="hidden" name="page" value="{{page}}">
 </form>
 {% endblock %}
