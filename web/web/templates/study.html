@@ -6,10 +6,8 @@
       <a href="#{{ study['AccessionNumber'] }}" data-toggle="collapse" class="exam-details">
         <span class="small oi oi-collapse-down float-right " title="Collapse"></span>
         {{study['StudyDescription']}}
-
       </a>
-      
-      <a class="text-success pl-2" target="_blank" href="{{  sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">Open images in Sectra Uniview
+      <a class="text-success pl-2" target="_blank" href="{{  sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">View images
         <span class="oi oi-external-link small"></span>
       </a>
     </h5>
