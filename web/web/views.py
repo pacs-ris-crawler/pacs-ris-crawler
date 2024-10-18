@@ -151,10 +151,9 @@ def export_anon():
         out = io.BytesIO()
         writer = pd.ExcelWriter(out)
         df.to_excel(writer, index=False, sheet_name="Sheet1")
-        writer.save()
         writer.close()
         out.seek(0)
-        return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
+        return send_file(out, download_name="export.xlsx", as_attachment=True)
     return ("", 204)
 
 
@@ -166,10 +165,9 @@ def export():
         out = io.BytesIO()
         writer = pd.ExcelWriter(out)
         df.to_excel(writer, index=False, sheet_name="Sheet1")
-        writer.save()
         writer.close()
         out.seek(0)
-        return send_file(out, attachment_filename="export.xlsx", as_attachment=True)
+        return send_file(out, download_name="export.xlsx", as_attachment=True)
     return ("", 204)
 
 
