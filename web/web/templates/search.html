@@ -16,8 +16,8 @@
       </small>
     </div>
   </div>
-    <div class="row px-5">
-      <div class="col alert alert-danger small {% if not error %} d-none {% endif %}" role="alert">
+    <div class="container">
+      <div class=" alert alert-danger {% if not error %} d-none {% endif %}" role="alert">
         <strong>Error:</strong> {{error}}
         <br>
         <small>{{trace}}</small>
