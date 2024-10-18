@@ -391,13 +391,13 @@ def get_statistics_per_month(date):
 
 
 def get_statistics_per_year(year):
-    payload = {
-        "q": "*",
-        "rows": "10000000",
-        "fq": ["Category:parent"],
-        "fq": [f"StudyDate:[{year}0101 TO {year}1231]"],
-        "fl": "InstitutionName, StudyDate",
-    }
+    payload = [
+        ("q", "*"),
+        ("rows", "10000000"),
+        ("fq", ["Category:parent"]),
+        ("fq", [f"StudyDate:[{year}0101 TO {year}1231]"]),
+        ("fl", "InstitutionName, StudyDate"),
+    ]
     headers = {"content-type": "application/json"}
     response = get(solr_url(app.config), payload, headers=headers)
     return response.json()
