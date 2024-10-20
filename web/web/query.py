@@ -33,7 +33,7 @@ def query_body(args, limit=100):
         if args.get("SeriesDescription"):
             body["params"][
                 "fl"
-            ] = "*,[child parentFilter=Category:parent childFilter='(Modality:{} OR SeriesDescription:{})' limit=200]".format(
+            ] = "*,[child parentFilter=Category:parent childFilter='(Modality:{} OR SeriesDescription:{})' limit=1000]".format(
                 modalities, args.get("SeriesDescription")
             )
             filters1 = (
@@ -44,14 +44,14 @@ def query_body(args, limit=100):
         else:
             body["params"][
                 "fl"
-            ] = "*,[child parentFilter=Category:parent childFilter='Modality:{}' limit=200]".format(
+            ] = "*,[child parentFilter=Category:parent childFilter='Modality:{}' limit=1000]".format(
                 modalities
             )
             body["filter"] = _create_filter_query(args) + [filters2]
     elif args.get("SeriesDescription"):
         body["params"][
             "fl"
-        ] = "*,[child parentFilter=Category:parent childFilter='SeriesDescription:{}' limit=200]".format(
+        ] = "*,[child parentFilter=Category:parent childFilter='SeriesDescription:{}' limit=1000]".format(
             args.get("SeriesDescription")
         )
         filters1 = "{!parent which=Category:parent}(+SeriesDescription:%s)" % args.get(
@@ -59,7 +59,7 @@ def query_body(args, limit=100):
         )
         body["filter"] = _create_filter_query(args) + [filters1]
     else:
-        body["params"]["fl"] = "*,[child parentFilter=Category:parent limit=200]"
+        body["params"]["fl"] = "*,[child parentFilter=Category:parent limit=1000]"
         body["filter"] = _create_filter_query(args)
 
     body["offset"] = int(args.get("offset", "0"))
