@@ -149,7 +149,7 @@ def export_anon():
     if df is not None:
         df = df.drop(["PatientName", "PatientBirthDate"], axis=1)
         out = io.BytesIO()
-        writer = pd.ExcelWriter(out)
+        writer = pd.ExcelWriter(out, engine="xlsxwriter")
         df.to_excel(writer, index=False, sheet_name="Sheet1")
         writer.close()
         out.seek(0)
@@ -163,7 +163,7 @@ def export():
     df = query_all(q, solr_url(app.config))
     if df is not None:
         out = io.BytesIO()
-        writer = pd.ExcelWriter(out)
+        writer = pd.ExcelWriter(out, engine="xlsxwriter")
         df.to_excel(writer, index=False, sheet_name="Sheet1")
         writer.close()
         out.seek(0)
