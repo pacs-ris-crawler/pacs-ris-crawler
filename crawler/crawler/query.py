@@ -44,9 +44,21 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
 
 def query_day_accs(config, day) -> List[Dict[str, str]]:
     # needed to split because it was too many results for sectra, e.g. day = 2022-09-13
-    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-12000")
-    result_am, _ = run(query_am)
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-8000")
+    result_am1, _ = run(query_am)
+    
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-8000")
+    result_am2, _ = run(query_am)
 
-    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1200-2359")
-    result_pm, _ = run(query_pm)
-    return result_am + result_pm
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1200-1400")
+    result_pm1, _ = run(query_pm)
+
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1400-1600")
+    result_pm2, _ = run(query_pm)
+
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1600-1800")
+    result_pm3, _ = run(query_pm)
+
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1800-2359")
+    result_pm4, _ = run(query_pm)
+    return result_am1 + result_am2 + result_pm1 + result_pm2 + result_pm3 + result_pm4
