@@ -21,7 +21,25 @@
     <div id="statistics-page" class="container py-3 show bg-light mt-1 form-inline">
       <form class="form-group pl-2 py-2" hx-get="/stats_per_year" hx-target="#year_viz">
         <label class="pr-2">Year: </label>
-        <input class="form-control" type="number" min="2002" max="2099" step="1" name="year" />
+        <input class="form-control" type="number" min="2002" max="2099" step="1" name="year" required />
+
+        <label class="pr-2 pl-3">Month (optional): </label>
+        <select class="form-control" name="month">
+          <option value="" selected>-- Select Month --</option>
+          <option value="01">January</option>
+          <option value="02">February</option>
+          <option value="03">March</option>
+          <option value="04">April</option>
+          <option value="05">May</option>
+          <option value="06">June</option>
+          <option value="07">July</option>
+          <option value="08">August</option>
+          <option value="09">September</option>
+          <option value="10">October</option>
+          <option value="11">November</option>
+          <option value="12">December</option>
+        </select>
+
         <button class="btn btn-primary btn-sm ml-3">Visualize</button>
       </form>
     </div>
@@ -30,5 +48,6 @@
     </figure>
   </div>
 </body>
+
 
 </html>

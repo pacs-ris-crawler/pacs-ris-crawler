@@ -273,13 +273,23 @@ def month_statistics():
 @app.route("/stats_per_year", methods=["GET"])
 def stats_per_year():
     year = request.args["year"]
-    payload = [
-        ("q", "*"),
-        ("rows", "1000000"),
-        ("fq", ["Category:parent"]),
-        ("fq", [f"StudyDate:[{year}0101 TO {year}1231]"]),
-        ("fl", "InstitutionName, StudyDate"),
-    ]
+    month = request.args["month"]
+    if not month:
+        payload = [
+            ("q", "*"),
+            ("rows", "1000000"),
+            ("fq", ["Category:parent"]),
+            ("fq", [f"StudyDate:[{year}0101 TO {year}1231]"]),
+            ("fl", "InstitutionName, StudyDate"),
+        ]
+    else:
+        payload = [
+            ("q", "*"),
+            ("rows", "1000000"),
+            ("fq", ["Category:parent"]),
+            ("fq", [f"StudyDate:[{year}{month}01 TO {year}{month}31]"]),
+            ("fl", "InstitutionName, StudyDate"),
+        ]
     headers = {"content-type": "application/json"}
     response = get(solr_url(app.config), payload, headers=headers)
     data = response.json()["response"]["docs"]
@@ -308,28 +318,26 @@ def stats_per_year():
     # Calculate the maximum count per month
     df['max_count'] = df.groupby('month')['count'].transform('max')
 
-    # Define text color based on the count threshold per month
-    def text_color(row):
-        threshold = row['max_count'] * 0.6  # Set threshold at 60% of max count
-        return 'white' if row['count'] >= threshold else 'black'
+    # Check the number of unique months in the data
+    num_months = len(df['month'].unique())
 
-    df['text_color'] = df.apply(text_color, axis=1)
+    # Dynamically adjust figure size
+    figure_height = num_months * 2
 
-    # 4. Create the Plot Using Facet Wrap
     p = (ggplot(df, aes(x='day_of_week', y='week_of_month', fill='count'))
         + geom_tile(color='white', show_legend=False)
         # Add count labels in the center of the tile
-        + geom_text(aes(label='count', color='text_color'), size=6)
+        + geom_text(aes(label='count'), size=6)
         # Add day labels in the lower right corner
-        + geom_text(aes(label='day_of_month', color='text_color'),
-                    size=4, position=position_nudge(x=0.4, y=-0.35))
+        + geom_text(aes(label='day_of_month'),
+                    size=4, position=position_nudge(x=0.37, y=-0.4))
         + scale_x_continuous(
             breaks=range(7),
             labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         )
         + scale_y_reverse()
-        + scale_fill_gradient(low='white', high='blue')
-        + scale_color_identity()
+        + scale_fill_gradient(high="#3e83c8",low="#f6f9fc",)
+        + scale_color_identity(labels=None)
         + theme_minimal()
         + labs(title=f'Studies / day for {year}', x='', y='')
         + theme(
@@ -338,13 +346,16 @@ def stats_per_year():
             axis_ticks_major_y=element_blank(),
             panel_grid_major=element_blank(),  # Remove major grid lines
             panel_grid_minor=element_blank(),  # Remove minor grid lines
-            figure_size=(4, 25),  # Adjust figure size
+            figure_size=(4, figure_height),  # Adjust figure size
             panel_spacing=0.1,
             strip_text_x=element_text(size=6),
-            plot_title=element_text(size=7, ha='left'),
+            plot_title=element_text(size=7, ha='center'),
         )
-        + facet_wrap('~month', ncol=1)
     )
+    # Apply facets only if there's more than one month
+    if num_months > 1:
+        p += facet_wrap('~month', ncol=1)
+        
     buf = io.BytesIO()
     p.save(buf, format="png", bbox_inches="tight", pad_inches=0, dpi=300)
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
