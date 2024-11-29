@@ -83,7 +83,7 @@ def search():
         for result in results:
             result["_childDocuments_"] = sorted(
                 result["_childDocuments_"],
-                key=lambda k: int(k["SeriesNumber"] or "0"),
+                key=lambda k: int(k.get("SeriesNumber", "0")),
             )
 
         command = ""
