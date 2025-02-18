@@ -48,6 +48,10 @@ def download_debug():
     cmd = download_series_debug(app.config, study_uid, series_uid, download_folder)
     code, output = run(cmd)
     
+    app.logger.info("Running command: %s", cmd)
+    app.logger.info("Output: %s", output)
+    app.logger.info("Code: %s", code)
+
     return render_template("download_debug.html", output=output, code=code)
 
 
