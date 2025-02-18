@@ -2,11 +2,11 @@ import json
 import logging
 from datetime import datetime
 
-
 import rq_dashboard
 from flask import Flask, render_template, request
 
-from receiver.job import download_series, transfer_series
+from receiver.job import download_series, transfer_series, download_series_debug
+from receiver.executor import run
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("receiver.default_config")
@@ -35,6 +35,20 @@ def to_date(timestamp):
 @app.route("/")
 def main():
     return render_template("index.html", version=version)
+
+
+@app.route("/download_debug", methods=["POST"])
+def download_debug():
+    """Post to download a single series of images for debugging."""
+    app.logger.info("Debug download request received")
+    study_uid = request.form.get("study_uid")
+    series_uid = request.form.get("series_uid")
+    download_folder = request.form.get("download_folder")
+
+    cmd = download_series_debug(app.config, study_uid, series_uid, download_folder)
+    code, output = run(cmd)
+    
+    return render_template("download_debug.html", output=output, code=code)
 
 
 @app.route("/download", methods=["POST"])

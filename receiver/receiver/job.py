@@ -62,6 +62,24 @@ def base_command_new_pacs(dcmtk_config):
         + new_pacs()
     )
 
+def download_series_debug(config, study_uid, series_uid,  dir_name):
+    output_dir = config["IMAGE_FOLDER"]
+    dcmtk = dcmtk_config(config)
+    image_folder = os.path.join(output_dir, dir_name)
+    if not os.path.exists(image_folder):
+        os.makedirs(image_folder, exist_ok=True)
+    command = (
+            base_command_new_pacs(dcmtk)
+            + " --output-directory "
+            + image_folder
+            + " -k StudyInstanceUID="
+            + study_uid
+            + " -k SeriesInstanceUID="
+            + series_uid
+        )
+    args = shlex.split(command)
+    return args
+
 
 def download_series(config, series_list, dir_name, image_type, queue_prio):
     """Download the series. The folder structure is as follows:

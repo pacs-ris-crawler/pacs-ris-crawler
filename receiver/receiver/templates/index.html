@@ -20,6 +20,27 @@
       </div>
     </div>
   </div>
+
+  <div class="container py-3 mt-1 rounded" style="background-color:#B3D7FF">
+    <h5>Debug downloading a single series! This is for single series only!</h5>
+    <div class="pl-3 pt-2">
+      <form method="post" action="/download_debug">
+        <div class="form-group">
+          <label for="study_uid">Study UID:</label>
+          <input type="text" class="form-control" id="study_uid" name="study_uid">
+        </div>
+        <div class="form-group">
+          <label for="series_uid">Series UID:</label>
+          <input type="text" class="form-control" id="series_uid" name="series_uid">
+        </div>
+        <div class="form-group">
+          <label for="download_folder">Download Folder:</label>
+          <input type="text" class="form-control" id="download_folder" name="download_folder">
+        </div>
+        <button type="submit" class="btn btn-primary">Download</button>
+      </form>
+    </div>
+  </div>
 </body>
 
 </html>

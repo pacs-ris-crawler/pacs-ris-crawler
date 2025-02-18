@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Debug Output</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Download Debug Output</h1>
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="card-title">Output</h2>
+                <pre class="bg-light p-3 border rounded">{{ output }}</pre>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h2 class="card-title">Command Code</h2>
+                <pre class="bg-light p-3 border rounded">{{ code }}</pre>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a class="btn btn-primary" href="/">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
