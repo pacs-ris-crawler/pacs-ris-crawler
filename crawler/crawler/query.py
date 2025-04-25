@@ -47,7 +47,7 @@ def query_day_accs(config, day) -> List[Dict[str, str]]:
     query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-8000")
     result_am1, _ = run(query_am)
     
-    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "00000-8000")
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "8000-1200")
     result_am2, _ = run(query_am)
 
     query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1200-1400")
