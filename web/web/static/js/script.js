@@ -17,6 +17,36 @@ $(function () {
     yearRange: [2005, 2019]
   });
 
+  $('#llmSubmit').on('click', function () {
+    const userText = $('#modalTextField').val().trim();
+    if (!userText) { $('#modalTextField').focus(); return; }
+  
+    $('#loading').removeClass('d-none');
+    $(this).prop('disabled', true);
+  
+    $.ajax({
+      method: 'POST',
+      url:  '/llm_query',
+      data: JSON.stringify({ query: userText }),
+      contentType: 'application/json',
+      dataType: 'json',         // expect JSON back
+      headers: {                // CSRF if you use Flask-WTF
+        'X-CSRFToken': $('meta[name=csrf-token]').attr('content')
+      }
+    }).done(res => {
+        if (res.studyDescriptionQuery) $('#studydescription-input').val(res.studyDescriptionQuery);
+        if (res.regexQuery)      $('#search-input').val(res.regexQuery);
+        $('#textInputModal').modal('hide');
+    }).fail(() => {
+        noty({ text:'LLM processing failed',
+               type:'error', layout:'centerRight', timeout:3000 });
+    }).always(() => {
+        $('#loading').addClass('d-none');
+        $('#llmSubmit').prop('disabled', false);
+    });
+  });
+  
+
   var getCheckedData = function () {
     return $('input:checked[name=series]')
       .map(function () {

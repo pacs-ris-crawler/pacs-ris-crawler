@@ -10,7 +10,7 @@ from plotnine import *
 matplotlib.use("Agg")
 import pandas as pd
 import requests
-from flask import render_template, request, send_file
+from flask import render_template, request, send_file, jsonify
 from requests import RequestException, get, post
 
 from web.app import (
@@ -34,6 +34,7 @@ from web.query_all import query_all
 from web.solr import solr_url
 from web.statistics import calculate
 from web.terms import get_terms_data
+from web.query_llm import llm_dummy
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -69,6 +70,21 @@ def main():
         receiver_url=RECEIVER_URL,
         receiver_dashboard_url=RECEIVER_DASHBOARD_URL,
     )
+
+
+@app.route("/llm_query", methods=["POST", "GET"])
+def llm_query():
+    """Converts human text into proper regex query"""
+    params = request.get_json(force=True)
+    text_query = params.get("query", "")
+    if text_query and text_query.strip():
+        llm_output = llm_dummy(input_prompt=text_query)
+
+    package = {
+        "regexQuery": llm_output.get("regex_pattern"),
+        "studyDescriptionQuery": (" ").join(llm_output.get("study_description"))
+    }
+    return package
 
 
 @app.route("/search", methods=["POST", "GET"])

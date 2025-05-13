@@ -215,12 +215,44 @@
             </div>
           </div>
         </div>
-        <div class="col d-flex">
-          <button type="submit" class="btn btn-primary btn-sm align-self-end ml-auto">Search</button>
+        <div class="col d-flex justify-content-end">
+          <button type="button" class="btn btn-primary btn-sm align-self-end mr-2" data-toggle="modal" data-target="#textInputModal">
+            LLM-assisted Filtering
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm align-self-end">Search</button>
         </div>
       </div>
     </div>
     <input type="hidden" name="offset" value="{{offset}}">
     <input type="hidden" name="page" value="{{page}}">
 </form>
+
+<div class="modal fade" id="textInputModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Enter free-text query</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <textarea class="form-control" id="modalTextField"
+                  name="query" rows="6" required></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button id="llmSubmit" class="btn btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$('#textInputModal button[type="submit"]').on('click', function() {
+  console.log("OK button clicked!");
+});
+</script>
 {% endblock %}
