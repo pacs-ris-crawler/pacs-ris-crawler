@@ -16,7 +16,8 @@ def run(query: str, parse_results=True) ->Tuple[List[Dict[str, str]], int]:
     """
     log.debug("Running query", query=query)
     cmd = shlex.split(query)
-    completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+    # do not check=True because if segfaults with the current version of dcmtk 3.6.4 and ubuntu 20.04!!!
+    completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stderr = completed.stderr.decode('latin1')
     if "UnableToProcess" in stderr:
         raise DicomQueryError("Query failed at DICOM level")
