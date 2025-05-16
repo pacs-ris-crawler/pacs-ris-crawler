@@ -1,3 +1,4 @@
+import subprocess
 from typing import Dict, List
 
 import pandas as pd
@@ -69,7 +70,7 @@ def query_day_accs(
     try:
         result, _ = run(query)
         return result
-    except DicomQueryError as e:
+    except (DicomQueryError, subprocess.CalledProcessError) as e:
         log.info("splitting_time_range start_time=%s end_time=%s", start_time, end_time)
         # Convert times to integers for calculation
         start = int(start_time)
