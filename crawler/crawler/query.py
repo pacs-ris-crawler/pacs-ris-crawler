@@ -52,55 +52,26 @@ def get_months_of_year(year: str) -> List[Dict[str, str]]:
     return [d.strftime("%Y-%m") for d in pd.date_range(start, end, freq="MS")]
 
 
-def query_day_accs(
-    config, day, start_time="0000", end_time="2359"
-) -> List[Dict[str, str]]:
-    """Query for accession numbers for a given day and time range.
-    If the query fails due to too many results:
-    1. Split into half days (12 hours)
-    2. If that fails, split into 2-hour chunks
+def query_day_accs(config, day) -> List[Dict[str, str]]:
+    # needed to split because it was too many results for sectra, e.g. day = 2022-09-13
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "0000-0800")
+    result_am1, _ = run(query_am)
+    
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "0800-1000")
+    result_am2, _ = run(query_am)
 
-    Args:
-        config: DICOM configuration
-        day: The day to query
-        start_time: Start time in HHMM format (default "0000")
-        end_time: End time in HHMM format (default "2359")
-    """
-    query = accs_per_day(config, day.strftime("%Y%m%d"), f"{start_time}-{end_time}")
-    try:
-        result, _ = run(query)
-        return result
-    except (DicomQueryError, subprocess.CalledProcessError) as e:
-        log.info("splitting_time_range start_time=%s end_time=%s", start_time, end_time)
-        # Convert times to integers for calculation
-        start = int(start_time)
-        end = int(end_time)
+    query_am = accs_per_day(config, day.strftime("%Y%m%d"), "1001-1159")
+    result_am3, _ = run(query_am)
 
-        # Calculate period length in hours
-        period_length = (end - start) // 100  # Convert to hours
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1200-1400")
+    result_pm1, _ = run(query_pm)
 
-        if period_length >= 12:
-            # Split into half days: 0000-1159 and 1200-2359
-            first_end = 1159
-            second_start = 1200
-        elif period_length > 2:
-            # Split into 2-hour chunks
-            # e.g., 0000-0159, 0200-0359, etc.
-            first_end = start + 159
-            second_start = start + 200
-        else:
-            # If period is 2 hours or less, give up
-            log.error(
-                "time_range_too_small start_time=%s end_time=%s", start_time, end_time
-            )
-            return []
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1401-1600")
+    result_pm2, _ = run(query_pm)
 
-        # Format split points as 4-digit strings
-        first_end_time = f"{first_end:04d}"
-        second_start_time = f"{second_start:04d}"
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1601-1800")
+    result_pm3, _ = run(query_pm)
 
-        # Recursively query both halves
-        first_half = query_day_accs(config, day, start_time, first_end_time)
-        second_half = query_day_accs(config, day, second_start_time, end_time)
-
-        return first_half + second_half
+    query_pm = accs_per_day(config, day.strftime("%Y%m%d"), "1801-2359")
+    result_pm4, _ = run(query_pm)
+    return result_am1 + result_am2 + result_am3 + result_pm1 + result_pm2 + result_pm3 + result_pm4
