@@ -48,8 +48,8 @@ def merge_pacs_ris_task(query: dict) -> str:
     return output_path
 
 
-def daily_up_converted_merged_task(query: dict) -> str:
-    # Prefect task dependency (run merge_pacs_ris_task first)
+def index_acc(acc: str):
+    query = {"acc": acc, "dicom_node": "SECTRA"}
     merged_file_path = merge_pacs_ris_task(query)
 
     # Load configuration and get the upload URL
@@ -71,8 +71,3 @@ def daily_up_converted_merged_task(query: dict) -> str:
             my_file.write("Upload successful")
 
     return output_path
-
-
-def index_acc(acc: str):
-    query = {"acc": acc, "dicom_node": "SECTRA"}
-    daily_up_converted_merged_task(query)
