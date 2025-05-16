@@ -133,3 +133,7 @@ def _get_value(line: str) -> str:
     start = line.find("[") + 1
     end = line.rfind("]")
     return line[start:end].strip(" \t\r\n\0")
+
+
+class DicomQueryError(Exception):
+    pass
