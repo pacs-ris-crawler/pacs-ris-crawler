@@ -4,14 +4,11 @@ from typing import List
 import json
 from flask import current_app
 
-# ollama_url = current_app.config.get('OLLAMA_URL', 'http://10.5.63.16:11434')
-
-
-model = "llama3.3:70b-instruct-q5_K_M"
+# model = "llama3.3:70b-instruct-q5_K_M"
 # model = mixtral:8x7b-instruct-v0.1-q8_0
-# model = "mistral-small:24b-instruct-2501-q4_K_M"
+model = "mistral-small:24b-instruct-2501-q4_K_M"
 # model = mistral-small3.1:24b-instruct-2503-fp16
-# model = mistral-small3.1:24b-instruct-2503-q8_0
+# model = "mistral-small3.1:24b-instruct-2503-q8_0"
 
 def create_client():
     def _get_ollama_url():
@@ -77,8 +74,8 @@ system_prompt = (
 
 def llm_dummy(model=model, input_prompt="Bauchschmerzen", system_prompt=system_prompt, format=query_output.model_json_schema()):
     
-    llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)
     try:
+        llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)
         llm_output = query_output.model_validate_json(llm_output)
     except:
         try:
