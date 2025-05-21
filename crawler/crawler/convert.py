@@ -48,10 +48,11 @@ def convert_pacs_file(json_in):
                 p_dict["ReferringPhysicianName"] = entry["ReferringPhysicianName"]
             if "SeriesDate" in entry:
                 p_dict["SeriesDate"] = entry["SeriesDate"]
-            p_dict["StudyDate"] = entry["StudyDate"]
+            if "StudyDate" in entry:
+                p_dict["StudyDate"] = entry["StudyDate"]
             if "StudyTime" in entry:
                 p_dict["StudyTime"] = entry["StudyTime"]
-            if entry["StudyDescription"]:
+            if "StudyDescription" in entry:
                 p_dict["StudyDescription"] = entry["StudyDescription"]
             if "StudyID" in entry:
                 p_dict["StudyID"] = entry["StudyID"]

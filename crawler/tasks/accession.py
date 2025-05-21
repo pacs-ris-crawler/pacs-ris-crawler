@@ -1,7 +1,9 @@
 import crawler.writer as w
-from crawler.query import query_for_study_uid
-
-from crawler.query import prefetch_accession_number, query_accession_number
+from crawler.query import (
+    prefetch_accession_number,
+    query_accession_number,
+    query_for_study_uid,
+)
 from tasks.util import load_dicom_config, load_prefetch_node
 
 
@@ -41,13 +43,15 @@ def run_accession_task(accession_number: str, dicom_node: str) -> None:
     results = []
     for study_uid in study_uids:
         result, command = query_accession_number(config, study_uid)
-        results.append(result)
+        if result and any(result):
+            results.append(result)
 
     flat = [item for sublist in results for item in sublist]
-    w.write_file(flat, f"data/{accession_number}_accession.json")
+    if results and flat:
+        w.write_file(flat, f"data/{accession_number}_accession.json")
 
-    with open(f"data/{accession_number}_command.txt", "w") as f:
-        f.write(command)
+        with open(f"data/{accession_number}_command.txt", "w") as f:
+            f.write(command)
 
 
 def prefetch_task(accession_number: str) -> None:

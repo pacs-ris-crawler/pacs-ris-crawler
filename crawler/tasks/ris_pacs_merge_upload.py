@@ -1,24 +1,31 @@
 import json
 import logging
+import os
+from pathlib import Path
 
 import requests
 
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
 from tasks.accession import accession
-from tasks.util import dict_to_str, load_config
+from tasks.util import load_config
 
 
 def convert_pacs_file_task(query: dict) -> str:
     if "acc" in query:
-        # Prefect flow run instead of Luigi task dependency
+        # Run accession task to generate the file
         accession(query["acc"], query["dicom_node"])
 
-    # Read the input JSON file
-    with open(f"data/{query['acc']}_accession.json", "r") as daily:
+    # Check if the file exists
+    input_path = f"data/{query['acc']}_accession.json"
+    if not Path(input_path).exists():
+        logging.warning(f"Accession {query['acc']} seems to have no images, skipping")
+        return None
+
+    # Read and process the file
+    with open(input_path, "r") as daily:
         json_in = json.load(daily)
 
-    # Convert the PACS file
     json_out = convert_pacs_file(json_in)
 
     # Write the converted JSON to the output file
@@ -32,6 +39,10 @@ def convert_pacs_file_task(query: dict) -> str:
 def merge_pacs_ris_task(query: dict) -> str:
     # Prefect task dependency (run convert_pacs_file_task first)
     pacs_file_path = convert_pacs_file_task(query)
+
+    if pacs_file_path is None:
+        logging.warning(f"Accession {query['acc']} seems to have no images, skipping")
+        return None
 
     # Read the converted PACS file
     with open(pacs_file_path, "r") as daily:
@@ -57,6 +68,11 @@ def index_acc(acc: str):
     upload_url = get_solr_upload_url(config)
     logging.debug("Uploading to url %s", upload_url)
 
+    if merged_file_path is None:
+        msg = f"Accession {query['acc']} seems to have no images, skipping"
+        logging.warning(msg)
+        return msg
+
     # Upload the merged JSON file to Solr
     with open(merged_file_path, "r") as in_file:
         file = {"file": (in_file.name, in_file, "application/json")}
@@ -65,9 +81,5 @@ def index_acc(acc: str):
         )
     if not update_response.ok:
         update_response.raise_for_status()
-    else:
-        output_path = f"data/{query['acc']}_solr_uploaded.txt"
-        with open(output_path, "w") as my_file:
-            my_file.write("Upload successful")
 
-    return output_path
+    return "Upload successful for accession %s" % acc
