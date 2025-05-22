@@ -6,59 +6,49 @@ from crawler.query import (
 )
 from tasks.util import load_dicom_config, load_prefetch_node
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def fetch_study_uids(accession_number, dicom_node):
     dicom_config = load_dicom_config(dicom_node)
     study_uids = query_for_study_uid(dicom_config, accession_number)
-
-    with open(f"data/{accession_number}_accession.txt", "w") as outfile:
-        for uid in study_uids:
-            outfile.write(uid + "\n")
+    return study_uids
 
 
-def run_prefetch_task(accession_number: str) -> None:
+def run_prefetch_task(study_uids: list) -> None:
     config = load_prefetch_node()
-    study_uids = []
-    with open(f"data/{accession_number}_accession.txt", "r") as f:
-        for line in f:
-            study_uids.append(line.strip())
-
     cmds = []
     for study_uid in study_uids:
         cmd = prefetch_accession_number(config, study_uid)
         cmds.append(cmd + "\n")
-
-    with open(f"data/{accession_number}_prefetch_command.txt", "w") as f:
-        for cmd in cmds:
-            f.write(cmd)
+        # for debugging
+        logger.debug("Run prefetch command was %s", cmd)
 
 
-def run_accession_task(accession_number: str, dicom_node: str) -> None:
+def run_accession_task(dicom_node: str, study_uids: list) -> list:
     config = load_dicom_config(dicom_node)
-    study_uids = []
-    with open(f"data/{accession_number}_accession.txt", "r") as f:
-        for line in f:
-            study_uids.append(line.strip())
-
     results = []
     for study_uid in study_uids:
         result, command = query_accession_number(config, study_uid)
+        # for debugging
+        logger.debug("Run accession command was %s", command)
         if result and any(result):
             results.append(result)
 
     flat = [item for sublist in results for item in sublist]
     if results and flat:
-        w.write_file(flat, f"data/{accession_number}_accession.json")
-
-        with open(f"data/{accession_number}_command.txt", "w") as f:
-            f.write(command)
+        return flat
+    return []
 
 
 def prefetch_task(accession_number: str) -> None:
-    fetch_study_uids(accession_number, "SECTRA")
-    run_prefetch_task(accession_number)
+    study_uids = fetch_study_uids(accession_number, "SECTRA")
+    run_prefetch_task(study_uids)
 
 
-def accession(accession_number: str, dicom_node: str) -> None:
-    fetch_study_uids(accession_number, dicom_node)
-    run_accession_task(accession_number, dicom_node)
+def accession(accession_number: str, dicom_node: str) -> list:
+    study_uids = fetch_study_uids(accession_number, dicom_node)
+    flat_json = run_accession_task(dicom_node, study_uids)
+    return flat_json

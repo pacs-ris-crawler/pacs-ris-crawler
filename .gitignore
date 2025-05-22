@@ -105,7 +105,7 @@ venv-rewrite/
 # mypy
 .mypy_cache/
 
-crawler/data/*
+crawler/crawler/data/*
 receiver/image_data/*
 crawler/*-deployment.yaml
 crawler/.prefectignore

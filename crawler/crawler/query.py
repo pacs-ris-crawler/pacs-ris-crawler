@@ -28,7 +28,7 @@ def query_for_study_uid(config, accession_number):
         for r in result:
             ids.append(r["StudyInstanceUID"])
         return ids
-    raise LookupError(
+    log.warning(
         f"No result found for accession number: {accession_number}\nQuery was: {query}"
     )
 
@@ -37,7 +37,7 @@ def query_accession_number(config, study_uid):
     query = basic_query(config)
     query = add_study_uid(query, study_uid)
     result, _ = run(query)
-    return [result], query
+    return result, query
 
 
 def prefetch_accession_number(config, study_uid):
