@@ -70,6 +70,7 @@ def _get_timing_db_connection():
             start_time TEXT NOT NULL,
             end_time TEXT NOT NULL,
             duration_seconds REAL NOT NULL,
+            merged_json TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
@@ -77,6 +78,14 @@ def _get_timing_db_connection():
     # Add StudyDate column if it doesn't exist (for existing databases)
     try:
         conn.execute('ALTER TABLE timing_info ADD COLUMN studydate TEXT')
+        conn.commit()
+    except sqlite3.OperationalError:
+        # Column already exists
+        pass
+    
+    # Add merged_json column if it doesn't exist
+    try:
+        conn.execute('ALTER TABLE timing_info ADD COLUMN merged_json TEXT')
         conn.commit()
     except sqlite3.OperationalError:
         # Column already exists
@@ -99,22 +108,23 @@ def _get_timing_db_connection():
     return conn
 
 
-def _log_timing_info_sqlite(acc: str, study_description: str, study_date: str, start_time: datetime, end_time: datetime, duration: float):
+def _log_timing_info_sqlite(acc: str, study_description: str, study_date: str, start_time: datetime, end_time: datetime, duration: float, merged_json: str = None):
     """Log timing information to SQLite database with WAL mode for concurrent access"""
     try:
         with _get_timing_db_connection() as conn:
             # Insert timing data
             conn.execute('''
                 INSERT INTO timing_info 
-                (acc, studydescription, studydate, start_time, end_time, duration_seconds)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (acc, studydescription, studydate, start_time, end_time, duration_seconds, merged_json)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (
                 acc,
                 study_description or '',
                 study_date or '',
                 start_time.strftime('%Y-%m-%d %H:%M:%S.%f'),
                 end_time.strftime('%Y-%m-%d %H:%M:%S.%f'),
-                round(duration, 4)
+                round(duration, 4),
+                merged_json
             ))
             
             conn.commit()
@@ -163,6 +173,6 @@ def index_acc(acc: str):
     duration = end_time - start_time
     
     # Log timing information to SQLite database
-    _log_timing_info_sqlite(acc, study_description, study_date, start_datetime, end_datetime, duration)
+    _log_timing_info_sqlite(acc, study_description, study_date, start_datetime, end_datetime, duration, str(merged_json))
 
     return "Upload successful for accession %s" % acc
