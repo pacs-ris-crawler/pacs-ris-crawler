@@ -1,0 +1,20 @@
+[project]
+name = "pacs-ris-crawler"
+version = "2.0.0"
+description = "pacs-ris-crawler to index pacs and reports together"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.1",
+    "flask-assets>=2.1.0",
+    "gunicorn>=23.0.0",
+    "pandas>=2.2.3",
+    "plotnine>=0.14.5",
+    "pytest>=8.3.5",
+    "redis>=6.1.0",
+    "sqlalchemy>=2.0.41",
+    "requests>=2.32.3",
+    "rq-dashboard>=0.8.2.2",
+    "structlog>=25.3.0",
+    "pyodbc>=5.2.0",
+]

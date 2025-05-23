@@ -1,10 +1,10 @@
-import os
-import sqlite3
 import time
 from datetime import datetime
 
 import requests
 import structlog
+from sqlalchemy import create_engine, text, URL
+from sqlalchemy.exc import SQLAlchemyError
 
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
@@ -42,96 +42,75 @@ def merge_pacs_ris_task(query: dict) -> str:
     return merged_out
 
 
-def _get_timing_db_connection():
-    """Get SQLite connection with WAL mode enabled for concurrent access"""
-    db_path = os.path.join('crawler', 'data', 'timing.db')
+def _get_db_connection():
+    """Get SQLAlchemy engine for MS SQL Server"""
+    config = load_config()
     
-    # Create data directory if it doesn't exist
-    os.makedirs(os.path.join('crawler', 'data'), exist_ok=True)
     
-    # Connect to database with timeout for concurrent access
-    conn = sqlite3.connect(db_path, timeout=30.0)
+    # Create engine with connection pooling
+    connection_string = URL.create(
+        "mssql+pyodbc",
+        username=config['MSSQL_USERNAME'],
+        password=config['MSSQL_PASSWORD'],
+        host=config['MSSQL_SERVER'],
+        port=config['MSSQL_PORT'],
+        database=config['MSSQL_DATABASE'],
+        query={
+            "driver": "ODBC Driver 18 for SQL Server",
+            "TrustServerCertificate": "yes",
+        },
+    )
+    engine = create_engine(
+        connection_string,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        pool_size=5,
+        max_overflow=10
+    )
     
-    # Enable WAL mode for better concurrent performance
-    conn.execute('PRAGMA journal_mode=WAL')
-    
-    # Set other performance optimizations
-    conn.execute('PRAGMA synchronous=NORMAL')  # Faster than FULL, still safe with WAL
-    conn.execute('PRAGMA cache_size=10000')    # 10MB cache
-    conn.execute('PRAGMA temp_store=MEMORY')   # Use memory for temp tables
-    
-    # Create table if it doesn't exist
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS timing_info (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            acc TEXT NOT NULL,
-            studydescription TEXT,
-            studydate TEXT,
-            start_time TEXT NOT NULL,
-            end_time TEXT NOT NULL,
-            duration_seconds REAL NOT NULL,
-            merged_json TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Add StudyDate column if it doesn't exist (for existing databases)
-    try:
-        conn.execute('ALTER TABLE timing_info ADD COLUMN studydate TEXT')
-        conn.commit()
-    except sqlite3.OperationalError:
-        # Column already exists
-        pass
-    
-    # Add merged_json column if it doesn't exist
-    try:
-        conn.execute('ALTER TABLE timing_info ADD COLUMN merged_json TEXT')
-        conn.commit()
-    except sqlite3.OperationalError:
-        # Column already exists
-        pass
-    
-    # Create indexes for faster queries
-    conn.execute('''
-        CREATE INDEX IF NOT EXISTS idx_timing_acc ON timing_info(acc)
-    ''')
-    
-    conn.execute('''
-        CREATE INDEX IF NOT EXISTS idx_timing_start_time ON timing_info(start_time)
-    ''')
-    
-    conn.execute('''
-        CREATE INDEX IF NOT EXISTS idx_timing_created_at ON timing_info(created_at)
-    ''')
-    
-    conn.commit()
-    return conn
+    return engine
 
 
 def _log_timing_info_sqlite(acc: str, study_description: str, study_date: str, start_time: datetime, end_time: datetime, duration: float, merged_json: str = None):
-    """Log timing information to SQLite database with WAL mode for concurrent access"""
+    """Log timing information to MS SQL Server database using upsert operation"""
     try:
-        with _get_timing_db_connection() as conn:
-            # Insert timing data
-            conn.execute('''
-                INSERT INTO timing_info 
-                (acc, studydescription, studydate, start_time, end_time, duration_seconds, merged_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (
-                acc,
-                study_description or '',
-                study_date or '',
-                start_time.strftime('%Y-%m-%d %H:%M:%S.%f'),
-                end_time.strftime('%Y-%m-%d %H:%M:%S.%f'),
-                round(duration, 4),
-                merged_json
-            ))
+        engine = _get_db_connection()
+        
+        with engine.connect() as conn:
+            # Use MERGE for upsert operation
+            conn.execute(text('''
+                MERGE pacscrawler_studydata AS target
+                USING (SELECT :acc AS acc) AS source
+                ON target.acc = source.acc
+                WHEN MATCHED THEN
+                    UPDATE SET 
+                        studydescription = :study_description,
+                        studydate = :study_date,
+                        start_time = :start_time,
+                        end_time = :end_time,
+                        duration_seconds = :duration,
+                        merged_json = :merged_json,
+                        created_at = GETDATE()
+                WHEN NOT MATCHED THEN
+                    INSERT (acc, studydescription, studydate, start_time, end_time, duration_seconds, merged_json)
+                    VALUES (:acc, :study_description, :study_date, :start_time, :end_time, :duration, :merged_json);
+            '''), {
+                'acc': acc,
+                'study_description': study_description or '',
+                'study_date': study_date or '',
+                'start_time': start_time,
+                'end_time': end_time,
+                'duration': round(duration, 4),
+                'merged_json': merged_json
+            })
             
             conn.commit()
-            log.debug(f"Logged timing info for {acc}: {duration:.4f}s")
+            log.debug(f"Upserted study data for {acc}: {duration:.4f}s")
             
-    except Exception as e:
-        log.error(f"Failed to write timing info to database for {acc}: {e}")
+    except SQLAlchemyError as e:
+        log.error(f"Failed to upsert study data to database for {acc}: {e}")
+    finally:
+        engine.dispose()
 
 
 def index_acc(acc: str):

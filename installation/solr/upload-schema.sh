@@ -1,11 +1,12 @@
 #!/bin/bash
 
-if [[ $# -eq 0 ]] ; then
-    echo "No argument supplied, please supply name of solr core, e.g. ./update-schema.sh pacs_core"
+if [[ $# -ne 2 ]] ; then
+    echo "No or not enough arguments supplied, please supply name of solr core and port, e.g. ./update-schema.sh pacs_core 8984"
     exit 1
 fi
 
 CORE=$1
+PORT=$2
 curl -X POST -H 'Content-type:application/json' --data-binary '{
   "add-field":[
    {
@@ -40,7 +41,7 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true }, 
    {
      "name":"PatientAge",
-     "type":"int",
+     "type":"pint",
      "docValues":true },
    {
      "name":"ReferringPhysicianName",
@@ -54,6 +55,9 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true },
    {
      "name":"StudyDate",
+     "type":"plong" },
+   {
+     "name":"StudyTime",
      "type":"plong" },
    {
      "name":"StudyDescription",
@@ -83,8 +87,8 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
    {
     "name":"RisReport",
     "type":"text_de"},
-   {
-      "name":"Category",
+    {
+      "name":"Tags",
       "type":"string",
       "docValues":true }]
-}' http://localhost:8983/solr/$CORE/schema
+}' http://localhost:$PORT/solr/$CORE/schema
