@@ -3,13 +3,13 @@ from datetime import datetime
 
 import requests
 import structlog
-from sqlalchemy import create_engine, text, URL
+from sqlalchemy import URL, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from crawler.config import get_solr_upload_url
 from crawler.convert import convert_pacs_file, merge_pacs_ris
-from tasks.accession import accession
-from tasks.util import load_config
+from crawler.accession import accession
+from crawler.util import load_config
 
 log = structlog.get_logger()
 
@@ -73,6 +73,7 @@ def _get_db_connection():
 
 def _log_timing_info_sqlite(acc: str, study_description: str, study_date: str, start_time: datetime, end_time: datetime, duration: float, merged_json: str = None):
     """Log timing information to MS SQL Server database using upsert operation"""
+    engine = None
     try:
         engine = _get_db_connection()
         
@@ -110,7 +111,8 @@ def _log_timing_info_sqlite(acc: str, study_description: str, study_date: str, s
     except SQLAlchemyError as e:
         log.error(f"Failed to upsert study data to database for {acc}: {e}")
     finally:
-        engine.dispose()
+        if engine is not None:
+            engine.dispose()
 
 
 def index_acc(acc: str):

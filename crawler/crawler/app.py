@@ -11,8 +11,8 @@ from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
 from redis import Redis
 from rq import Queue
-from tasks.accession import prefetch_task
-from tasks.ris_pacs_merge_upload import index_acc
+from crawler.accession import prefetch_task
+from crawler.ris_pacs_merge_upload import index_acc
 
 from crawler.query import query_day_accs
 

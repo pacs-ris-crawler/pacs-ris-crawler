@@ -11,7 +11,7 @@ from typing import Dict,  Optional
 import structlog
 from sqlalchemy import URL, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
-from tasks.util import load_config
+from crawler.util import load_config
 
 log = structlog.get_logger()
 
