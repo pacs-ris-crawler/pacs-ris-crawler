@@ -23,14 +23,14 @@ def query_for_study_uid(config, accession_number):
     An example would be GRASP sequences."""
     query = study_uid_query(config, accession_number)
     result, _ = run(query)
+    ids = []
     if result:
-        ids = []
         for r in result:
             ids.append(r["StudyInstanceUID"])
-        return ids
     log.warning(
         f"No result found for accession number: {accession_number}\nQuery was: {query}"
     )
+    return ids
 
 
 def query_accession_number(config, study_uid):
