@@ -1,61 +1,87 @@
 #!/usr/bin/env python3
 """
-Utility script for managing the SQLite timing database.
+Utility script for managing the MS SQL Server study data database.
 Provides functions to export data to CSV, get statistics, and manage the database.
 """
 
 import csv
 import os
-import sqlite3
-from datetime import datetime
-from typing import Dict, List, Optional, Tuple
+from typing import Dict,  Optional
 
 import structlog
+from sqlalchemy import URL, create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
+from tasks.util import load_config
 
 log = structlog.get_logger()
 
 
-def get_timing_db_connection():
-    """Get SQLite connection to the timing database"""
-    db_path = os.path.join('crawler', 'data', 'timing.db')
+def get_db_connection():
+    """Get SQLAlchemy engine for MS SQL Server"""
+    config = load_config()
     
-    if not os.path.exists(db_path):
-        raise FileNotFoundError(f"Timing database not found at {db_path}. Run some index_acc operations first to create the database.")
+    # Create engine with connection pooling
+    connection_string = URL.create(
+        "mssql+pyodbc",
+        username=config['MSSQL_USERNAME'],
+        password=config['MSSQL_PASSWORD'],
+        host=config['MSSQL_SERVER'],
+        port=config['MSSQL_PORT'],
+        database=config['MSSQL_DATABASE'],
+        query={
+            "driver": "ODBC Driver 18 for SQL Server",
+            "TrustServerCertificate": "yes",
+        },
+    )
     
-    return sqlite3.connect(db_path, timeout=30.0)
+    engine = create_engine(
+        connection_string,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+        pool_size=5,
+        max_overflow=10
+    )
+    
+    return engine
 
 
 def export_to_csv(output_file: Optional[str] = None, limit: Optional[int] = None) -> str:
     """
-    Export timing data from SQLite database to CSV file
+    Export study data from MS SQL Server database to CSV file
     
     Args:
-        output_file: Path to output CSV file (default: crawler/data/timing_info.csv)
+        output_file: Path to output CSV file (default: crawler/data/study_data.csv)
         limit: Maximum number of records to export (default: all)
     
     Returns:
         Path to the created CSV file
     """
     if output_file is None:
-        output_file = os.path.join('crawler', 'data', 'timing_info.csv')
+        output_file = os.path.join('crawler', 'data', 'study_data.csv')
     
     try:
-        with get_timing_db_connection() as conn:
+        engine = get_db_connection()
+        
+        with engine.connect() as conn:
             # Build query
-            query = '''
+            query = text('''
                 SELECT acc, studydescription, studydate, start_time, end_time, duration_seconds
-                FROM timing_info
+                FROM pacscrawler_studydata
                 ORDER BY start_time
-            '''
+            ''')
             
             if limit:
-                query += f' LIMIT {limit}'
+                query = text(f'''
+                    SELECT TOP {limit} acc, studydescription, studydate, start_time, end_time, duration_seconds
+                    FROM pacscrawler_studydata
+                    ORDER BY start_time
+                ''')
             
-            cursor = conn.execute(query)
-            rows = cursor.fetchall()
+            result = conn.execute(query)
+            rows = result.fetchall()
             
             if not rows:
-                log.warning("No timing data found in database")
+                log.warning("No study data found in database")
                 return output_file
             
             # Write to CSV
@@ -78,25 +104,29 @@ def export_to_csv(output_file: Optional[str] = None, limit: Optional[int] = None
                         'duration_seconds': row[5]
                     })
             
-            log.info(f"Exported {len(rows)} timing records to {output_file}")
+            log.info(f"Exported {len(rows)} study records to {output_file}")
             return output_file
             
-    except Exception as e:
-        log.error(f"Failed to export timing data: {e}")
+    except SQLAlchemyError as e:
+        log.error(f"Failed to export study data: {e}")
         raise
+    finally:
+        engine.dispose()
 
 
 def get_timing_statistics() -> Dict:
     """
-    Get comprehensive statistics about timing data
+    Get comprehensive statistics about study data
     
     Returns:
         Dictionary containing various timing statistics
     """
     try:
-        with get_timing_db_connection() as conn:
+        engine = get_db_connection()
+        
+        with engine.connect() as conn:
             # Basic statistics
-            cursor = conn.execute('''
+            result = conn.execute(text('''
                 SELECT 
                     COUNT(*) as total_count,
                     AVG(duration_seconds) as avg_duration,
@@ -104,46 +134,36 @@ def get_timing_statistics() -> Dict:
                     MAX(duration_seconds) as max_duration,
                     MIN(start_time) as earliest_record,
                     MAX(start_time) as latest_record
-                FROM timing_info
-            ''')
+                FROM pacscrawler_studydata
+            '''))
             
-            basic_stats = cursor.fetchone()
+            basic_stats = result.fetchone()
             
             if basic_stats[0] == 0:
-                return {'total_count': 0, 'message': 'No timing data found'}
+                return {'total_count': 0, 'message': 'No study data found'}
             
             # Study description statistics
-            cursor = conn.execute('''
-                SELECT studydescription, COUNT(*) as count
-                FROM timing_info
+            result = conn.execute(text('''
+                SELECT TOP 10 studydescription, COUNT(*) as count
+                FROM pacscrawler_studydata
                 WHERE studydescription IS NOT NULL AND studydescription != ''
                 GROUP BY studydescription
                 ORDER BY count DESC
-                LIMIT 10
-            ''')
+            '''))
             
-            study_stats = cursor.fetchall()
+            study_stats = result.fetchall()
             
-            # Duration percentiles (approximate)
-            cursor = conn.execute('''
-                SELECT duration_seconds
-                FROM timing_info
-                ORDER BY duration_seconds
-            ''')
+            # Duration percentiles
+            result = conn.execute(text('''
+                SELECT 
+                    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY duration_seconds) OVER () as p50,
+                    PERCENTILE_CONT(0.9) WITHIN GROUP (ORDER BY duration_seconds) OVER () as p90,
+                    PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_seconds) OVER () as p95,
+                    PERCENTILE_CONT(0.99) WITHIN GROUP (ORDER BY duration_seconds) OVER () as p99
+                FROM pacscrawler_studydata
+            '''))
             
-            durations = [row[0] for row in cursor.fetchall()]
-            
-            def percentile(data, p):
-                """Calculate percentile"""
-                if not data:
-                    return None
-                k = (len(data) - 1) * p / 100
-                f = int(k)
-                c = k - f
-                if f == len(data) - 1:
-                    return data[f]
-                else:
-                    return data[f] * (1 - c) + data[f + 1] * c
+            percentiles = result.fetchone()
             
             stats = {
                 'total_count': basic_stats[0],
@@ -152,31 +172,33 @@ def get_timing_statistics() -> Dict:
                 'max_duration': basic_stats[3],
                 'earliest_record': basic_stats[4],
                 'latest_record': basic_stats[5],
-                'p50_duration': percentile(durations, 50),
-                'p90_duration': percentile(durations, 90),
-                'p95_duration': percentile(durations, 95),
-                'p99_duration': percentile(durations, 99),
+                'p50_duration': percentiles[0],
+                'p90_duration': percentiles[1],
+                'p95_duration': percentiles[2],
+                'p99_duration': percentiles[3],
                 'top_study_types': study_stats
             }
             
             return stats
             
-    except Exception as e:
-        log.error(f"Failed to get timing statistics: {e}")
+    except SQLAlchemyError as e:
+        log.error(f"Failed to get study statistics: {e}")
         raise
+    finally:
+        engine.dispose()
 
 
 def print_timing_summary():
-    """Print a formatted summary of timing statistics"""
+    """Print a formatted summary of study statistics"""
     try:
         stats = get_timing_statistics()
         
         if stats.get('total_count', 0) == 0:
-            print("No timing data found in database")
+            print("No study data found in database")
             return
         
         print("\n" + "="*60)
-        print("TIMING STATISTICS SUMMARY")
+        print("STUDY DATA STATISTICS SUMMARY")
         print("="*60)
         
         print(f"Total accessions processed: {stats['total_count']:,}")
@@ -200,12 +222,12 @@ def print_timing_summary():
         print()
         
     except Exception as e:
-        print(f"Error getting timing summary: {e}")
+        print(f"Error getting study summary: {e}")
 
 
 def cleanup_old_records(days: int = 30) -> int:
     """
-    Remove timing records older than specified number of days
+    Remove study records older than specified number of days
     
     Args:
         days: Number of days to keep (default: 30)
@@ -214,92 +236,79 @@ def cleanup_old_records(days: int = 30) -> int:
         Number of records deleted
     """
     try:
-        with get_timing_db_connection() as conn:
+        engine = get_db_connection()
+        
+        with engine.connect() as conn:
             # Delete old records
-            cursor = conn.execute('''
-                DELETE FROM timing_info
-                WHERE created_at < datetime('now', '-{} days')
-            '''.format(days))
+            result = conn.execute(text('''
+                DELETE FROM pacscrawler_studydata
+                WHERE created_at < DATEADD(day, -:days, GETDATE())
+            '''), {'days': days})
             
-            deleted_count = cursor.rowcount
+            deleted_count = result.rowcount
             conn.commit()
             
-            # Vacuum to reclaim space
-            conn.execute('VACUUM')
-            
-            log.info(f"Deleted {deleted_count} timing records older than {days} days")
+            log.info(f"Deleted {deleted_count} study records older than {days} days")
             return deleted_count
             
-    except Exception as e:
+    except SQLAlchemyError as e:
         log.error(f"Failed to cleanup old records: {e}")
         raise
+    finally:
+        engine.dispose()
 
 
 def get_database_info() -> Dict:
-    """Get information about the database file and WAL mode status"""
+    """Get information about the database"""
     try:
-        db_path = os.path.join('crawler', 'data', 'timing.db')
+        engine = get_db_connection()
         
-        if not os.path.exists(db_path):
-            return {'exists': False, 'path': db_path}
-        
-        # Get file size
-        file_size = os.path.getsize(db_path)
-        
-        with get_timing_db_connection() as conn:
-            # Check WAL mode
-            cursor = conn.execute('PRAGMA journal_mode')
-            journal_mode = cursor.fetchone()[0]
+        with engine.connect() as conn:
+            # Get database size and other info
+            result = conn.execute(text('''
+                SELECT 
+                    DB_NAME() as database_name,
+                    (SELECT SUM(size * 8.0 / 1024) FROM sys.database_files) as size_mb,
+                    (SELECT COUNT(*) FROM pacscrawler_studydata) as record_count,
+                    (SELECT MIN(created_at) FROM pacscrawler_studydata) as earliest_record,
+                    (SELECT MAX(created_at) FROM pacscrawler_studydata) as latest_record
+            '''))
             
-            # Get page count and page size
-            cursor = conn.execute('PRAGMA page_count')
-            page_count = cursor.fetchone()[0]
-            
-            cursor = conn.execute('PRAGMA page_size')
-            page_size = cursor.fetchone()[0]
-            
-            # Check if WAL file exists
-            wal_file = db_path + '-wal'
-            wal_exists = os.path.exists(wal_file)
-            wal_size = os.path.getsize(wal_file) if wal_exists else 0
+            info = result.fetchone()
             
             return {
-                'exists': True,
-                'path': db_path,
-                'file_size': file_size,
-                'journal_mode': journal_mode,
-                'page_count': page_count,
-                'page_size': page_size,
-                'wal_exists': wal_exists,
-                'wal_size': wal_size,
-                'total_size': file_size + wal_size
+                'database_name': info[0],
+                'size_mb': round(info[1], 2),
+                'record_count': info[2],
+                'earliest_record': info[3],
+                'latest_record': info[4]
             }
             
-    except Exception as e:
+    except SQLAlchemyError as e:
         log.error(f"Failed to get database info: {e}")
         return {'error': str(e)}
+    finally:
+        engine.dispose()
 
 
 def optimize_database():
-    """Optimize the database by running ANALYZE and VACUUM"""
+    """Optimize the database by updating statistics"""
     try:
-        with get_timing_db_connection() as conn:
+        engine = get_db_connection()
+        
+        with engine.connect() as conn:
             log.info("Running database optimization...")
             
             # Update table statistics
-            conn.execute('ANALYZE')
-            
-            # Reclaim unused space
-            conn.execute('VACUUM')
-            
-            # Checkpoint WAL file
-            conn.execute('PRAGMA wal_checkpoint(FULL)')
+            conn.execute(text('UPDATE STATISTICS pacscrawler_studydata WITH FULLSCAN'))
             
             log.info("Database optimization completed")
             
-    except Exception as e:
+    except SQLAlchemyError as e:
         log.error(f"Failed to optimize database: {e}")
         raise
+    finally:
+        engine.dispose()
 
 
 if __name__ == "__main__":
@@ -333,16 +342,13 @@ if __name__ == "__main__":
             
         elif command == "info":
             info = get_database_info()
-            if info.get('exists'):
-                print(f"Database path: {info['path']}")
-                print(f"File size: {info['file_size']:,} bytes")
-                print(f"Journal mode: {info['journal_mode']}")
-                print(f"WAL file exists: {info['wal_exists']}")
-                if info['wal_exists']:
-                    print(f"WAL file size: {info['wal_size']:,} bytes")
-                print(f"Total size: {info['total_size']:,} bytes")
+            if 'error' not in info:
+                print(f"Database: {info['database_name']}")
+                print(f"Size: {info['size_mb']} MB")
+                print(f"Records: {info['record_count']:,}")
+                print(f"Time range: {info['earliest_record']} to {info['latest_record']}")
             else:
-                print(f"Database does not exist at: {info['path']}")
+                print(f"Error: {info['error']}")
                 
         elif command == "optimize":
             optimize_database()
