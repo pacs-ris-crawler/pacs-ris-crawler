@@ -156,4 +156,4 @@ def index_acc(acc: str):
     # Log timing information to SQLite database
     _log_timing_info_sqlite(acc, study_description, study_date, start_datetime, end_datetime, duration, str(merged_json))
 
-    return "Upload successful for accession %s" % acc
+    return merged_json

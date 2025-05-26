@@ -88,33 +88,13 @@ def create_app(test_config=None):
         if not accession_number:
             return "no accession number given", 400
         try:
-            index_acc(accession_number)
-            output_path = f"data/{accession_number}_ris_pacs_merged.json"
-            # Verify that the output file exists
-            if not Path(output_path).exists():
-                return f"Output file {output_path} not found", 500
-
-            # Read and load the JSON results from the output file
-            with open(output_path, "r") as merged_file:
-                results = json.load(merged_file)
-
-            for result in results:
-                result["_childDocuments_"] = sorted(
-                    result["_childDocuments_"],
-                    key=lambda k: int(k.get("SeriesNumber", "0")),
-                )
-
-            command = ""
-            if Path(f"data/{accession_number}_command.txt").exists():
-                with open(f"data/{accession_number}_command.txt", "r") as f:
-                    command = " ".join(y.strip() for y in f.read().splitlines())
+            result = index_acc(accession_number)
 
             return render_template(
                 "result.html",
-                command=command,
                 accession_number=accession_number,
                 version=app.config["VERSION"],
-                results=results,
+                results=result,
             )
         except Exception as e:
             logger.error("search_error", error=str(e), exc_info=True)
