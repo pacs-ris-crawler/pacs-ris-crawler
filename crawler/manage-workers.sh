@@ -20,7 +20,7 @@ else
 fi
 
 # Configuration
-WORKER_SERVICE_PREFIX="pacs_ris_crawler-indexer-worker@"
+WORKER_SERVICE_PREFIX="pacs_ris_crawler-worker-indexer@"
 WORKER_COUNT=4
 
 # Colors for output
