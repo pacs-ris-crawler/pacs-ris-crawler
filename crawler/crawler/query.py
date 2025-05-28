@@ -14,6 +14,7 @@ from crawler.command import (
 )
 from crawler.dicom import DicomQueryError
 from crawler.executor import run
+from crawler.util import load_config
 
 log = structlog.get_logger()
 
@@ -21,7 +22,11 @@ log = structlog.get_logger()
 def query_for_study_uid(config, accession_number):
     """There could be different study_uids for a single accession number.
     An example would be GRASP sequences."""
-    query = study_uid_query(config, accession_number)
+    # Load full configuration for DCMTK_BIN and merge with DICOM node config
+    full_config = load_config()
+    merged_config = {**full_config, **config}
+    
+    query = study_uid_query(merged_config, accession_number)
     result, _ = run(query)
     ids = []
     if result:
@@ -34,14 +39,22 @@ def query_for_study_uid(config, accession_number):
 
 
 def query_accession_number(config, study_uid):
-    query = basic_query(config)
+    # Load full configuration for DCMTK_BIN and merge with DICOM node config
+    full_config = load_config()
+    merged_config = {**full_config, **config}
+    
+    query = basic_query(merged_config)
     query = add_study_uid(query, study_uid)
     result, _ = run(query)
     return result, query
 
 
 def prefetch_accession_number(config, study_uid):
-    query = prefetch_query(config, study_uid)
+    # Load full configuration for DCMTK_BIN and merge with DICOM node config
+    full_config = load_config()
+    merged_config = {**full_config, **config}
+    
+    query = prefetch_query(merged_config, study_uid)
     run(query, parse_results=False)
     return query
 
@@ -66,7 +79,11 @@ def query_day_accs(
         start_time: Start time in HHMM format (default "0000")
         end_time: End time in HHMM format (default "2359")
     """
-    query = accs_per_day(config, day.strftime("%Y%m%d"), f"{start_time}-{end_time}")
+    # Load full configuration for DCMTK_BIN and merge with DICOM node config
+    full_config = load_config()
+    merged_config = {**full_config, **config}
+    
+    query = accs_per_day(merged_config, day.strftime("%Y%m%d"), f"{start_time}-{end_time}")
     try:
         result, _ = run(query)
         return result

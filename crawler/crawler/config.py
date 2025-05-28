@@ -13,6 +13,15 @@ def pacs_settings(config):
     return f"-aec {ae_called} {ae_peer_address} {ae_peer_port} -aet {ae_title}"
 
 
+def get_dcmtk_bin_path(config):
+    """
+    Gets the DCMTK binary path from configuration
+    :param config: configuration dictionary
+    :return: str: path to DCMTK binaries
+    """
+    return config.get("DCMTK_BIN", "/usr/bin")
+
+
 def get_solr_upload_url(file="config.ini"):
     """
     Reads the configuration from the config.ini file
