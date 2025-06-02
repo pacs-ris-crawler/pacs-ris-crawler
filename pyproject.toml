@@ -17,4 +17,5 @@ dependencies = [
     "rq-dashboard>=0.8.2.2",
     "structlog>=25.3.0",
     "pyodbc>=5.2.0",
+    "xlsxwriter>=3.2.3",
 ]
