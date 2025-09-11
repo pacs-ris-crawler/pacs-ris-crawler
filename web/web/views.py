@@ -34,7 +34,7 @@ from web.query_all import query_all
 from web.solr import solr_url
 from web.statistics import calculate
 from web.terms import get_terms_data
-from web.query_llm import llm_dummy
+from web.query_llm import llm_validate
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -78,11 +78,11 @@ def llm_query():
     params = request.get_json(force=True)
     text_query = params.get("query", "")
     if text_query and text_query.strip():
-        llm_output = llm_dummy(input_prompt=text_query)
+        llm_output = llm_validate(input_prompt=text_query)
 
     package = {
-        "regexQuery": llm_output.get("regex_pattern"),
-        "studyDescriptionQuery": (" ").join(llm_output.get("study_description"))
+        "regexQuery": llm_output.get("bericht_query"),
+        "studyDescriptionQuery": llm_output.get("modality_query")
     }
     return package
 

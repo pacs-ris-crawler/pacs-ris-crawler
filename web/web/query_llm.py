@@ -7,7 +7,8 @@ from flask import current_app
 # model = "llama3.3:70b-instruct-q5_K_M"
 # model = mixtral:8x7b-instruct-v0.1-q8_0
 model = "mistral-small:24b-instruct-2501-q4_K_M"
-# model = mistral-small3.1:24b-instruct-2503-fp16
+# model = "mistral-small3.2:24b-instruct-2506-q8_0"
+# model = "mistral-small3.1:24b-instruct-2503-fp16"
 # model = "mistral-small3.1:24b-instruct-2503-q8_0"
 
 def create_client():
@@ -43,36 +44,39 @@ def llm(model=model, input_prompt="Hallo", system_prompt="Du bist ein hilfsberei
 
 class query_output(BaseModel):
 
-    regex_pattern: str = Field(..., title="Regex", description="best regex pattern to search through the database")
-    study_description: List[str] = Field(..., title="StudyDescriptions", description="a list of all study descriptions to be looked for")
-    phrases: List[str] = Field(..., title="Phrases", description="different word phrases to be used for search which are covered by the regex pattern")
+    bericht_query: str = Field()
+    modality_query: str = Field()
 
-system_prompt = (
-    "Du bist ein medizinischer Regex-Spezialist. Deine Aufgabe ist es, frei formulierte menschliche Suchanfragen "
-    "in **radiologischen Berichten** in präzise, PCRE-kompatible reguläre Ausdrücke zu übersetzen.\n\n"
-    "### Kontext der Berichte\n"
-    "Jeder Bericht besteht aus genau fünf Abschnitten mit festen Labels: Anamnese, Fragestellung, Technik, Befund, Beurteilung.\n\n"
-    "### Vorgehen\n"
-    "1. **Abschnitte wählen**: Entscheide, in welchen der fünf Abschnitte gesucht werden soll – es können auch mehrere Abschnitte sein.\n"
-    "2. **Phrasen ableiten**: Erzeuge aus der Anfrage relevante Suchphrasen und gängige Synonyme.\n"
-    "3. **Regex bauen**: Generiere genau einen Ausdruck, der folgende Eigenschaften hat:\n"
-    "   • **Abschnitts-Anchor** am Zeilenanfang (case-insensitive, z. B. `(?mi)^Label:`) – ohne diesen darf kein Treffer entstehen.\n"
-    "   • **Multiline-Support**: Erlaube mit DOTALL (`(?s)`) oder expliziten Zeilenumbruchs-Tokens (`\\r?\\n`), dass der Ausdruck "
-    "über mehrere Zeilen sucht.\n"
-    "   • **Nicht-gierige Quantifizierung** (`.*?`), damit nach dem Header nur bis zum ersten echten Vorkommen deiner Phrasen eingespannt wird.\n"
-    "   • **Phrasen-Gruppe** als ODER-Konstruktion mit Wortgrenzen (`\\b(?:…|…)\\b`), die zwingend mindestens eine Phrase enthalten muss.\n"
-    "   • **Kein Match**, wenn nur der Abschnitts-Anchor existiert – es muss immer wirklich eine der Phrasen folgen.\n"
-    "4. **Flags & Technik**: Nutze case-insensitive (`(?i)`) und ggf. DOTALL-Modus (`(?s)`), vermeide variable-length Lookbehinds.\n\n"
-    "### Ausgabeformat (JSON)\n"
-    "Antwort nur mit diesem Objekt, ohne zusätzlichen Text:\n"
-    "{\n"
-    "  \"phrases\": [\"<Liste_der_Suchphrasen>\"],\n"
-    "  \"regex_pattern\": \"<vollständiges_PCRE_Muster>\"\n"
-    "}\n\n"
-    "Antworte auf Deutsch."
-)
+system_prompt = """
+Du bist ein medizinischer Regex-Generator. Wandle Benutzeranfragen über Radiologie-Berichte in JSON-Format um.
 
-def llm_dummy(model=model, input_prompt="Bauchschmerzen", system_prompt=system_prompt, format=query_output.model_json_schema()):
+Deine Aufgabe:
+1. Extrahiere die wichtigsten Informationen aus der Benutzeranfrage
+2. Erstelle für den Berichtsstext eine Wildcard Query, die diese Begriffe sucht. Dabei sollen automatisch Buchstabierungsvarianten und Reihenfolgvarianten abgedeckt sein. Schaue, dass die query so gut wie möglich die Benutzeranfrage abbildet und dass du nicht zu viele Pathologien einschliesst (zB bei Hypertension -> einfach *idiopathische*, welches auch viele andere Krankheiten involvieren würde).
+3. Erstelle für die Bildgebungsmodalitäten eine Lucene Regex Query, die diese Begriffe sucht. Hier reicht es, wenn die gängigsten Gross- und Kleinschreibvarianten und Buchstabierungsvarianten probiert werden, es muss nicht alles abgedeckt werden sondern nur die häufigsten. Die Query darf nicht länger als 255 Zeichen sein. Es sollen nur deutsche Begriffe für Modalitäten abgedeckt werden.
+
+Ausgabeformat (nur JSON, keine Erklärung):
+{
+  "bericht_query": *tokenisierte query in SOLR Regex Form*,
+  "modality_query": *single-query in SOLR Regex Form*
+}
+
+Beispiel 1:
+Benutzer: "Alle US untersuchungen Abdomen ohne Biopsie bei Bauchschmerzen"
+Ausgabe: {
+  "bericht_query": "(*bauchschmerz* OR *bauchweh* OR *oberbauchschmerz* OR *unterbauchschmerz* OR *mittelbauchschmerz* OR *flankenschmerz* OR *leistenschmerz* OR *leistenbeschwerden* OR *abdomenschmerz* OR *abdomin*schmerz* OR *abdomin*beschwerden* OR *epigastr*schmerz* OR *hypogastr*schmerz* OR *nabelschmerz* OR *periumbilik*schmerz* OR *paraumbilik*schmerz* OR *kolik*bauch* OR *kolik*abdom*)",
+  "modality_query": "/(.*[sS]onogra(ph|f)?(ie|y)?.*)&(.*[aA]bdom.*)&~(.*[bB]iopsie.*)/",
+}
+
+Beispiel 2:
+Benutzer: "Alle CT Schädel mit Epiduralblutungen"
+Ausgabe: {
+  "bericht_query": "("epidural hämatom*"~3 OR "hämatom*epidural"~3 OR "epidural blut*"~3 OR "blut* epidural"~3 OR "extradural hämatom*"~3 OR "hämatom* extradural"~3 OR "extradural blut*"~3 OR "blut* extradural"~3)",
+  "modality_query": "/.*CT.*Sch(ä|ae)del.*/",
+}
+"""
+
+def llm_validate(model=model, input_prompt="Bauchschmerzen", system_prompt=system_prompt, format=query_output.model_json_schema()):
     
     try:
         llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)
@@ -84,7 +88,3 @@ def llm_dummy(model=model, input_prompt="Bauchschmerzen", system_prompt=system_p
             llm_output = None
 
     return llm_output.model_dump() if llm_output else query_output().model_dump()
-
-
-# print(llm_dummy(input=input_prompt, system_prompt=system_prompt))
-
