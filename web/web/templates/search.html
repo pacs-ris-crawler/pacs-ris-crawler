@@ -33,7 +33,23 @@
       <div class="form-group row mx-auto px-1">
         <div class="col">
           <label for="patientid-input" class="col-form-label"
-            title="Patient ID to search for, multiples are separated by space">Report Text</label>
+            title="Patient ID to search for, multiples are separated by space">Report Text
+            <span class="oi oi-info" data-toggle="tooltip" data-placement="bottom" data-html="true" 
+                  title="<div style='text-align: left; max-width: 600px; font-size: 13px;'>
+                         <strong>SOLR Query Examples (everything converted to lowercase, so no need to consider capitalisation):</strong><br/>
+                         <table style='width: 100%; margin-top: 8px; font-family: monospace;'>
+                           <tr><td style='padding: 2px 8px 2px 0; width: 35%;'><code>pneumon*</code></td><td style='padding: 2px 0;'>matches pneumonia, pneumonitis, etc.</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>*kardiom*</code></td><td style='padding: 2px 0;'>matches any word containing 'kardiom'</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>&quot;pleural effusion&quot;</code></td><td style='padding: 2px 0;'>exact phrase match</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>&quot;lungen metastasen&quot;~3</code></td><td style='padding: 2px 0;'>words within 3 positions</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>pneumonia~2</code></td><td style='padding: 2px 0;'>allows 2 character differences</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>tumor* OR karzinom*</code></td><td style='padding: 2px 0;'>boolean OR operation</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>pneumonia AND NOT kein*</code></td><td style='padding: 2px 0;'>boolean AND NOT operation</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>&quot;*metastas* leber*&quot;~5</code></td><td style='padding: 2px 0;'>wildcard (*) + phrase &#40;&quot;&quot;&#41; + proximity combined</td></tr>
+                         </table>
+                         </div>"
+                  style="cursor: help; margin-left: 5px; font-size: 0.8em; color: #6c757d;"></span>
+          </label>
             <div class="input-group input-group-sm">
               <input type="text" class="form-control form-control-sm" id="search-input" name="RisReport"
                 value="{{ params.RisReport }}" autofocus>
@@ -56,7 +72,21 @@
         <div class="col">
           <label for="studydescription-input" class="col-form-label"
             title="Study Description to search for, for exact search put it between &quot; &quot;">Study
-            Description</label>
+            Description
+            <span class="oi oi-info" data-toggle="tooltip" data-placement="bottom" data-html="true" 
+                  title="<div style='text-align: left; max-width: 800px; font-size: 13px;'>
+                         <strong>Lucene Regex Examples (Capitalisation must be considered!):</strong><br/>
+                         <table style='width: 100%; margin-top: 8px; font-family: monospace;'>
+                           <tr><td style='padding: 2px 8px 2px 0; width: 35%;'><code>/.*CT.*[sS]chädel.*/</code></td><td style='padding: 2px 0;'>CT with Schädel or schädel</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>/.*MR.*[tT]horax.*/</code></td><td style='padding: 2px 0;'>MR with Thorax or thorax</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>/.*[Aa]bdomen.*/</code></td><td style='padding: 2px 0;'>contains Abdomen or abdomen</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>/^CT.*/</code></td><td style='padding: 2px 0;'>starts with CT</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>/.*Kontrast.*$/</code></td><td style='padding: 2px 0;'>ends with Kontrast</td></tr>
+                           <tr><td style='padding: 2px 8px 2px 0;'><code>/.*(CT|MR).*/</code></td><td style='padding: 2px 0;'>contains CT OR MR</td></tr>
+                         </table>
+                         </div>"
+                  style="cursor: help; margin-left: 5px; font-size: 0.8em; color: #6c757d;"></span>
+          </label>
           <input class="form-control form-control-sm" type="text" id="studydescription-input" name="StudyDescription"
             value="{{ params.StudyDescription }}">
         </div>
@@ -250,9 +280,4 @@
   </div>
 </div>
 
-<script>
-$('#textInputModal button[type="submit"]').on('click', function() {
-  console.log("OK button clicked!");
-});
-</script>
 {% endblock %}

@@ -11,6 +11,13 @@ ul.result li {
     border-bottom: 2px solid #ddd;
 }
 
+/* Tooltip styling for better width and content display */
+.tooltip .tooltip-inner {
+    max-width: 640px;
+    width: max-content;
+    white-space: normal;
+}
+
 /* no ugly blue border around links on click */
 a:focus {
     outline:0;

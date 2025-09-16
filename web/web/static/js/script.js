@@ -1,6 +1,8 @@
 $(function () {
   console.log("ready!");
 
+  $('[data-toggle="tooltip"]').tooltip();
+  
   var startDatePicker = $('#start-date-picker').pikaday({
     format: 'DD.MM.YYYY',
     firstDay: 1,
