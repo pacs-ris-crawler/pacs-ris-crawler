@@ -3,13 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List
 import json
 from flask import current_app
-
-# model = "llama3.3:70b-instruct-q5_K_M"
-# model = mixtral:8x7b-instruct-v0.1-q8_0
-model = "mistral-small:24b-instruct-2501-q4_K_M"
-# model = "mistral-small3.2:24b-instruct-2506-q8_0"
-# model = "mistral-small3.1:24b-instruct-2503-fp16"
-# model = "mistral-small3.1:24b-instruct-2503-q8_0"
+import re
 
 def create_client():
     def _get_ollama_url():
@@ -76,7 +70,7 @@ Ausgabe: {
 }
 """
 
-def llm_validate(model=model, input_prompt="Bauchschmerzen", system_prompt=system_prompt, format=query_output.model_json_schema()):
+def llm_validate(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="", system_prompt=system_prompt, format=query_output.model_json_schema()):    
     
     try:
         llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)

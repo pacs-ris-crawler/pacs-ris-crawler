@@ -10,7 +10,7 @@ from plotnine import *
 matplotlib.use("Agg")
 import pandas as pd
 import requests
-from flask import render_template, request, send_file, jsonify
+from flask import render_template, request, send_file, jsonify, current_app
 from requests import RequestException, get, post
 
 from web.app import (
@@ -77,8 +77,9 @@ def llm_query():
     """Converts human text into proper regex query"""
     params = request.get_json(force=True)
     text_query = params.get("query", "")
+    model = current_app.config.get('OLLAMA_MODEL', 'mistral-small3.2:24b-instruct-2506-q8_0')
     if text_query and text_query.strip():
-        llm_output = llm_validate(input_prompt=text_query)
+        llm_output = llm_validate(model=model, input_prompt=text_query)
 
     package = {
         "regexQuery": llm_output.get("bericht_query"),
