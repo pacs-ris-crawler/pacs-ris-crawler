@@ -4,6 +4,9 @@ AE_CALLED = "AE_CALLED"
 PEER_ADDRESS = "127.0.0.1"
 PEER_PORT = "104"
 
+# DCMTK settings - Path to DCMTK binaries
+DCMTK_BIN = "/usr/bin"
+
 
 # Solr settings
 SOLR_UPLOAD_URL = "http://localhost:8983/solr/pacs_crawler/update/json"

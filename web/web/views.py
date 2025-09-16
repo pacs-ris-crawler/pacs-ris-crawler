@@ -199,7 +199,7 @@ def download_all():
             "data": data,
             "dir": q["download-dir"],
             "image_type": q["imageType"],
-            "queue_prio": q["queue"]
+            "queue_prio": q["queue_prio"]
         }
         return download_or_transfer(RECEIVER_DOWNLOAD_URL, download_data)
     return ("", 204)

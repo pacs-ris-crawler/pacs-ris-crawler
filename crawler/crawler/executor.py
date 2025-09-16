@@ -1,11 +1,11 @@
 import shlex
 import subprocess
-import logging
+import structlog
 
 from typing import List, Dict, Tuple
-from crawler.dicom import get_results
+from crawler.dicom import get_results, DicomQueryError
 
-log = logging.getLogger("crawler.app")
+log = structlog.get_logger()
 
 def run(query: str, parse_results=True) ->Tuple[List[Dict[str, str]], int]:
     """
@@ -14,10 +14,15 @@ def run(query: str, parse_results=True) ->Tuple[List[Dict[str, str]], int]:
     :return: a tuple where the first value is a list of DICOM tags and values
     and second value is result size
     """
-    log.debug(query)
+    log.debug("Running query", query=query)
     cmd = shlex.split(query)
+    # do not check=True because if segfaults with the current version of dcmtk 3.6.4 and ubuntu 20.04!!!
     completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    lines = completed.stderr.decode('latin1').splitlines()
+    stderr = completed.stderr.decode('latin1')
+    if "UnableToProcess" in stderr:
+        raise DicomQueryError("Query failed at DICOM level")
+    lines = stderr.splitlines()
+
     result = ""
     if parse_results:
         result = get_results(lines)

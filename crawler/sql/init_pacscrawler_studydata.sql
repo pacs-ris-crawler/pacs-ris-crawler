@@ -1,6 +1,7 @@
 -- Create pacscrawler_studydata table
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'pacscrawler_studydata')
 BEGIN
-    CREATE TABLE curalogic.dbo.pacscrawler_studydata (
+    CREATE TABLE pacscrawler_studydata (
         id INT IDENTITY(1,1) PRIMARY KEY,
         acc NVARCHAR(255) NOT NULL,
         studydescription NVARCHAR(255),
@@ -12,4 +13,4 @@ BEGIN
         created_at DATETIME2 DEFAULT GETDATE()
     )
 END
-
+GO

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from requests import get
 from requests.auth import HTTPBasicAuth
-from tasks.util import load_config
+from crawler.util import load_config
 
 from crawler.config import get_report_show_url
 
@@ -48,10 +48,11 @@ def convert_pacs_file(json_in):
                 p_dict["ReferringPhysicianName"] = entry["ReferringPhysicianName"]
             if "SeriesDate" in entry:
                 p_dict["SeriesDate"] = entry["SeriesDate"]
-            p_dict["StudyDate"] = entry["StudyDate"]
+            if "StudyDate" in entry:
+                p_dict["StudyDate"] = entry["StudyDate"]
             if "StudyTime" in entry:
                 p_dict["StudyTime"] = entry["StudyTime"]
-            if entry["StudyDescription"]:
+            if "StudyDescription" in entry:
                 p_dict["StudyDescription"] = entry["StudyDescription"]
             if "StudyID" in entry:
                 p_dict["StudyID"] = entry["StudyID"]
@@ -124,9 +125,9 @@ def merge_pacs_ris(pacs):
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
             if uses_basis_auth:
-                response = get(url, auth=HTTPBasicAuth(user, pwd))
+                response = get(url, auth=HTTPBasicAuth(user, pwd), verify=False)
             else:
-                response = get(url)
+                response = get(url, verify=False)
             response.raise_for_status()
             data = response.text
             dic["RisReport"] = data

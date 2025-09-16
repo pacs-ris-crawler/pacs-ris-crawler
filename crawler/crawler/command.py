@@ -1,14 +1,14 @@
 from datetime import date, datetime
-from typing import Tuple
 
-from crawler.config import pacs_settings
+from crawler.config import get_dcmtk_bin_path, pacs_settings
 
 
 def study_uid_query(configuration, accession_number):
     """It is not possible to query by accession number therefore we need
     to first fetch the studyinstanceuid.
     """
-    return f"findscu -v -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)} " \
+    dcmtk_bin = get_dcmtk_bin_path(configuration)
+    return f"{dcmtk_bin}/findscu -v -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)} " \
             "-k StudyInstanceUID " \
             f"-k AccessionNumber={accession_number}"
     
@@ -18,7 +18,8 @@ def accs_per_day(configuration, day, time):
     """
     Query for all studyinstanceuids for a given day.
     """
-    return f"findscu -v -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)} " \
+    dcmtk_bin = get_dcmtk_bin_path(configuration)
+    return f"{dcmtk_bin}/findscu -v -to 60 -S -k 0008,0052=STUDY {pacs_settings(configuration)} " \
             "-k AccessionNumber " \
             f" -k StudyDate={day} " \
             f" -k StudyTime={time} "
@@ -26,7 +27,8 @@ def accs_per_day(configuration, day, time):
 
 def basic_query(configuration):
     """Returns a basic findscu command with no query parameters set."""
-    return f"findscu -v -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)}" \
+    dcmtk_bin = get_dcmtk_bin_path(configuration)
+    return f"{dcmtk_bin}/findscu -v -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)}" \
              " -k PatientName " \
              " -k PatientBirthDate " \
              " -k PatientID " \
@@ -52,7 +54,8 @@ def basic_query(configuration):
 
 def prefetch_query(configuration, study_uid):
     """This is a hack to force sectra to get exams to the online storage that afterwards seriesdescription can be retrieved"""
-    return f"""movescu -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)} -k StudyInstanceUID={study_uid}"""
+    dcmtk_bin = get_dcmtk_bin_path(configuration)
+    return f"""{dcmtk_bin}/movescu -to 60 -S -k 0008,0052=SERIES {pacs_settings(configuration)} -k StudyInstanceUID={study_uid}"""
 
 
 def add_modality(query, modality):
