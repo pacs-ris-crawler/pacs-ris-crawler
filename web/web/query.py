@@ -10,6 +10,7 @@ DEFAULT_PAYLOAD = {
         "group.field": "PatientID",
         "group.limit": 100,
         "group.ngroups": "true",
+        "defType": "complexphrase"
     },
 }
 
