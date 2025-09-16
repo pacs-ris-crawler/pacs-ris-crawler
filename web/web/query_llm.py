@@ -43,7 +43,7 @@ def apply_placeholders(q: str) -> str:
     q = BOOST_PL.sub(r'\1^\3', q)    # "foo bar"[b=4]   -> "foo bar"^4  | term[b=3] -> term^3
     return q
 
-def llm(model=model, input_prompt="Hallo", system_prompt="Du bist ein hilfsbereiter KI-Assisstent", format=''):
+def llm(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="Hallo", system_prompt="Du bist ein hilfsbereiter KI-Assisstent", format=''):
     client = create_client()
     response = client.generate(
         model=model, 
