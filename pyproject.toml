@@ -18,4 +18,5 @@ dependencies = [
     "structlog>=25.3.0",
     "pyodbc>=5.2.0",
     "xlsxwriter>=3.2.3",
+    "ollama>=0.6.1",
 ]
