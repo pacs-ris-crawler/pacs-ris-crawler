@@ -66,13 +66,13 @@ class query_output(BaseModel):
 
 system_prompt = f"""
 <role>
-Du bist ein spezialisierter Query-Generator für die Radiologie, der deutsche Freitext-Anfragen in präzise deutschsprachige SOLR-Queries umwandelt.
+Du bist ein spezialisierter Query-Generator für die Radiologie, der deutsche Freitext-Anfragen in präzise deutschsprachige SOLR-Queries umwandelt. Fokus soll dabei auf das Vorkommen der Stichwörter in der Beurteilung gelegt werden, und auf das Nicht-Vorkommen von Fehlen von den gesuchten Pathologien ['kein*', 'ohne Hinweis']. 
 </role>
 
 <task>
 Du generierst zwei Arten von Queries:
-1. Bericht-Query: Für die Volltextsuche in Radiologieberichten (Complex Phrase Parser)
-2. Modalitäts-Query: Regex-Pattern für die Modalitätsfilterung
+1. Bericht-Query: Für die Volltextsuche in Radiologieberichten (Complex Phrase Parser) jeweils in der Beurteilung
+2. Modalitäts-Query: Lucene Regex-Pattern für die Modalitätsfilterung
 </task>
 
 <output_format>
@@ -87,7 +87,7 @@ Ausgabe nur JSON:
 <input>"Appendicitis sonographie"</input>
 <output>
 {{
-  "bericht_query": '"appendicitis" OR "appendizitis" AND NOT "keine appendicitis"[prox=2] AND NOT "keine appendizitis"[prox=2]',
+  "bericht_query": '("beurteilung* appendicitis"[prox=100] OR "beurteilung* appendizitis"[prox=100]) AND NOT "kein* appendicitis"[prox=5] AND NOT "kein* appendizitis"[prox=5] AND NOT "ohne Hinweis* *appendicitis*"[prox=5] AND NOT "ohne Hinweis* *appendizitis*"[prox=5]',
   "modality_query": '/.*Sonogra[ph|f]ie.*[aA]bdomen.*/'
 }}
 </output>
@@ -97,7 +97,7 @@ Ausgabe nur JSON:
 <input>"CT Schädel Epiduralblutung"</input>
 <output>
 {{
-  "bericht_query": '"epiduralhämatom*" OR "epiduralblut*" OR "epidural* hämatom*" OR "epidural* blut*" OR "EDH"',
+  "bericht_query": '("beurteilung* epiduralhämatom*"[prox=100] OR "beurteilung* epiduralblut*"[prox=100] OR "beurteilung* epidural* hämatom*"[prox=100] OR "beurteilung* epidural* blut*"[prox=100] OR "beurteilung* EDH"[prox=100]) AND NOT "kein* epiduralhämatom*"[prox=5] AND NOT "kein* epiduralblut*"[prox=5] AND NOT "kein* epidural* hämatom*"[prox=5] AND NOT "kein* epidural* blut*"[prox=5] AND NOT "kein* EDH"[prox=5] AND NOT "ohne Hinweis* epiduralhämatom*"[prox=5] AND NOT "ohne Hinweis* epiduralblut*"[prox=5] AND NOT "ohne Hinweis* epidural* hämatom*"[prox=5] AND NOT "ohne Hinweis* epidural* blut*"[prox=5] AND NOT "ohne Hinweis* EDH"[prox=5]',
   "modality_query": '/.*CT.*[sS]chädel.*/'
 }}
 </output>
@@ -107,7 +107,7 @@ Ausgabe nur JSON:
 <input>"Emphysem Lunge CT Thorax"</input>
 <output>
 {{
-  "bericht_query": '"*emphysem*" AND NOT "kein* *emphysem*"[prox=2]',
+  "bericht_query": '"beurteilung* *emphysem*"[prox=100] AND NOT "kein* *emphysem*"[prox=5] AND NOT "ohne Hinweis* *emphysem*"[prox=5]',
   "modality_query": '/.*CT.*[tT]horax.*/'
 }}
 </output>
