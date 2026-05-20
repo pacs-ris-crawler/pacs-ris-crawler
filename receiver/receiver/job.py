@@ -11,28 +11,28 @@ from receiver.executor import run, run_many
 logger = logging.getLogger("job")
 
 
-def transfer_new_pacs_command(dcmtk_config, study_uid, series_uid):
+def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
     """Constructs the first part of the transfer command to a PACS node."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/getscu -v -S -k QueryRetrieveLevel=SERIES "
+        + "/movescu -v -S -pdu 131072 -k QueryRetrieveLevel=SERIES "
         + transfer_pacs()
-        + _transfer_new(study_uid, series_uid)
+        + _transfer_new(target, study_uid, series_uid)
     )
 
 
-def _transfer_new(study_uid, series_uid):
-    return " -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
-        study_uid, series_uid
+def _transfer_new(target, study_uid, series_uid):
+    return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
+        target, study_uid, series_uid
     )
 
 
-def transfer_series(config, series_list):
+def transfer_series(config, target, series_list):
     dcmtk = dcmtk_config(config)
     for entry in series_list:
         study_uid = entry["study_uid"]
         series_uid = entry["series_uid"]
-        command = transfer_new_pacs_command(dcmtk, study_uid, series_uid)
+        command = transfer_new_pacs_command(dcmtk, target, study_uid, series_uid)
         args = shlex.split(command)
         queue_transfer(args)
         logger.debug("Running transfer command %s", args)
@@ -43,12 +43,13 @@ def base_command(dcmtk_config, pacs_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/getscu -S -k QueryRetrieveLevel=SERIES "
-        + "-aet {} -aec {} {} {}".format(
+        + "/movescu -S -pdu 131072 -k QueryRetrieveLevel=SERIES "
+        + "-aet {} -aec {} {} {} +P {}".format(
             pacs_config.ae_title,
             pacs_config.ae_called,
             pacs_config.peer_address,
             pacs_config.peer_port,
+            pacs_config.incoming_port,
         )
     )
 
@@ -57,7 +58,7 @@ def base_command_new_pacs(dcmtk_config):
     """Constructs the first part of a dcmtk command."""
     return (
         dcmtk_config.dcmtk_bin
-        + "/getscu -S -k QueryRetrieveLevel=SERIES "
+        + "/movescu -S -pdu 131072 +xv -k QueryRetrieveLevel=SERIES "
         + new_pacs()
     )
 
