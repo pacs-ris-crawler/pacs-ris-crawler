@@ -6,6 +6,11 @@ import rq_dashboard
 from flask import Flask, render_template, request
 
 from receiver.job import download_series, transfer_series, download_series_debug
+from receiver.dicomweb import (
+    download_series_dicomweb,
+    download_series_debug_dicomweb,
+    transfer_series_dicomweb,
+)
 from receiver.executor import run
 
 app = Flask(__name__, instance_relative_config=True)
@@ -45,10 +50,20 @@ def download_debug():
     series_uid = request.form.get("series_uid")
     download_folder = request.form.get("download_folder")
 
-    cmd = download_series_debug(app.config, study_uid, series_uid, download_folder)
-    code, output = run(cmd)
-    
-    app.logger.info("Running command: %s", cmd)
+    method = app.config.get("RETRIEVE_METHOD", "movescu")
+    try:
+        if method == "dicomweb":
+            code, output = download_series_debug_dicomweb(
+                app.config, study_uid, series_uid, download_folder,
+            )
+        else:
+            cmd = download_series_debug(app.config, study_uid, series_uid, download_folder)
+            code, output = run(cmd)
+            app.logger.info("Running command: %s", cmd)
+    except ValueError as exc:
+        app.logger.error("Debug download configuration error: %s", exc)
+        code, output = 1, str(exc)
+
     app.logger.info("Output: %s", output)
     app.logger.info("Code: %s", code)
 
@@ -65,7 +80,19 @@ def download():
     image_type = data.get("image_type", "dicom")
     queue_prio = data.get("queue_prio", "queue-medium")
     app.logger.info("download called and saving to %s", dir_name)
-    length = download_series(app.config, series_list, dir_name, image_type, queue_prio)
+    method = app.config.get("RETRIEVE_METHOD", "movescu")
+    try:
+        if method == "dicomweb":
+            length = download_series_dicomweb(
+                app.config, series_list, dir_name, image_type, queue_prio,
+            )
+        else:
+            length = download_series(
+                app.config, series_list, dir_name, image_type, queue_prio,
+            )
+    except ValueError as exc:
+        app.logger.error("Download configuration error: %s", exc)
+        return json.dumps({"status": "error", "message": str(exc)}), 400
     return json.dumps({"status": "OK", "series_length": length})
 
 
@@ -77,6 +104,10 @@ def transfer():
     target = data.get("target", "")
     series_list = data.get("data", "")
     app.logger.info("transfer called and sending to %s", target)
-    length, command = transfer_series(app.config, target, series_list)
-    app.logger.info(f"command was:\n {command}")
-    return json.dumps({"status": "OK", "series_length": length})
+    method = app.config.get("RETRIEVE_METHOD", "movescu")
+    if method == "dicomweb":
+        transfer_series_dicomweb(app.config, target, series_list)
+    else:
+        length, command = transfer_series(app.config, target, series_list)
+        app.logger.info("command was:\n %s", command)
+        return json.dumps({"status": "OK", "series_length": length})
