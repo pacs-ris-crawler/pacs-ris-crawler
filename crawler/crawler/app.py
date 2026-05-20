@@ -74,6 +74,13 @@ def create_app(test_config=None):
             return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
         return ""
 
+    @app.template_filter("series_num_short")
+    def series_num_short(value, max_len=4):
+        text = str(value).strip() if value is not None else ""
+        if len(text) <= max_len:
+            return text
+        return text[:max_len]
+
     @app.route("/")
     def main():
         return render_template(

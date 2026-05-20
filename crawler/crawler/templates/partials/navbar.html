@@ -1,0 +1,11 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-3">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center flex-wrap">
+      <a class="navbar-brand blog-header-logo mb-0" href="/">Crawler Admin</a>
+      {% if version %}
+      <small class="text-muted-brand ml-3 d-none d-md-inline">v{{ version }}</small>
+      {% endif %}
+    </div>
+    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Universitätsspital Basel" style="height:24px">
+  </div>
+</nav>

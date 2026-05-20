@@ -1,13 +1,13 @@
 {% if stdout %}
-<h4>Standard Output</h4>
-<div class="container bg-white rounded border p-3">
-    <samp style="white-space: pre;">{{stdout}}</samp>
+<h4 class="crawler-output-heading">Standard output</h4>
+<div class="crawler-output-panel">
+  <pre class="crawler-output-pre mb-0">{{ stdout }}</pre>
 </div>
 {% endif %}
 
 {% if stderr %}
-<h4 class="pt-3">Standard Error Output</h4>
-<div class="container pt-3 mt-3 bg-white rounded border p-3">
-    <samp style="white-space: pre-wrap;">{{stderr}}</samp>
+<h4 class="crawler-output-heading mt-3">Standard error</h4>
+<div class="crawler-output-panel">
+  <pre class="crawler-output-pre mb-0">{{ stderr }}</pre>
 </div>
 {% endif %}

@@ -1,28 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "page.html" %}
 
-<head>
-  <meta charset="utf-8">
-  <title>Crawler Admin Dashboard</title>
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/pikaday.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css') }}">
-</head>
-
-<body class="container">
-  {% include 'partials/header.html' %}
-  {% include 'partials/search.html' %}
-  {% block content %}
-  {% endblock %}
-  <div class="container py-3 mt-1 bg-light">
-    <div class="embed-responsive embed-responsive-1by1">
-      <iframe id="prefect" class="embed-responsive-item" frameborder="0" src="/rq"></iframe>
+{% block body_content %}
+<div class="container-fluid px-4 pb-4">
+  <div class="pacs-main mx-auto">
+    {% include 'partials/navbar.html' %}
+    {% include 'partials/search.html' %}
+    {% block crawler_main %}{% endblock %}
+    <div class="pacs-card crawler-rq-panel mt-3">
+      <div class="crawler-panel-heading d-flex justify-content-between align-items-center">
+        <span>Job queue (RQ)</span>
+        <button type="button" id="reload-button" class="btn btn-outline-teal btn-sm py-0">Reload</button>
+      </div>
+      <div class="crawler-rq-frame">
+        <iframe id="prefect" src="/rq" title="RQ Dashboard"></iframe>
+      </div>
     </div>
   </div>
-  {% assets "js_all" %}
-  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-  {% endassets %}
-</body>
-
-</html>
+</div>
+{% endblock %}

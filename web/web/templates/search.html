@@ -2,21 +2,7 @@
 
 {% block search %}
 <form id="search-form" action="/search" method="POST">
-  <div class="row px-1">
-    <div class="col">
-      <a class="pl-3" href="/">PACS / RIS Crawler</a>
-      {% if indexed_start_date %}
-        <div class="pl-3 small">Indexed: {{indexed_start_date | int | to_date }} - {{indexed_end_date | int | to_date}}</div>
-      {% endif %}
-    </div>
-    <div class="col-auto">
-      <img src="/static/images/logo.svg" alt="Universitätsspital Basel" style="height:34px">
-      <small>
-          <p class="mt-2" style="padding-left: 50px;">Klinik für Radiologie und Nuklearmedizin</p>
-      </small>
-    </div>
-  </div>
-    <div class="container">
+    <div class="container px-0">
       <div class=" alert alert-danger {% if not error %} d-none {% endif %}" role="alert">
         <strong>Error:</strong> {{error}}
         <br>

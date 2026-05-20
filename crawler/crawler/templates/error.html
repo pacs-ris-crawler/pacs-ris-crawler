@@ -1,7 +1,9 @@
 {% extends "index.html" %}
 
-{% block content %}
-  <div class="alert alert-danger my-2 py-2">
-    No Study found for accession number: <b>{{ accession_number }}</b>
+{% block crawler_main %}
+<div class="pacs-search-panel p-3 mt-1">
+  <div class="alert alert-danger mb-0">
+    No study found for accession number <strong>{{ accession_number }}</strong>.
   </div>
+</div>
 {% endblock %}

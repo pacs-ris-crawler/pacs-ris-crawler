@@ -145,8 +145,8 @@ def search():
         return render_template(
             "result.html",
             docs=docs,
-            results="{:,}".format(results),
-            studies_result="{:,}".format(studies_result),
+            results=results,
+            studies_result=studies_result,
             payload=payload,
             facet_url=request.url,
             params=params,

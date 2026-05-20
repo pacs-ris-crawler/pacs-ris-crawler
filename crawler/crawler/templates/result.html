@@ -1,67 +1,25 @@
-{% extends "index.html" %} {% block content %}
-<div class="container pl-0 pr-0 bg-white mt-3">
-  <div class="pv3 pl-3">
-    <button id="upload-button" class="btn btn-sm btn-info">Upload Result</button>
-    <div class="pt-3">
-      <div class="card small rounded-1 bg-light">
-      <div class="card-body pa-3" contenteditable="false" aria-multiline="true">{{command}}</div>
-    </div>
-    </div>
-  </div>
-<div class="pl-3" >
-  {% for study in results %}
-  <div class="card my-3 small rounded-1 bg-light">
-    <div class="card-body p-3">
-      <h5 class="card-title h6">
-        <a href="#{{ study['AccessionNumber'] }}" class="exam-details">
-          <span class="small  float-right "></span>
-          {{study['PatientID']}}, {{study['StudyDescription']}}, {{study['AccessionNumber']}}
-        </a>
-      </h5>
-      <h6 class="card-subtitle" style="font-size:0.8rem">{{ study['StudyDate'] | to_date}}, Age {{study['PatientAge']}}</h6>
-      <div class="container p-0 pt-2 " id="{{study['AccessionNumber']}}">
-        <div class="row">
-          <div class="col">
-            <p>
-              <u>
-                <strong>Series</strong>
-              </u>
-            </p>
-            <table class="table table-sm"
-              data-accession-number="{{ study['AccessionNumber'] }}">
-              <thead>
-                <tr>
-                  <th>Modality</th>
-                  <th>Series Number</th>
-                  <th>Series Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                    {% for child in study._childDocuments_ %}
-                  <td>{{ child['Modality'] }} </td>
-                  <td>{{ child['SeriesNumber'] }} </td>
-                  <td>{{ child['SeriesDescription'] }} </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div class="col">
-            <p class="mb-0">
-              <u>
-                <strong>Report</strong>
-              </u>
-            </p>
-            <div id="{{ study['AccessionNumber'] }}-report" style="white-space:pre-line">
-              {{study['RisReport']}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endfor %}
-</div>
+{% extends "index.html" %}
 
+{% block crawler_main %}
+<div class="results-panel mt-1">
+  <div class="results-toolbar-row results-row">
+    <div class="results-body">
+      <span class="results-summary-label mb-0">Accession {{ accession_number }}</span>
+    </div>
+    <div class="results-actions">
+      <button type="button" id="upload-button" class="btn btn-primary btn-sm">Upload result</button>
+    </div>
+  </div>
+  {% if command %}
+  <div class="crawler-command-panel px-3 py-2">
+    <div class="crawler-command-label">Command</div>
+    <pre class="crawler-command-pre mb-0">{{ command }}</pre>
+  </div>
+  {% endif %}
+  <div class="crawler-results-body px-2 py-2">
+    {% for study in results %}
+    {% include 'partials/study_result.html' %}
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

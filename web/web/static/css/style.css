@@ -1,11 +1,4 @@
-ul.result li {
-    border-bottom: 1px solid #ddd;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    background-color: transparent;
-    padding-left: 0;
-}
+/* patient list borders handled in app-theme.css (.patient-entry) */
 
 .border-bottom {
     border-bottom: 2px solid #ddd;

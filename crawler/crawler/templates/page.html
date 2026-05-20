@@ -4,14 +4,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PACS RIS Crawler</title>
-  <link rel="icon" type="image/png" href="{{url_for('static', filename='images/favicon.png') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/pikaday.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/bootstrap-icons.min.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/app-theme.css') }}">
-  <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css') }}">
+  <title>{% block title %}Crawler Admin Dashboard{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pikaday.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/open-iconic-bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app-theme.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
   <style>
     @font-face {
       font-family: 'Source Serif 4';
@@ -44,17 +43,14 @@
       src: url("{{ url_for('static', filename='css/fonts/JetBrainsMono-Regular.woff2') }}") format('woff2');
     }
   </style>
-  <!-- Matomo Image Tracker-->
-  <img referrerpolicy="no-referrer-when-downgrade" src="https://analytics.ict-mscc.uhbs.ch/matomo.php?idsite=3&amp;rec=1" style="border:0" alt="" />
-  <!-- End Matomo -->
 </head>
 
 <body>
   <div id="loading" class="loading d-none">Loading&#8230;</div>
-  {% block content %}
-  {% endblock %}
+  {% block body_content %}{% endblock %}
   {% assets "js_all" %}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
 </body>
+
 </html>

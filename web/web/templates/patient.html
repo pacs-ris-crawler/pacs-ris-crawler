@@ -1,41 +1,58 @@
-<div class="container px-0 border-bottom pb-1 pt-2">
-  <div class="row">
-    <div class="col">
-      <input type="checkbox" name="select-all-page"><span class="pl-1"> Patients found: </span><span class="badge badge-secondary mr-3">{{ results }}</span>  Studies found: <span class="badge badge-secondary" id="studies_result">{{ studies_result }}</span>
+<div class="results-panel">
+  <div class="results-row results-toolbar-row">
+    <div class="results-check">
+      <input type="checkbox" class="results-checkbox" name="select-all-page" id="select-all-page">
     </div>
-    <div class="col">
-        {% include 'paging.html' %}
-      </div>
-    <div class="col-1">
-      <div class="float-sm-right">
-        <a href="#" id="expand-all"><span class="oi oi-collapse-down" title="Expand all"></span></a>
-      </div>
-      <div class="float-sm-right mr-3">
-        <a href="#" id="collapse-all"><span class="oi oi-collapse-up" title="Collapse all"></span></a>
-      </div>
+    <div class="results-body">
+      <label class="results-summary-label mb-0" for="select-all-page">
+        <span class="results-label-part">Patients found:</span>
+        <span class="badge badge-count">{{ results | swiss_number }}</span>
+        <span class="results-label-part ml-3">Studies found:</span>
+        <span class="badge badge-count" id="studies_result" data-count="{{ studies_result }}">{{ studies_result | swiss_number }}</span>
+      </label>
     </div>
-  </div>
-</div>
-<ul class="list-group result">
-  {% for doc in docs['groups'] %}
-  <li class="list-group-item patients pr-0">
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" name="select-all-patient"
-        data-patient-id="{{ doc['groupValue'] }}">
-      <a data-toggle="collapse" data-target="#{{ doc['groupValue'] }}" href="#">
-        <span class="oi oi-collapse-down float-sm-right"></span>
-        <span class="float-right pr-3">Studies <span class="badge badge-secondary">{{ doc.doclist.numFound }}</span>
-        </span>
-        <div class="col pl-0">
-          {{ doc.doclist.docs[0]['PatientID'] }}, {{ doc.doclist.docs[0]['PatientSex'] }}
-        </div>
+    <div class="results-actions">
+      {% include 'paging.html' %}
+      <a href="#" id="collapse-all" class="results-tool-link ml-2" title="Collapse all">
+        <span class="oi oi-collapse-up"></span>
+      </a>
+      <a href="#" id="expand-all" class="results-tool-link ml-1" title="Expand all">
+        <span class="oi oi-collapse-down"></span>
       </a>
     </div>
-  </li>
-  <div class="pl-3 collapse" id="{{ doc['groupValue'] }}">
-    {% for study in doc.doclist.docs %}
-    {% include 'study.html' %}
-    {% endfor %}
   </div>
-  {% endfor %}
-</ul>
+  <ul class="list-group result mb-0">
+    {% for doc in docs['groups'] %}
+    <li class="list-group-item patient-entry">
+      <div class="results-row patient-row">
+        <div class="results-check">
+          <input type="checkbox" class="results-checkbox" name="select-all-patient"
+            data-patient-id="{{ doc['groupValue'] }}">
+        </div>
+        <div class="results-body">
+          <button type="button" class="results-text-btn patient-row-toggle"
+            data-toggle="collapse" data-target="#{{ doc['groupValue'] }}">
+            {{ doc.doclist.docs[0]['PatientID'] }}, {{ doc.doclist.docs[0]['PatientSex'] }}
+          </button>
+        </div>
+        <div class="results-meta">
+          <span class="patient-row-studies">
+            <span class="results-label-part">Studies</span>
+            <span class="badge badge-count">{{ doc.doclist.numFound }}</span>
+          </span>
+          <button type="button" class="results-icon-btn ml-2"
+            data-toggle="collapse" data-target="#{{ doc['groupValue'] }}"
+            aria-label="Expand patient">
+            <span class="oi oi-collapse-down patient-row-chevron" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <div class="patient-studies collapse" id="{{ doc['groupValue'] }}">
+        {% for study in doc.doclist.docs %}
+        {% include 'study.html' %}
+        {% endfor %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

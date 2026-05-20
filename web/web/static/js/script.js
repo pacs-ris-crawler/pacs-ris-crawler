@@ -123,10 +123,18 @@ $(function () {
   });
 
 
+  function studiesResultCount() {
+    var count = $('#studies_result').data('count');
+    if (count !== undefined) {
+      return parseInt(count, 10);
+    }
+    return parseInt($('#studies_result').text().replace(/'/g, ''), 10);
+  }
+
   $("#export").on('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if (parseInt($('#studies_result').html()) > 10000) {
+    if (studiesResultCount() > 10000) {
       noty({
         text: 'Too many results to export (Studies > 10000)',
         layout: 'centerRight',
@@ -170,7 +178,7 @@ $(function () {
   $("#export_anon").on('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
-    if (parseInt($('#studies_result').html()) > 10000) {
+    if (studiesResultCount() > 10000) {
       noty({
         text: 'Too many results to export (Studies > 10000)',
         layout: 'centerRight',
@@ -454,14 +462,13 @@ $(function () {
     $("input:checkbox").not('.modality').prop('checked', value);
   });
 
-  $('li.list-group-item.patients a').on('click', function (e) {
-    // parent is in because user can click also on icon
-    $(e.target).parent().find('span').first().toggleClass('oi-collapse-down oi-collapse-up');
+  $('li.patient-entry').on('click', '.patient-row-toggle, .results-icon-btn', function () {
+    var $row = $(this).closest('.patient-row');
+    $row.find('.patient-row-chevron').toggleClass('oi-collapse-down oi-collapse-up');
   });
 
-  $('a.exam-details').on('click', function (e) {
-    // parent is in because user can click also on icon
-    $(e.target).parent().find('span').first().toggleClass('oi-collapse-down oi-collapse-up');
+  $('.study-block').on('click', '.exam-details, .results-icon-btn', function () {
+    $(this).closest('.study-block').find('.exam-chevron').toggleClass('oi-collapse-down oi-collapse-up');
   });
 
   /**

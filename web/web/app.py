@@ -34,6 +34,35 @@ def to_date(date_as_int):
     return ""
 
 
+@app.template_filter("swiss_number")
+def swiss_number(value):
+    """Format integer with Swiss thousands separator (apostrophe), e.g. 3000 -> 3'000."""
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return value
+    sign = "-" if n < 0 else ""
+    s = str(abs(n))
+    if len(s) <= 3:
+        return sign + s
+    parts = []
+    while len(s) > 3:
+        parts.insert(0, s[-3:])
+        s = s[:-3]
+    if s:
+        parts.insert(0, s)
+    return sign + "'".join(parts)
+
+
+@app.template_filter("series_num_short")
+def series_num_short(value, max_len=4):
+    """Display at most the first few digits of a series number (full value in title)."""
+    text = str(value).strip() if value is not None else ""
+    if len(text) <= max_len:
+        return text
+    return text[:max_len]
+
+
 @app.context_processor
 def inject_ui_flags():
     return dict(

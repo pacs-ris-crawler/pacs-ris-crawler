@@ -1,46 +1,61 @@
-<div class="card my-3 small rounded-1 bg-light">
-  <div class="card-body p-3">
-    <h5 class="card-title h6">
-      <input type="checkbox" name='select-all-accession-number' data-patient-id="{{ doc['groupValue'] }}"
+<div class="study-block">
+  <div class="results-row study-row">
+    <div class="results-check">
+      <input type="checkbox" class="results-checkbox" name="select-all-accession-number"
+        data-patient-id="{{ doc['groupValue'] }}"
         data-accession-number="{{ study['AccessionNumber'] }}">
-      <a href="#{{ study['AccessionNumber'] }}" data-toggle="collapse" class="exam-details">
-        <span class="small oi oi-collapse-down float-right " title="Collapse"></span>
-        {{study['StudyDescription']}}
-      </a>
-      <a class="text-success pl-2" target="_blank" href="{{  sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">View images
-        <span class="oi oi-external-link small"></span>
-      </a>
-    </h5>
-    {% if study['ProtocolName']|length %}
-    <div class="h6" style="font-size:0.8rem">
-      <span>StudyDate: {{ study['StudyDate'] | to_date}}, Age: {{study['PatientAge']}}, AccessionNumber:
-        {{study['AccessionNumber']}}, ReferringPhysician: {{study['ReferringPhysicianName']}}, Institution:
-        {{study['InstitutionName']}}<br>
-        ProtocolNames: {{study['ProtocolName']}}</span>
     </div>
-    {% else %}
-    <div class="h6" style="font-size:0.8rem">
-      <span>StudyDate: {{ study['StudyDate'] | to_date}}, Age: {{study['PatientAge']}}, AccessionNumber:
-        {{study['AccessionNumber']}}, ReferringPhysician: {{study['ReferringPhysicianName']}}, Institution:
-        {{study['InstitutionName']}}
+    <div class="results-body study-row-main">
+      <button type="button" class="results-text-btn exam-details"
+        data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}">
+        {{ study['AccessionNumber'] }}
+      </button>
+      <a class="view-images-link" target="_blank" rel="noopener"
+        href="{{ sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">
+        View images <span class="oi oi-external-link small"></span>
+      </a>
     </div>
-    {% endif %}
-    <div class="container p-0 pt-2 collapse" id="{{study['AccessionNumber']}}">
-      <div class="row">
-        <div class="col">
-          <p>
-            <u>
-              <strong>Series</strong>
-            </u>
-          </p>
-          <table class="table table-sm" data-patient-id="{{ doc['groupValue'] }}"
+    <div class="results-meta">
+      <button type="button" class="results-icon-btn"
+        data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}"
+        aria-label="Expand study">
+        <span class="oi oi-collapse-down small exam-chevron" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+  <div class="study-meta">
+    <ul class="study-meta-list">
+      <li class="study-meta-item">
+        <span class="study-meta-label">Date</span>
+        <span class="study-meta-value">{{ study['StudyDate'] | to_date }}</span>
+      </li>
+      <li class="study-meta-item">
+        <span class="study-meta-label">Age</span>
+        <span class="study-meta-value">{{ study['PatientAge'] }}</span>
+      </li>
+      <li class="study-meta-item">
+        <span class="study-meta-label">Referring</span>
+        <span class="study-meta-value">{{ study['ReferringPhysicianName'] }}</span>
+      </li>
+      <li class="study-meta-item">
+        <span class="study-meta-label">Institution</span>
+        <span class="study-meta-value">{{ study['InstitutionName'] }}</span>
+      </li>
+    </ul>
+  </div>
+  <div class="study-details collapse" id="study-{{ study['AccessionNumber'] }}">
+    <div class="study-panels">
+      <div class="study-series-panel">
+        <div class="study-panel-heading">Series</div>
+        <div class="study-series-table-wrap">
+          <table class="series-table" data-patient-id="{{ doc['groupValue'] }}"
             data-accession-number="{{ study['AccessionNumber'] }}">
             <thead>
               <tr>
-                <th></th>
-                <th>Modality</th>
-                <th>Series Number</th>
-                <th>Series Description</th>
+                <th class="col-check" scope="col"></th>
+                <th class="col-mod" scope="col">Mod.</th>
+                <th class="col-num" scope="col">#</th>
+                <th class="col-desc" scope="col">Description</th>
               </tr>
             </thead>
             <tbody>
@@ -49,44 +64,34 @@
               {% endfor %}
               {% for child in study['_childDocuments_'] | sort(attribute='series_int') %}
               <tr>
-                <td>
-                  <input type="checkbox" name="series" data-patient-id="{{ doc['groupValue'] }}"
-                    data-patient-birthdate="{{ doc.doclist.docs[0]['PatientBirthDate'] }}" {#
-                      Why is here an if?
-                      In the beginning all series had the same StudyInstanceUID. But then
-                      someone started to download the GRASP sequences. They have the same
-                      accession number *but* a different StudyInstanceUID. It was agreed
-                      not do reindex all the documents, but only some, this if-else statement
-                      is needed to ensure old behaviour is working where the StudyInstanceUID
-                      is saved on the parent, as well as the new way, where StudyInstanceUID
-                      is saved on the series level.
-                      #} {% if child.StudyInstanceUID %}
-                    data-study-id="{{ child['StudyInstanceUID'].strip(' \t\r\0') }}" {% else %}
-                    data-study-id="{{ study['StudyInstanceUID'].strip(' \t\r\0') }}" {% endif %}
+                <td class="col-check">
+                  <input type="checkbox" class="results-checkbox series-checkbox" name="series"
+                    data-patient-id="{{ doc['groupValue'] }}"
+                    data-patient-birthdate="{{ doc.doclist.docs[0]['PatientBirthDate'] }}"
+                    {% if child.StudyInstanceUID %}
+                    data-study-id="{{ child['StudyInstanceUID'].strip(' \t\r\0') }}"
+                    {% else %}
+                    data-study-id="{{ study['StudyInstanceUID'].strip(' \t\r\0') }}"
+                    {% endif %}
                     data-series-id="{{ child['SeriesInstanceUID'].strip(' \t\r\0') }}"
                     data-accession-number="{{ study['AccessionNumber'] }}"
                     data-series-number="{{ child['SeriesNumber'] }}"
-                    data-study-description="{{study['StudyDescription']}}" data-study-date="{{ study['StudyDate'] }}"
+                    data-study-description="{{ study['StudyDescription'] }}"
+                    data-study-date="{{ study['StudyDate'] }}"
                     data-series-description="{{ child['SeriesDescription'] }}">
                 </td>
-                <td>{{ child['Modality'] }} </td>
-                <td>{{ child['SeriesNumber'] }} </td>
-                <td>{{ child['SeriesDescription'] }} </td>
+                <td class="col-mod">{{ child['Modality'] }}</td>
+                <td class="col-num" title="Series {{ child['SeriesNumber'] }}">{{ child['SeriesNumber'] | series_num_short }}</td>
+                <td class="col-desc" title="{{ child['SeriesDescription'] }}">{{ child['SeriesDescription'] }}</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
-        <div class="col">
-          <p class="mb-0">
-            <u>
-              <strong>Report</strong>
-            </u>
-          </p>
-          <div id="{{ study['AccessionNumber'] }}-report" style="white-space:pre-line">
-            {{study['RisReport']}}
-          </div>
-        </div>
+      </div>
+      <div class="study-report-panel">
+        <div class="study-panel-heading">Report</div>
+        <div id="{{ study['AccessionNumber'] }}-report" class="study-report-body">{{ study['RisReport'] }}</div>
       </div>
     </div>
   </div>

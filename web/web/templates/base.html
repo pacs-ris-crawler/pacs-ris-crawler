@@ -1,15 +1,20 @@
 {% extends "page.html" %}
 
 {% block content %}
-<div class="container rounded pt-3 mt-4" style="background-color:#edf4f7">
-  {% block search %}
-  {% endblock %}
-</div>
-{% if show_transfer_targets or show_download_options %}
-{% include 'partials/actions.html' %}
-{% endif %}
-<div class="container pt-1">
-  {% block table %}
-  {% endblock %}
+<div class="container-fluid px-4">
+  <div class="pacs-main mx-auto">
+    {% include 'partials/navbar.html' %}
+    <div class="pacs-search-panel p-3 mb-3">
+      {% block search %}
+      {% endblock %}
+    </div>
+    {% if show_transfer_targets or show_download_options %}
+    {% include 'partials/actions.html' %}
+    {% endif %}
+    <div class="pt-1 pb-4">
+      {% block table %}
+      {% endblock %}
+    </div>
+  </div>
 </div>
 {% endblock %}

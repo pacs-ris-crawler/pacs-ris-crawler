@@ -1,9 +1,36 @@
 $(function () {
   console.log('ready');
 
-  $('#reload-button').on('click', function(e) {
-    var f = document.getElementById('prefect');
-    f.src = f.src;
+  $('.study-block').on('click', '.exam-details, .results-icon-btn', function () {
+    $(this).closest('.study-block').find('.exam-chevron').toggleClass('oi-collapse-down oi-collapse-up');
+  });
+
+  function resizeRqFrame() {
+    var frame = document.getElementById('prefect');
+    if (!frame || !frame.contentDocument) {
+      return;
+    }
+    var doc = frame.contentDocument;
+    var height = Math.max(
+      doc.body ? doc.body.scrollHeight : 0,
+      doc.documentElement ? doc.documentElement.scrollHeight : 0
+    );
+    if (height > 0) {
+      frame.style.height = height + 'px';
+      if (doc.body) {
+        doc.body.style.overflow = 'hidden';
+      }
+      if (doc.documentElement) {
+        doc.documentElement.style.overflow = 'hidden';
+      }
+    }
+  }
+
+  $('#prefect').on('load', resizeRqFrame);
+
+  $('#reload-button').on('click', function () {
+    var frame = document.getElementById('prefect');
+    frame.src = frame.src;
   });
 
 
@@ -11,7 +38,7 @@ $(function () {
     var form = $(this);
     var url = form.attr('action');
 
-    var acc_numbers = $("#prefetch_accession_numbers").val().split(" ").filter(Boolean)
+    var acc_numbers = $("#accession_numbers").val().split(" ").filter(Boolean)
     console.log(acc_numbers)
     if (acc_numbers.length > 0) {
       for (let index = 0; index < acc_numbers.length; index++) {
