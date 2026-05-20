@@ -17,6 +17,7 @@ SOLR_CORE_NAME = 'grouping'
 
 SHOW_DOWNLOAD_OPTIONS = True
 SHOW_TRANSFER_TARGETS = True
+SHOW_LLM_ASSISTED_FILTERING = False
 
 TRANSFER_TARGETS = [{'AE_TITLE': 'AE_TITLE', 'DISPLAY_NAME': 'Foo'}]
 
@@ -27,3 +28,7 @@ MOVA_TRANSFER_URL = 'http://localhost:9001/transfer'
 
 # Zero foot print viewer integration
 ZFP_VIEWER = ""
+
+# LLM-assisted search (vLLM OpenAI-compatible API)
+VLLM_URL = ''
+VLLM_MODEL = ''

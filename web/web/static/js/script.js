@@ -2,7 +2,27 @@ $(function () {
   console.log("ready!");
 
   $('[data-toggle="tooltip"]').tooltip();
-  
+
+  var $moreSearchDetails = $('#more-search-details');
+  var $moreSearchDetailsToggle = $('#more-search-details-toggle');
+  var $moreSearchDetailsToggleText = $('#more-search-details-toggle-text');
+  var $moreSearchDetailsToggleIcon = $('#more-search-details-toggle-icon');
+  function updateMoreSearchDetailsToggle(expanded) {
+    $moreSearchDetailsToggleText.text(
+      expanded ? 'Hide filter options' : 'Show more filter options'
+    );
+    $moreSearchDetailsToggleIcon
+      .toggleClass('oi-collapse-down', !expanded)
+      .toggleClass('oi-collapse-up', expanded);
+    $moreSearchDetailsToggle.attr('aria-expanded', expanded ? 'true' : 'false');
+  }
+  $moreSearchDetails.on('show.bs.collapse', function () {
+    updateMoreSearchDetailsToggle(true);
+  });
+  $moreSearchDetails.on('hide.bs.collapse', function () {
+    updateMoreSearchDetailsToggle(false);
+  });
+
   var startDatePicker = $('#start-date-picker').pikaday({
     format: 'DD.MM.YYYY',
     firstDay: 1,

@@ -75,9 +75,15 @@ def main():
 @app.route("/llm_query", methods=["POST", "GET"])
 def llm_query():
     """Converts human text into proper regex query"""
+    if not current_app.config.get("SHOW_LLM_ASSISTED_FILTERING", False):
+        return jsonify({"error": "LLM-assisted filtering is disabled"}), 404
+
     params = request.get_json(force=True)
     text_query = params.get("query", "")
-    model = current_app.config.get('OLLAMA_MODEL', 'mistral-small3.2:24b-instruct-2506-q8_0')
+    model = (
+        current_app.config.get('VLLM_MODEL')
+        or current_app.config.get('OLLAMA_MODEL', 'apollo-llm')
+    )
     if text_query and text_query.strip():
         llm_output = llm_validate(model=model, input_prompt=text_query)
 

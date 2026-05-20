@@ -17,6 +17,7 @@ REPORT_SHOW_URL = app.config["REPORT_SHOW_URL"]
 
 SHOW_DOWNLOAD_OPTIONS = app.config["SHOW_DOWNLOAD_OPTIONS"]
 SHOW_TRANSFER_TARGETS = app.config["SHOW_TRANSFER_TARGETS"]
+SHOW_LLM_ASSISTED_FILTERING = app.config["SHOW_LLM_ASSISTED_FILTERING"]
 TRANSFER_TARGETS = app.config["TRANSFER_TARGETS"]
 
 RECEIVER_URL = app.config["RECEIVER_URL"]
@@ -31,6 +32,13 @@ def to_date(date_as_int):
     if date_as_int:
         return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
     return ""
+
+
+@app.context_processor
+def inject_ui_flags():
+    return dict(
+        show_llm_assisted_filtering=SHOW_LLM_ASSISTED_FILTERING,
+    )
 
 
 @app.context_processor

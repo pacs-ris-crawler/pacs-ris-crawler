@@ -79,7 +79,6 @@ def _create_filter_query(args):
         _filter("PatientName", args),
         _filter("AccessionNumber", args),
         _filter("ReferringPhysicianName", args),
-        _filter("ProtocolName", args),
         _create_date("PatientBirthDate", args),
         _create_date("StudyDate", args),
         _create_date_range(args.get("StartDate"), args.get("EndDate")),

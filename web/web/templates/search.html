@@ -92,15 +92,18 @@
         </div>
       </div>
       <div class="form-group row mx-auto px-1">
-        <a data-toggle="collapse" data-target="#more-search-details" href="#" class="ml-3" aria-expanded="true">Show more
-          filter options</a>  
+        <a id="more-search-details-toggle" data-toggle="collapse" data-target="#more-search-details" href="#" class="ml-3" aria-expanded="false">
+          <span id="more-search-details-toggle-icon" class="oi oi-collapse-down small mr-1" aria-hidden="true"></span>
+          <span id="more-search-details-toggle-text">Show more filter options</span>
+        </a>
     </div>
       <div id="more-search-details" class="collapse">
       <div class="form-group row mx-auto px-1 ">
         <div class="col">
-          <label for="protocolname-input" class="col-form-label" title="ProtocolName">Protocol Name</label>
-          <input class="form-control form-control-sm" type="text" id="protocolname-input" name="ProtocolName"
-            value="{{ params.ProtocolName }}">
+          <label for="seriesdescription-input" class="col-form-label"
+            title="Series Description to search for, AND is *not* supported">Series Description</label>
+          <input class="form-control form-control-sm" type="text" id="seriesdescription-input" name="SeriesDescription"
+            value="{{ params.SeriesDescription }}">
         </div>
         <div class="col">
           <label for="referringphysicianname-input" class="col-form-label" title="Referring Physician ">Referring
@@ -133,16 +136,6 @@
       </div>
       <div class="row mx-auto px-1 pt-3">
         <p class="h6 col">Series Filters</p>
-      </div>
-      <div class="form-group row mx-auto px-1">
-        <div class="col-sm-6">
-          <label for="seriesdescription-input" class="col-form-label"
-            title="Series Description to search for, AND is *not* supported">Series Description</label>
-          <input class="form-control form-control-sm" type="text" id="seriesdescription-input" name="SeriesDescription"
-            value="{{ params.SeriesDescription }}">
-        </div>
-        <div class="col-sm-6">
-        </div>
       </div>
       <div class="form-group row mx-auto px-1 mb-0">
         <div class="col">
@@ -246,9 +239,11 @@
           </div>
         </div>
         <div class="col d-flex justify-content-end">
+          {% if show_llm_assisted_filtering %}
           <button type="button" class="btn btn-primary btn-sm align-self-end mr-2" data-toggle="modal" data-target="#textInputModal">
             LLM-assisted Filtering (beta)
           </button>
+          {% endif %}
           <button type="submit" class="btn btn-primary btn-sm align-self-end">Search</button>
         </div>
       </div>
@@ -257,6 +252,7 @@
     <input type="hidden" name="page" value="{{page}}">
 </form>
 
+{% if show_llm_assisted_filtering %}
 <div class="modal fade" id="textInputModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -279,5 +275,6 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 {% endblock %}

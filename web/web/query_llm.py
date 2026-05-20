@@ -1,23 +1,65 @@
-from ollama import Client
-from pydantic import BaseModel, Field
-from typing import List
 import json
-from flask import current_app
 import re
+from typing import Any
 
-def create_client():
-    def _get_ollama_url():
-        return current_app.config.get('OLLAMA_URL', '')
-    
-    ollama_url = _get_ollama_url()
+import requests
+from flask import current_app
+from pydantic import BaseModel, Field
 
-    client = Client(
-        host=ollama_url,
-        headers={
-            "Content-Type": "application/json"}
-        )
-    
-    return client
+
+def _get_vllm_base_url() -> str:
+    url = (
+        current_app.config.get("VLLM_URL")
+        or current_app.config.get("OLLAMA_URL")
+        or "http://10.5.63.16:11440"
+    )
+    return url.rstrip("/")
+
+
+def _build_response_format(format: Any) -> dict | None:
+    if not format:
+        return None
+    if isinstance(format, dict):
+        return {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "query_output",
+                "schema": format,
+                "strict": True,
+            },
+        }
+    return {"type": "json_object"}
+
+
+def llm(
+    model="apollo-llm",
+    input_prompt="Hallo",
+    system_prompt="Du bist ein hilfsbereiter KI-Assisstent",
+    format="",
+):
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": input_prompt},
+        ],
+        "temperature": 1e-4,
+        "max_tokens": 2048,
+    }
+    response_format = _build_response_format(format)
+    if response_format:
+        payload["response_format"] = response_format
+
+    response = requests.post(
+        f"{_get_vllm_base_url()}/v1/chat/completions",
+        json=payload,
+        headers={"Content-Type": "application/json"},
+        timeout=120,
+    )
+    response.raise_for_status()
+    content = response.json()["choices"][0]["message"]["content"]
+    return content.replace("ß", "ss")
+
 
 # Simple regex patterns that avoid splitting OR/AND operators
 _PROX_FIX = re.compile(r'(?<!")(?!\b(?:OR|AND|NOT)\b)(\b[a-zA-ZäöüÄÖÜß*]+(?:\s+(?!\b(?:OR|AND|NOT)\b)[a-zA-ZäöüÄÖÜß*]+)+)\s*~\s*(\d+)')
@@ -42,22 +84,6 @@ def apply_placeholders(q: str) -> str:
     q = FUZZ_PL.sub(r'\1~\2', q)     # term[f=2]        -> term~2
     q = BOOST_PL.sub(r'\1^\3', q)    # "foo bar"[b=4]   -> "foo bar"^4  | term[b=3] -> term^3
     return q
-
-def llm(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="Hallo", system_prompt="Du bist ein hilfsbereiter KI-Assisstent", format=''):
-    client = create_client()
-    response = client.generate(
-        model=model, 
-        system=system_prompt,
-        prompt=input_prompt,
-        options={
-            'temperature': 1e-4,
-            'num_ctx': 2048
-            },
-        format=format
-    )
-
-    final_response = response["response"].replace("ß", "ss")  
-    return final_response
 
 class query_output(BaseModel):
 
@@ -114,7 +140,7 @@ Ausgabe nur JSON:
 </example>
 """
 
-def llm_validate(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="", system_prompt=system_prompt, format=query_output.model_json_schema()):    
+def llm_validate(model="apollo-llm", input_prompt="", system_prompt=system_prompt, format=query_output.model_json_schema()):    
     
     try:
         llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)
