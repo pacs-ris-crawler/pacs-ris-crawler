@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-3">
+<nav class="navbar navbar-expand-lg app-navbar shadow-sm mb-3">
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center flex-wrap">
       <a class="navbar-brand blog-header-logo mb-0" href="/">Crawler Admin</a>
@@ -6,6 +6,11 @@
       <small class="text-muted-brand ml-3 d-none d-md-inline">v{{ version }}</small>
       {% endif %}
     </div>
-    <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Universitätsspital Basel" style="height:24px">
+    <div class="d-flex align-items-center">
+      <button type="button" class="btn btn-sm theme-toggle-btn mr-3" data-theme-toggle aria-label="Switch theme">
+        <i class="bi bi-moon-stars theme-toggle-icon" aria-hidden="true"></i>
+      </button>
+      <img class="navbar-logo" src="{{ url_for('static', filename='images/logo.svg') }}" alt="Universitätsspital Basel">
+    </div>
   </div>
 </nav>

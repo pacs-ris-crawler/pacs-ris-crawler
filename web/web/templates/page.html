@@ -2,6 +2,15 @@
 <html lang="en">
 
 <head>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('pacs-ris-theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PACS RIS Crawler</title>

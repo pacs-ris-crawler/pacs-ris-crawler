@@ -52,6 +52,7 @@ def create_app(test_config=None):
     # Configure assets
     assets = Environment(app)
     js = Bundle(
+        "js/theme.js",
         "js/jquery-3.3.1.min.js",
         "js/bootstrap.bundle.min.js",
         "js/jquery.noty.packaged.min.js",

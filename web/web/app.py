@@ -86,6 +86,7 @@ def sectra_uniview_url():
 # JS Assets part
 assets = Environment(app)
 js = Bundle(
+    "js/theme.js",
     "js/jquery-3.1.0.min.js",
     "js/tether.min.js",
     "js/popper.min.js",

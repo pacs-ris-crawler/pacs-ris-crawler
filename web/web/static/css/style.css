@@ -1,7 +1,7 @@
 /* patient list borders handled in app-theme.css (.patient-entry) */
 
 .border-bottom {
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border, #ddd);
 }
 
 /* Tooltip styling for better width and content display */
@@ -39,7 +39,7 @@ a:focus {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.3);
+    background-color: var(--overlay, rgba(0,0,0,0.3));
   }
 
   /* :not(:required) hides these rules from IE9 and below */
