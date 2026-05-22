@@ -774,6 +774,20 @@ a.view-images-link:hover {
 .dropdown-menu {
     background-color: var(--dropdown-bg);
     border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.dropdown-menu .form-check-label,
+.dropdown-menu .custom-control-label,
+.dropdown-menu .form-label,
+.dropdown-menu label,
+.dropdown-menu h6 {
+    color: var(--text-primary);
+}
+
+.form-check-label,
+.custom-control-label {
+    color: var(--text-primary);
 }
 
 .dropdown-item {

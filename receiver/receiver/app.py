@@ -1,8 +1,13 @@
 import json
 import logging
+import sys
 from datetime import datetime
+from pathlib import Path
 
 import rq_dashboard
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from lib.rq_dashboard_custom import patch_rq_dashboard
 from flask import Flask, render_template, request
 
 from receiver.job import download_series, transfer_series, download_series_debug
@@ -21,6 +26,7 @@ version = app.config["VERSION"] = "1.3.1"
 app.config.from_object(rq_dashboard.default_settings)
 app.config["RQ_DASHBOARD_REDIS_URL"] = "redis://127.0.0.1:6379"
 rq_dashboard.web.setup_rq_connection(app)
+patch_rq_dashboard()
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
 

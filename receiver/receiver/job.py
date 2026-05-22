@@ -145,10 +145,16 @@ def delete_dicom_cmd(image_folder):
             os.remove(f)
 
 
+def _command_meta(cmd):
+    if isinstance(cmd, (list, tuple)):
+        return {"command": shlex.join(str(x) for x in cmd)}
+    return {"command": str(cmd)}
+
+
 def queue_transfer(cmd):
     redis_conn = Redis()
     q = Queue(name="transfer", connection=redis_conn)
-    q.enqueue(run, cmd, job_timeout="12m")
+    q.enqueue(run, cmd, job_timeout="12m", meta=_command_meta(cmd))
     return
 
 
@@ -164,6 +170,7 @@ def queue(
         run,
         args=(cmd,),
         description=f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid}",
+        meta=_command_meta(cmd),
     )
     if image_type == "nifti":
         nifti_job = q.enqueue(

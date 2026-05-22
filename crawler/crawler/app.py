@@ -1,11 +1,15 @@
 import json
 import logging
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 import rq_dashboard
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from lib.rq_dashboard_custom import patch_rq_dashboard
 import structlog
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
@@ -42,6 +46,7 @@ def create_app(test_config=None):
     app.config.from_object(rq_dashboard.default_settings)
     app.config["RQ_DASHBOARD_REDIS_URL"] = "redis://127.0.0.1:6379"
     rq_dashboard.web.setup_rq_connection(app)
+    patch_rq_dashboard()
     app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
     # Initialize Redis queues

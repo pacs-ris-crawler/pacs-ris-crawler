@@ -6,10 +6,15 @@ DICOM data from a PACS that supports DICOMweb (WADO-RS).
 
 import logging
 import os
+import sys
+from pathlib import Path
 
 import requests
 from redis import Redis
 from rq import Queue
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from lib.rq_dashboard_custom import format_dicomweb_job_command
 
 logger = logging.getLogger("dicomweb")
 
@@ -267,6 +272,7 @@ def _queue_dicomweb_download(config, entry, dir_name, image_type, queue_prio):
         description=(
             f"AccessionNr: {accession_number} / SeriesInstanceUID: {series_uid} (DICOMweb)"
         ),
+        meta={"command": format_dicomweb_job_command(config, entry, dir_name)},
     )
     if image_type == "nifti":
         nifti_job = q.enqueue(

@@ -5,31 +5,67 @@ $(function () {
     $(this).closest('.study-block').find('.exam-chevron').toggleClass('oi-collapse-down oi-collapse-up');
   });
 
+  var rqFrameResizeTimer = null;
+
   function resizeRqFrame() {
     var frame = document.getElementById('prefect');
     if (!frame || !frame.contentDocument) {
       return;
     }
     var doc = frame.contentDocument;
+    var body = doc.body;
+    var root = doc.documentElement;
     var height = Math.max(
-      doc.body ? doc.body.scrollHeight : 0,
-      doc.documentElement ? doc.documentElement.scrollHeight : 0
+      body ? body.scrollHeight : 0,
+      body ? body.offsetHeight : 0,
+      root ? root.scrollHeight : 0,
+      root ? root.offsetHeight : 0
     );
     if (height > 0) {
-      frame.style.height = height + 'px';
-      if (doc.body) {
-        doc.body.style.overflow = 'hidden';
-      }
-      if (doc.documentElement) {
-        doc.documentElement.style.overflow = 'hidden';
-      }
+      frame.style.height = (height + 8) + 'px';
     }
   }
 
-  $('#prefect').on('load', resizeRqFrame);
+  function scheduleRqFrameResize() {
+    if (rqFrameResizeTimer) {
+      clearTimeout(rqFrameResizeTimer);
+    }
+    rqFrameResizeTimer = setTimeout(resizeRqFrame, 50);
+  }
+
+  function watchRqFrame() {
+    var frame = document.getElementById('prefect');
+    if (!frame || !frame.contentDocument || !frame.contentDocument.body) {
+      return;
+    }
+    if (frame._rqResizeObserver) {
+      frame._rqResizeObserver.disconnect();
+    }
+    frame._rqResizeObserver = new MutationObserver(scheduleRqFrameResize);
+    frame._rqResizeObserver.observe(frame.contentDocument.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true
+    });
+  }
+
+  function onRqFrameLoad() {
+    resizeRqFrame();
+    watchRqFrame();
+    scheduleRqFrameResize();
+    setTimeout(resizeRqFrame, 250);
+    setTimeout(resizeRqFrame, 1000);
+  }
+
+  $('#prefect').on('load', onRqFrameLoad);
 
   $('#reload-button').on('click', function () {
     var frame = document.getElementById('prefect');
+    if (frame._rqResizeObserver) {
+      frame._rqResizeObserver.disconnect();
+      frame._rqResizeObserver = null;
+    }
     frame.src = frame.src;
   });
 

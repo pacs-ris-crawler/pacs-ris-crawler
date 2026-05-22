@@ -701,7 +701,7 @@ a.view-images-link:hover {
 }
 
 .crawler-rq-frame {
-    overflow: hidden;
+    overflow: visible;
     line-height: 0;
 }
 
@@ -709,9 +709,8 @@ a.view-images-link:hover {
     display: block;
     width: 100%;
     min-height: 18rem;
-    height: 26rem;
+    height: 18rem;
     border: 0;
-    overflow: hidden;
 }
 
 .crawler-results-body .study-meta {
@@ -838,6 +837,20 @@ a.view-images-link:hover {
 .dropdown-menu {
     background-color: var(--dropdown-bg);
     border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.dropdown-menu .form-check-label,
+.dropdown-menu .custom-control-label,
+.dropdown-menu .form-label,
+.dropdown-menu label,
+.dropdown-menu h6 {
+    color: var(--text-primary);
+}
+
+.form-check-label,
+.custom-control-label {
+    color: var(--text-primary);
 }
 
 .dropdown-item {
