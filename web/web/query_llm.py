@@ -1,130 +1,187 @@
-from ollama import Client
-from pydantic import BaseModel, Field
-from typing import List
 import json
-from flask import current_app
+import logging
 import re
+from functools import lru_cache
+from pathlib import Path
 
-def create_client():
-    def _get_ollama_url():
-        return current_app.config.get('OLLAMA_URL', '')
-    
-    ollama_url = _get_ollama_url()
+from flask import current_app
+from openai import OpenAI
+from pydantic import BaseModel, Field
 
-    client = Client(
-        host=ollama_url,
-        headers={
-            "Content-Type": "application/json"}
-        )
-    
-    return client
+logger = logging.getLogger(__name__)
 
-# Simple regex patterns that avoid splitting OR/AND operators
-_PROX_FIX = re.compile(r'(?<!")(?!\b(?:OR|AND|NOT)\b)(\b[a-zA-ZäöüÄÖÜß*]+(?:\s+(?!\b(?:OR|AND|NOT)\b)[a-zA-ZäöüÄÖÜß*]+)+)\s*~\s*(\d+)')
-_BOOST_FIX = re.compile(r'(?<!")(?!\b(?:OR|AND|NOT)\b)(\b[a-zA-ZäöüÄÖÜß*]+(?:\s+(?!\b(?:OR|AND|NOT)\b)[a-zA-ZäöüÄÖÜß*]+)+)\s*\^\s*(\d+)')
+_PROMPT_DIR = Path(__file__).resolve().parent
+_SYSTEM_PROMPT_FILE = _PROMPT_DIR / "system_prompt.txt"
+_MASSNAHMEN_FILE = _PROMPT_DIR / "massnahmen.txt"
+
+# Safety net: quote unquoted multi-word proximity/boost targets
+_PROX_FIX = re.compile(
+    r'(?<!")(?!\b(?:OR|AND|NOT)\b)(\b[a-zA-ZäöüÄÖÜß*]+(?:\s+(?!\b(?:OR|AND|NOT)\b)[a-zA-ZäöüÄÖÜß*]+)+)\s*~\s*(\d+)'
+)
+_BOOST_FIX = re.compile(
+    r'(?<!")(?!\b(?:OR|AND|NOT)\b)(\b[a-zA-ZäöüÄÖÜß*]+(?:\s+(?!\b(?:OR|AND|NOT)\b)[a-zA-ZäöüÄÖÜß*]+)+)\s*\^\s*(\d+)'
+)
+
+
+@lru_cache(maxsize=1)
+def load_system_prompt() -> str:
+    prompt = _SYSTEM_PROMPT_FILE.read_text(encoding="utf-8")
+    massnahmen = _MASSNAHMEN_FILE.read_text(encoding="utf-8").strip()
+    if massnahmen:
+        prompt = f"{prompt.rstrip()}\n{massnahmen}\n</massnahmen_catalog>"
+    else:
+        prompt = f"{prompt.rstrip()}\n</massnahmen_catalog>"
+    return prompt
+
 
 def normalize_bericht_query(q: str) -> str:
-    # Quote multi-word proximity targets: foo bar~3 -> "foo bar"~3
     q = _PROX_FIX.sub(r'"\1"~\2', q)
-    # Quote multi-word boost targets: foo bar^4 -> "foo bar"^4  
     q = _BOOST_FIX.sub(r'"\1"^\2', q)
-    # Clean up spaces
-    q = re.sub(r'\s+', ' ', q).strip()
+    q = re.sub(r"\s+", " ", q).strip()
     return q
 
-_WORD = r'[^\s"()|+~^]+'  # token without spaces/ops/quotes
-PROX_PL  = re.compile(r'["\']([^"\']+)["\']\s*\[prox=(\d+)\]')
-FUZZ_PL  = re.compile(r'(' + _WORD + r')\s*\[f=(\d+)\]')
-BOOST_PL = re.compile(r'("([^"]+)"|' + _WORD + r')\s*\[b=(\d+)\]')
 
-def apply_placeholders(q: str) -> str:
-    q = PROX_PL.sub(r'"\1"~\2', q)   # "foo bar"[prox=3] -> "foo bar"~3
-    q = FUZZ_PL.sub(r'\1~\2', q)     # term[f=2]        -> term~2
-    q = BOOST_PL.sub(r'\1^\3', q)    # "foo bar"[b=4]   -> "foo bar"^4  | term[b=3] -> term^3
-    return q
+def get_vllm_model(model=None) -> str:
+    if model:
+        return model
+    return current_app.config["VLLM_MODEL"]
 
-def llm(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="Hallo", system_prompt="Du bist ein hilfsbereiter KI-Assisstent", format=''):
-    client = create_client()
-    response = client.generate(
-        model=model, 
-        system=system_prompt,
-        prompt=input_prompt,
-        options={
-            'temperature': 1e-4,
-            'num_ctx': 2048
-            },
-        format=format
+
+def get_vllm_base_url() -> str:
+    url = current_app.config["VLLM_URL"].rstrip("/")
+    if url and not url.endswith("/v1"):
+        url = f"{url}/v1"
+    return url
+
+
+def get_vllm_api_key() -> str:
+    return current_app.config.get("VLLM_API_KEY", "token-unused")
+
+
+def _create_client() -> OpenAI:
+    return OpenAI(
+        base_url=get_vllm_base_url(),
+        api_key=get_vllm_api_key(),
     )
 
-    final_response = response["response"].replace("ß", "ss")  
-    return final_response
+
+def vllm_request(
+    system_prompt: str,
+    user_prompt: str,
+    model: str | None = None,
+    *,
+    thinking: bool = False,
+    schema: type[BaseModel] | None = None,
+) -> dict | str:
+    client = _create_client()
+    model = get_vllm_model(model)
+
+    try:
+        kwargs = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 1e-4,
+        }
+
+        if thinking:
+            kwargs["extra_body"] = {
+                "chat_template_kwargs": {"enable_thinking": True},
+            }
+
+        if schema is not None:
+            kwargs["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": schema.__name__,
+                    "schema": schema.model_json_schema(),
+                },
+            }
+
+        response = client.chat.completions.create(**kwargs)
+        content = response.choices[0].message.content or ""
+
+        if schema is not None:
+            parsed = json.loads(content)
+            if thinking:
+                reasoning = getattr(response.choices[0].message, "reasoning", None)
+                if reasoning:
+                    parsed["thinking"] = reasoning
+            return parsed
+
+        return content
+    except Exception as exc:
+        logger.exception("vLLM request failed")
+        return f"Error: {exc}"
+
+
+def llm(
+    model=None,
+    input_prompt="Hallo",
+    system_prompt=None,
+    format="",
+):
+    if system_prompt is None:
+        system_prompt = load_system_prompt()
+
+    schema = query_output if format else None
+    result = vllm_request(
+        system_prompt=system_prompt,
+        user_prompt=input_prompt,
+        model=get_vllm_model(model),
+        thinking=False,
+        schema=schema,
+    )
+
+    if isinstance(result, dict):
+        result.pop("thinking", None)
+        return json.dumps(result, ensure_ascii=False)
+
+    return str(result)
+
 
 class query_output(BaseModel):
+    bericht_query: str = Field(default="")
+    modality_query: str = Field(default="")
 
-    bericht_query: str = Field()
-    modality_query: str = Field()
 
-system_prompt = f"""
-<role>
-Du bist ein spezialisierter Query-Generator für die Radiologie, der deutsche Freitext-Anfragen in präzise deutschsprachige SOLR-Queries umwandelt. Fokus soll dabei auf das Vorkommen der Stichwörter in der Beurteilung gelegt werden, und auf das Nicht-Vorkommen von Fehlen von den gesuchten Pathologien ['kein*', 'ohne Hinweis']. 
-</role>
+def _postprocess_output(parsed: query_output) -> query_output:
+    parsed.bericht_query = normalize_bericht_query(parsed.bericht_query)
+    parsed.bericht_query = parsed.bericht_query.replace("'", '"')
+    parsed.modality_query = parsed.modality_query.strip()
+    return parsed
 
-<task>
-Du generierst zwei Arten von Queries:
-1. Bericht-Query: Für die Volltextsuche in Radiologieberichten (Complex Phrase Parser) jeweils in der Beurteilung
-2. Modalitäts-Query: Lucene Regex-Pattern für die Modalitätsfilterung
-</task>
 
-<output_format>
-Ausgabe nur JSON:
-{{
-  "bericht_query": "vollständige Complex phrase SOLR query hier",
-  "modality_query": "regex für modalität hier"
-}}
-</output_format>
+def llm_validate(
+    model=None,
+    input_prompt="",
+    system_prompt=None,
+    format=query_output.model_json_schema(),
+):
+    if system_prompt is None:
+        system_prompt = load_system_prompt()
 
-<example>
-<input>"Appendicitis sonographie"</input>
-<output>
-{{
-  "bericht_query": '("beurteilung* appendicitis"[prox=100] OR "beurteilung* appendizitis"[prox=100]) AND NOT "kein* appendicitis"[prox=5] AND NOT "kein* appendizitis"[prox=5] AND NOT "ohne Hinweis* *appendicitis*"[prox=5] AND NOT "ohne Hinweis* *appendizitis*"[prox=5]',
-  "modality_query": '/.*Sonogra[ph|f]ie.*[aA]bdomen.*/'
-}}
-</output>
-</example>
+    llm_output = None
+    raw_response = ""
+    resolved_model = get_vllm_model(model)
 
-<example>
-<input>"CT Schädel Epiduralblutung"</input>
-<output>
-{{
-  "bericht_query": '("beurteilung* epiduralhämatom*"[prox=100] OR "beurteilung* epiduralblut*"[prox=100] OR "beurteilung* epidural* hämatom*"[prox=100] OR "beurteilung* epidural* blut*"[prox=100] OR "beurteilung* EDH"[prox=100]) AND NOT "kein* epiduralhämatom*"[prox=5] AND NOT "kein* epiduralblut*"[prox=5] AND NOT "kein* epidural* hämatom*"[prox=5] AND NOT "kein* epidural* blut*"[prox=5] AND NOT "kein* EDH"[prox=5] AND NOT "ohne Hinweis* epiduralhämatom*"[prox=5] AND NOT "ohne Hinweis* epiduralblut*"[prox=5] AND NOT "ohne Hinweis* epidural* hämatom*"[prox=5] AND NOT "ohne Hinweis* epidural* blut*"[prox=5] AND NOT "ohne Hinweis* EDH"[prox=5]',
-  "modality_query": '/.*CT.*[sS]chädel.*/'
-}}
-</output>
-</example>
-
-<example>
-<input>"Emphysem Lunge CT Thorax"</input>
-<output>
-{{
-  "bericht_query": '"beurteilung* *emphysem*"[prox=100] AND NOT "kein* *emphysem*"[prox=5] AND NOT "ohne Hinweis* *emphysem*"[prox=5]',
-  "modality_query": '/.*CT.*[tT]horax.*/'
-}}
-</output>
-</example>
-"""
-
-def llm_validate(model="mistral-small3.2:24b-instruct-2506-q8_0", input_prompt="", system_prompt=system_prompt, format=query_output.model_json_schema()):    
-    
     try:
-        llm_output = llm(input_prompt=input_prompt, system_prompt=system_prompt, format=format)
-        llm_output = query_output.model_validate_json(llm_output)
-        llm_output.bericht_query = normalize_bericht_query(apply_placeholders(llm_output.bericht_query))
-        llm_output.bericht_query = llm_output.bericht_query.replace("'", '"')
-    except:
+        raw_response = llm(
+            model=resolved_model,
+            input_prompt=input_prompt,
+            system_prompt=system_prompt,
+            format=format,
+        )
+        llm_output = _postprocess_output(query_output.model_validate_json(raw_response))
+    except Exception:
+        logger.exception("Failed to parse LLM JSON output")
         try:
-            llm_output = query_output.model_validate(json.loads(llm_output))
-        except:
+            llm_output = _postprocess_output(
+                query_output.model_validate(json.loads(raw_response))
+            )
+        except Exception:
             llm_output = None
 
     return llm_output.model_dump() if llm_output else query_output().model_dump()

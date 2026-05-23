@@ -1,0 +1,635 @@
+Blutungsquellensuche
+Prä-SIRT
+Meckel-Divertikel-Szintigrafie
+Milzszintigrafie
+Speicheldrüsenszintigrafie
+Magen-Darm-Transitzeitbestimmung
+Skelettszintigrafie
+Zweiphasen-Skelettszintigrafie
+Dreiphasen-Skelettszintigrafie
+Hormonnachsorge
+Nebenschilddrüsenabklärung
+Schilddrüsensprechstunde
+Radiojodstudium mit Schilddrüsenszinti
+Schilddrüsenszinti mit MIBI
+Schilddrüsenszinti mit J131
+Schilddrüsenszinti
+Sonografie SD/Halsweichteile
+Sonografie mit FNP
+Schilddrüse Tumornachsorge
+Tumornachsorge mit Jod 123
+Tumornachsorge mit Sonografie
+Tumornachsorge unter Thyrogenstimulation
+Leukozytenszintigrafie
+Lymphbahnszintigrafie
+Sentinellymphkn.-Szintigrafie
+Sentinellymphknoten-Szintigrafie Mamma beidseits
+Sentinellymphknma.-Szintigrafie
+Sentinellymphknme.-Szintigrafie
+Myokardperfusionsszinti (Ruhe und Bel)
+Myokardperfusionsszinti (nur Bel)
+Myokardperfusionsszinti (nur Ruhe)
+Lungenmarkierung
+Radiospirometrie
+Lungenperfusionszintigraphie
+Präsynapt.Dopamin-Transporter-Szinti
+Hirnperfusionsszintigrafie
+Infektszinti mit 99mTc-Antigran-AK
+MIBG-Szintigrafie
+Tumorrezeptorszintigrafie
+PET/CT Skelett
+PET/CT Herz
+PET/CT Herz Calciumscore 0
+PET/CT Hirn
+PET/CT Hirn Amyloid
+PET/CT Hirn FET
+PET/CT Myokardsuppression
+PET/CT Onko/Infekt
+Onko-PET mit F-18-Cholin
+Onko-PET mit F-18 DOPA
+Onko-PET 68 Ga-DOTA
+Onko-PET 68Ga-DOTA-Exendin4
+Onko-PET mit 18-F PSMA
+Onko-PET 68 Ga-PSMA
+Stat. SIRT
+Intraarterielle Radionuklidtherapie
+SIRT-Aufnahmen
+Ambulante i.v. DOTATOC-Therapie
+Amb.intravenöse Radionuklidtherapie
+Intravenöse Radionuklidtherapie PSMA
+Intravenöse XOFIGO-Therapie
+Radiojodtherapie Elimination
+Radiojodtherapie mit Szinti
+Radiojodtherapie Toxikose
+Intraartikuläre Radiosynoviorthese
+Dynamische Nierenszintigrafie (MAG3)
+Statische Nierenszintigrafie (DMSA)
+Extremitätenperfusion im Operationssaal
+Konsil NUK
+Arteriografie / Intervention Aorta / Becken / Bein
+Arteriografie / Intervention Niere(n)
+Arteriografie / Intervention Abdomen viszeral
+Arteriografie / Intervention Kopf / Hals
+Flachdetektor CT Kopf/Hals
+Arteriografie / Intervention Aorta
+Arteriografie / Intervention obere Extremität
+Arteriografie / Intervention Bronchialarterien
+Arteriografie / Intervention Bein antegrad
+Arteriografie / Intervention lumbal / spinal
+SIRT
+Transarterielle Tumorbehandlung abdominell
+Stereotaktische Mamma-Biopsie / stereotaktische Lokalisation links
+Stereotaktische Mamma-Biopsie / stereotaktische Lokalisation rechts
+Stereotaktischer minimal-invasiver Mamma-Eingriff links
+Stereotaktischer minimal-invasiver Mamma-Eingriff rechts
+Mammografie 2D beidseits
+Mammografie 2D links
+Mammografie 2D präventiv beidseits
+Mammografie 2D präventiv links
+Mammografie 2D präventiv rechts
+Mammografie 2D rechts
+Mammografie beidseits
+Mammografie mit Kontrastmittel beidseits
+Mammografie mit Kontrastmittel links
+Mammografie mit Kontrastmittel rechts
+Mammografie links
+Mammografie präventiv beidseits
+Mammografie präventiv links
+Mammografie präventiv rechts
+Mammografie Präparateradiographie links
+Mammografie Präparateradiographie rechts
+Mammografie rechts
+CT Angiografie Abdomen-Becken
+CT Angiografie Abdomen-Becken-Bein
+CT Angiografie Hals
+CT Angiografie Schädel
+CT Angiografie obere Extremität beidseits
+CT Angiografie obere Extremität links
+CT Angiografie obere Extremität rechts
+CT Angiografie Hals-Thx-Abd-Becken-Bein
+CT Angiografie Thorax-Abdomen-Becken
+CT Angiografie untere Extremität beidseits
+CT Angiografie untere Extremität links
+CT Angiografie untere Extremität rechts
+CT gesteuerte Intervention diagnostisch
+CT Abdomen / Becken
+CT Leberprogramm dreiphasig
+CT Oberbauch
+CT Becken
+CT Angiografie Becken- Bein
+CT Aortenklappe
+CT Linker Vorhof
+CT Herz
+CT Herz nativ
+CT Herz / thorakale Aorta
+CT Ganzkoerper
+CT Hals (Neuroradiologie)
+CT Schädel Polytrauma
+CT Dentascan
+CT Gesichtsschädel NNH
+CT Gesichtsschädel/NNH inkl UK
+CT Orbita
+CT Ober/Unterkiefer
+CT Schädel med. REA
+CT Schädelbasis / Felsenbein
+CT Schädel
+CT Schädel CAS WHC
+CT Schädel-HWS
+CT Polytrauma
+CT med. REA
+CT Arthrografie Handgelenk links
+CT Arthrografie Handgelenk rechts
+CT Arthrografie obere Extremität links
+CT Arthrografie obere Extremität rechts
+CT Arthrografie Schulter links
+CT Arthrografie Schulter rechts
+CT Ellenbogen links
+CT Ellenbogen rechts
+CT Hand bds
+CT Hand links
+CT Hand rechts
+CT Handgelenk bds
+CT Handgelenk links
+CT Handgelenk rechts
+CT Oberarm links
+CT Oberarm rechts
+CT Schulter bds
+CT Schulter links
+CT Schulter rechts
+CT Unterarm bds
+CT Unterarm links
+CT Unterarm rechts
+CT Hals-Thorax-Abdomen-Becken
+CT Thorax-Abdomen-Becken
+CT Thorax
+CT Thorax / Hals
+CT Thorax / Oberbauch
+CT Thorax / Stroke
+CT Arthrografie Hüfte links
+CT Arthrografie Hüfte rechts
+CT Arthrografie Knie links
+CT Arthrografie Knie rechts
+CT Arthrografie untere Extremität links
+CT Arthrografie OSG links
+CT Arthrografie OSG rechts
+CT Arthrografie untere Extremität rechts
+CT Fuss bds
+CT Fuss links
+CT Fuss rechts
+CT Hüfte links
+CT Hüfte rechts
+CT Knie bds
+CT Knie links
+CT Knie rechts
+CT Oberschenkel links
+CT Oberschenkel rechts
+CT oberes Sprunggelenk bds
+CT oberes Sprunggelenk links
+CT oberes Sprunggelenk rechts
+CT Unterschenkel bds
+CT Angio Unterschenkel CAS WHC
+CT Unterschenkel links
+CT Unterschenkel rechts
+CT Wirbelsäule
+CT BWS
+CT HWS
+CT LWS
+CT LWS/Becken
+CT gesteuerte Operation
+CT gesteuerte Vertebroblastie
+CT gesteuerte Intervention therapeutisch
+DL-gesteuerte diagnostische Intervention
+Abdomen Zielaufnahme(n) unter DL
+Beckenteilaufnahme unter DL links
+Beckenteilaufnahme unter DL rechts
+Hals Zielaufnahme(n) unter DL
+Schädel Zielaufnahme(n) unter DL
+Kiefer Zielaufnahme(n) unter DL
+Nasennebenhöhlen Zielaufnahme(n) unter DL
+Durchleuchtung zur Lokalisation von Fremdkörpern
+Clavicula Zielaufnahme(n) unter DL links
+Clavicula Zielaufnahme(n) unter DL rechts
+Ellenbogengelenk Zielaufnahme(n) unter DL links
+Ellenbogengelenk Zielaufnahme(n) unter DL rechts
+Finger Zielaufnahme(n) unter DL links
+Finger Zielaufnahme(n) unter DL rechts
+Hand /Handwurzel /Carpaltunnel Zielaufnahme(n) unter DL links
+Hand /Handwurzel /Carpaltunnel Zielaufnahme(n) unter DL rechts
+Handgelenk Zielaufnahme unter DL beidseits
+Handgelenk Zielaufnahme(n) unter DL links
+Handgelenk Zielaufnahme(n) unter DL rechts
+Oberarm Zielaufnahme(n) unter DL links
+Oberarm Zielaufnahme(n) unter DL rechts
+Schultergelenk Zielaufnahme (n) unter DL beidseits
+Schultergelenk Zielaufnahme(n) unter DL links
+Schultergelenk Zielaufnahme(n) unter DL rechts
+Unterarm Zielaufnahme(n) unter DL links
+Unterarm Zielaufnahme(n) unter DL rechts
+Thorax Zielaufnahme(n) unter DL links
+Thorax Zielaufnahme(n) unter DL rechts
+Knöcherner Thorax Zielaufnahme(n) unter DL links
+Knöcherner Thorax Zielaufnahme(n) unter DL rechts
+Sternum / Sternoclaviculargelenk Zielaufnahme(n) unter DL
+Calcaneus links Zielaufnahme(n) unter DL links
+Calcaneus rechts Zielaufnahme(n) unter DL rechts
+Fuss Zielaufnahme unter DL beidseits
+Fuss Zielaufnahme(n) unter DL links
+Fuss Zielaufnahme(n) unter DL rechts
+Hüftgelenk Zielaufnahme(n) unter DL links
+Hüftgelenk Zielaufnahme(n) unter DL rechts
+Kniegelenk Zielaufnahme(n) unter DL links
+Kniegelenk Zielaufnahme(n) unter DL rechts
+Oberschenkel Zielaufnahme unter DL beidseits
+Oberes Sprunggelenk Zielaufnahme(n) unter DL links
+Oberes Sprunggelenk Zielaufnahme(n) unter DL rechts
+Oberschenkel Zielaufnahme(n) unter DL links
+Oberschenkel Zielaufnahme(n) unter DL rechts
+Unterschenkel Zielaufnahme unter DL bds
+Unterschenkel Zielaufnahme(n) unter DL links
+Unterschenkel Zielaufnahme(n) unter DL rechts
+Vorfuss Zielaufnahme(n) unter DL rechts
+Vorfuss Zielaufnahme(n) unter DL links
+Brustwirbelsäule Zielaufnahme(n) unter DL
+Halswirbelsäule Zielaufnahme(n) unter DL
+DL-gestützte Lumbalpunktion
+Lendenwirbelsäule Zielaufnahme(n) unter DL
+DL-gesteuerte therapeutische Intervention
+Infiltration eines Gelenkes diagnostisch
+Antegrade Urethrografie
+Antegrade Pyeloureterografie links
+Antegrade Pyeloureterografie rechts
+Ausscheidungsurografie
+Cholangiografie über T-Drain
+Colon-Kontrastdarstellung
+Defäkografie
+Differenzierte Schluckpassage mit Logopädie
+DJ Einlage/ Wechsel / Retrograde Ureteropyelografie beidseits
+DJ Einlage/ Wechsel / Retrograde Ureteropyelografie links
+DJ Einlage/ Wechsel / Retrograde Ureteropyelografie rechts
+ERCP
+Genitografie
+Hysterosalpingografie
+Miktionszysturethrografie (MCUG)
+Ösophagus-Magen-Darm-Passage
+Nephrostomiewechsel / Antegrade Pyeloureterografie links
+Nephrostomiewechsel / Antegrade Pyeloureterografie rechts
+Ösophagus-Magen-Duodenum-Passage
+Ösophagogramm
+Rektumstumpf-Kontrastdarstellung
+Retrograde Urethrografie
+Retrograde Ureteropyelografie beidseits
+Retrograde Ureteropyelografie links
+Retrograde Ureteropyelografie rechts
+Selektive Dünndarm-Darstellung
+Vesiculo-/ Epididymografie beidseits
+Zystografie
+Messung des Urinflusses unter Durchleuchtung
+Zysternografie
+Dakryografie beidseits
+Dakryografie links
+Dakryografie rechts
+Pudenzografie
+Sialografie links
+Sialografie rechts
+Ventrikulografie
+Myelographie mit Bloodpatch
+Kontrastdarstellung Fistel / Höhle / Gang
+Katheterkontrolle unter Durchleuchtung
+Katheterrevision unter Durchleuchtung
+Arthrografie Ellenbogengelenk links
+Arthrografie Ellenbogengelenk rechts
+Arthrografie Handgelenk links
+Arthrografie Handgelenk rechts
+Arthrografie Schultergelenk links
+Arthrografie Schultergelenk rechts
+Arthrografie Hüftgelenk links
+Arthrografie Hüftgelenk rechts
+Arthrografie Kniegelenk links
+Arthrografie Kniegelenk rechts
+Arthrografie oberes Sprunggelenk links
+Arthrografie oberes Sprunggelenk rechts
+Arthrografie unteres Sprunggelenk links
+Arthrografie unteres Sprunggelenk rechts
+Myelografie cervikal
+Myelografie dynamisch
+Myelografie lumbal
+Myelografie thorakal
+Infiltration eines Gelenkes therapeutisch
+Radiofrequenzthermoneurolyse cervikal
+Radiofrequenzthermoneurolyse lumbal
+Radiofrequenzthermoneurolyse thorakal
+MRI Angiografie Abdomen
+MRI Becken Bein Angio
+MRI Schädel mit Kopf-Angio
+MRI Schädel mit Kopf-Hals Angio
+MRI Angiografie untere Extremität beidseits
+MRI Angiografie Fuss links
+MRI Angiografie Fuss rechts
+MRI untere Extr Angio links
+MRI untere Extr Angio rechts
+MRI Angiografie Wirbelsäule
+MRI Angiografie Aorta
+MRI Angiografie Carotis
+MRI Mammapunktion links
+MRI Mammalokalisation beidseits
+MRI Mammalokalisation links
+MRI Mammalokalisation rechts
+MRI Mammapunktion rechts
+MRI Abdomen
+MRI Abdomen-Becken
+MRI Becken
+MRI Herz
+MRI Ganzkoerper
+MRI Kopf-Halsweichteile
+MRI Schädel
+MRI Schädel mit Gesichtsschädel
+MRI Kiefergelenke
+MRI Schädel ohne Angio
+MRI Mamma
+MRI Neuromuskulär
+MRI Neuromuskulär untere Extremitäten
+MRI Angiografie obere Extremität links
+MRI Angiografie obere Extremität rechts
+MRI Arthrografie Ellenbogen links
+MRI Arthrografie Ellenbogen rechts
+MRI Arthrografie Handgelenk links
+MRI Arthrografie Handgelenk rechts
+MRI Arthrografie Hand links
+MRI Arthrografie Hand rechts
+MRI Arthrografie Schulter links
+MRI Arthrografie Schulter rechts
+MRI obere Extremität beidseits
+MRI Ellenbogengelenk links
+MRI Ellenbogengelenk rechts
+MRI Finger links
+MRI Finger rechts
+MRI Hand beidseits
+MRI Hand links
+MRI Hand rechts
+MRI Handgelenk links
+MRI Handgelenk rechts
+MRI obere Extremität links
+MRI Oberarm links
+MRI Oberarm rechts
+MRI obere Extremität rechts
+MRI Schulter links
+MRI Schulter rechts
+MRI Unterarm links
+MRI Unterarm rechts
+MRI Thorax
+MRI Thorax-Abdomen
+MRI Achillessehne links
+MRI Achillessehne rechts
+MRI Arthrografie Hüfte links
+MRI Arthrografie Hüfte rechts
+MRI Arthrografie Knie links
+MRI Arthrografie Knie rechts
+MRI Arthrografie OSG links
+MRI Arthrografie OSG rechts
+MRI untere Extremitäten bds.
+MRI Fuss links
+MRI Fuss rechts
+MRI Hüfte beidseits
+MRI Hüfte links
+MRI Hüfte rechts
+MRI Kniegelenk beidseits
+MRI Kniegelenk links
+MRI Kniegelenk rechts
+MRI untere Extremität links
+MRI Oberschenkel beidseits
+MRI Oberschenkel links
+MRI Oberschenkel rechts
+MRI untere Extremität rechts
+Rotation MRI
+MRI Sprunggelenk links
+MRI Sprunggelenk rechts
+MRI Unterschenkel beidseits
+MRI Unterschenkel links
+MRI Unterschenkel rechts
+MRI Brustwirbelsäule
+MRI Bechterew
+MRI ganze Wirbelsäule
+MRI Halswirbelsäule
+MRI Lendenwirbelsäule
+MRI Plexus Brachialis
+MRI Plexus Lumbalis
+MRI Sakrum / ISG
+Phlebografie / Intervention Becken
+Phlebografie / Intervention Kopf / Hals
+Obere / untere Cavografie Darstellung / Intervention
+Phlebografie / Intervention obere Extremität
+Phlebografie / Intervention untere Extremität
+Abdomenübersicht
+Thorax liegend
+Thorax sitzend
+Thorax stehend
+Becken und Hüfte beidseits
+Beckenübersicht und Hüftgelenk links
+Beckenübersicht und Hüftgelenk rechts
+Beckenübersicht liegend
+Beckenteilaufnahme links
+Beckenteilaufnahme rechts
+Iliosacralgelenke n. Barsony
+Os sacrum
+Knochendichtemessung
+Schädel
+Nasenbein
+Orbita
+Acromionclaviculargelenke Panoramaaufnahme
+Clavicula links
+Clavicula rechts
+Ellenbogen beidseits
+Ellenbogen links
+Ellenbogen und Radiusköpfchen n. Norman links
+Ellenbogen und Radiusköpfchen n. Norman rechts
+Ellenbogen rechts
+Finger beidseits
+Finger links
+Finger rechts
+Hände beidseits
+Hand links
+Hand rechts
+3D Tomografie Handgelenk links
+3D Tomografie Handgelenk rechts
+Handgelenk beidseits
+Handgelenk links
+Handgelenk rechts
+Oberarm beidseits
+Oberarm links
+Oberarm rechts
+Scapula links
+Scapula rechts
+Schulter beidseits
+Schultergelenk links
+Schultergelenk rechts
+Unterarm links
+Unterarm rechts
+Sternum
+Calcaneus beidseits
+Calcaneus links
+Calcaneus rechts
+3D Tomografie Fuss/Oberes Sprunggelenk beidseits
+3D Tomografie Fuss/Oberes Sprunggelenk links
+3D Tomografie Fuss/Oberes Sprunggelenk rechts
+Füsse Beidseits
+Fuss links
+Fuss rechts
+Fuss stehend links
+Fuss stehend rechts
+Hüftgelenk links
+Hüftgelenk rechts
+Gehaltene Aufnahme Knie
+3D Tomografie Kniegelenk links
+3D Tomografie Kniegelenk rechts
+Knie beidseits
+Kniegelenk links
+Knie und Patella beidseits
+Kniegelenk und Patella links
+Kniegelenk und Patella rechts
+Kniegelenk rechts
+Kniegelenk stehend links
+Kniegelenk stehend rechts
+Orthoradiogramm
+Oberschenkel beidseits
+Oberes Sprunggelenk Beidseits
+Oberes Sprunggelenk links
+Oberes Sprunggelenk rechts
+Oberes Sprunggelenk ap und Saltzman beidseits
+Oberes Sprunggelenk ap und Saltzman links
+Oberes Sprunggelenk ap und Saltzman rechts
+Oberes Sprunggelenk stehend links
+Oberes Sprunggelenk stehend rechts
+Oberschenkel links
+Oberschenkel rechts
+Patella beidseits
+Patella links
+Patella rechts
+Unterschenkel beidseits
+Unterschenkel links
+Unterschenkel rechts
+Vorfuss links
+Vorfuss rechts
+Zeh links
+Zeh rechts
+Brustwirbelsäule in zwei Ebenen
+Brustwirbelsäule und Funktionsaufnahmen nach Bending
+Brustwirbelsäule-Funktionsaufnahmen nach Bending
+cerviko-thorakaler Uebergang liegend
+cerviko-thorakaler Uebergang stehend/sitzend
+Dens stehend/sitzend
+Fulcrum-Aufnahme der Wirbelsäule
+Ganze Wirbelsäule/Skoliosemessung
+Halswirbelsäule in zwei Ebenen (und Dens)
+Halswirbelsäule Funktionsaufnahmen
+Halswirbelsäule und Funktionsaufnahmen
+3D Tomografie Lendenwirbelsäule
+Lendenwirbelsäule in zwei Ebenen
+Lendenwirbelsäule Funktionsaufnahmen
+Lendenwirbelsäule stehend u.Funktionsaufnahmen
+thorako-lumbaler Uebergang ap und lat
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration Abdomen
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration Hals
+Minimal invasive Brustbiopsie mit Ultraschall
+US-gest.Bio/diag.Aspirat.oExL
+US-gest.Bio/diag.Aspirat.oExR
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration LK
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration Thorax
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration unt.Extremitäten LI
+Sonografisch gesteuerte Biopsie / diagnostische Aspiration unt.Extremitäten RE
+Sonografie ganzes Abdomen
+Sonografie Hoden / Nebenhoden / Penis bds.
+Sonografie Hoden mit KM
+Sonografie Oberbauch
+Sonografie ein Organ des Abdomens
+Morphologie / Blutfluss der Ovarien beidseits
+Restharnbestimmung
+Sonografie Unterbauch / Becken
+Sonografie Bauchwand
+Sonografie Leber mit KM
+Sonografie Nieren beidseits mit KM
+Sonografie Niere links mit KM
+Sonografie Niere rechts mit KM
+Sonografie Urogenitalsystem
+Sonografie Leiste beidseits
+Sonografie Leiste Links
+Sonografie Leiste Rechts
+Sonografie Speicheldrüsen beidseits
+Sonografie Halsweichteil beidseits
+Sonografie Halsweichteil links
+Sonografie Halsweichteil rechts
+Sonographie Schädel transfontanellär
+Sonografie Kopf Weichteile
+Sonografie Mamma beidseits
+Sonografie Mamma links
+Sonografie Mamma rechts
+Sonografie Hand beidseits
+Sonografie Hand links
+Sonografie Hand rechts
+Sonografie Ellenbogengelenk links
+Sonografie Handgelenk links
+Sonografie Schultergelenk links
+Sonografie Weichteile muskuloskelettal obere Extremitäten links
+Sonografie Ellenbogengelenk rechts
+Sonografie Handgelenk rechts
+Sonografie Schultergelenk rechts
+Sonografie Weichteile muskuloskelettal obere Extremitäten rechts
+Sonografie Weichteile obere Extremität beidseits
+Sonografie ganzes Abdomen und Lymphknotenstaging
+Sonografie eFAST
+Sonografie Lymphknotenstaging
+Sonografie LK mit KM
+Sonografie Thorax beidseits
+Sonografie Thorax links
+Sonografie Thorax rechts
+Sonografie Säuglingshüfte beidseits
+Sonografie Achillesehne links
+Sonografie Hüftgelenk links
+Sonografie Kniegelenk links
+Sonografie Sprunggelenkes / Fuss links
+Sonografie Weichteile muskuloskelettal untere Extremitäten links
+Sonografie Achillesehne rechts
+Sonografie Hüftgelenk rechts
+Sonografie Kniegelenk rechts
+Sonografie Sprunggelenkes / Fuss rechts
+Sonografie Weichteile muskuloskelettal unt.Extremitäten rechts
+Sonografie Weichteile untere Extremität beidseits
+Sonografie Rückenmark
+Sonografisch gesteuerte Lokalisation Mamma
+US-gest.vakuumassist.minim.invasiv.Mammaeingriff links
+US-gest.vakuumassist.minim.invasiv.Mammaeingriff rechts
+US-gesteuerte therapeutische Intervention
+US gesteuerte Infiltration eines Gelenkes therapeutisch
+Sonografie Venen mit KM
+Sonografie Venen obere Extremitäten links
+Sonografie Duplex tiefe Venen obere Extremität rechts
+Sono/Duplex Tiefe Venen untere Extremität links
+Sonografie Duplex tiefe Venen untere Extremität Unterschenkel links
+Sonografie Venen untere Extremitäten rechts
+Sonografie Arterien Abdomen/Becken
+Sonografie Morphologie und Duplex Hirnbasisarterien beidseits
+Sonografie Arterien mit KM
+Sonografie Arterien oberen Extremitäten links
+Sonografie Arterien oberen Extremitäten rechts
+Sonografie Arterien untere Extremitäten links
+Sonografie Morphologie und Duplex Arterien untere Extremität rechts
+PTC / PTCD
+Dialyseshunt Darstellung / Intervention
+Pulmonalisangiografie
+Perkutane Gastrostomie Neueinlage
+Wechsel perkutane Gastrostomie
+Transjuguläre Leberbiopsie und HVPG Messung
+Perkutane Nephrostomie
+Wechsel perkutane Nephrostomie
+Sonstiger Pfortadereingriff (nicht TIPS)
+TIPSS
+Behandlung Gefässmalformation
+DL-gesteuerte Picc Line Einlage
+Port-Einlage Arm
+Port-Entfernung Arm
+Konsil Abdominelle und Onkologische Diagnostik
+Konsil Cardiale und Thorakale Diagnostik
+Konsil/ Vorabklärung Interventionelle Radiologie
+Konsil/Zweitbeurteilung Mammografie
+Konsil Muskuloskelettale Diagnostik
+Konsil Neuroradiologie
+PICC Line Nachsorge
