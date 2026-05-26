@@ -80,12 +80,9 @@ def llm_query():
 
     params = request.get_json(force=True)
     text_query = params.get("query", "")
-    model = (
-        current_app.config.get('VLLM_MODEL')
-        or current_app.config.get('OLLAMA_MODEL', 'apollo-llm')
-    )
+    llm_output = {"bericht_query": "", "modality_query": ""}
     if text_query and text_query.strip():
-        llm_output = llm_validate(model=model, input_prompt=text_query)
+        llm_output = llm_validate(input_prompt=text_query)
 
     package = {
         "regexQuery": llm_output.get("bericht_query"),
