@@ -7,6 +7,7 @@ User=cyriacj
 Group=www-data
 WorkingDirectory=/var/www/pacs-ris-crawler/receiver
 Environment="PATH=<python virtual env path>:/usr/bin"
+Environment="PYTHONPATH=/var/www/pacs-ris-crawler"
 ExecStart=/var/www/pacs-ris-crawler/.venv/bin/gunicorn -b localhost:5005 -w 4 --log-level=info receiver.app:app
 
 [Install]

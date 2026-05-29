@@ -14,7 +14,7 @@ from redis import Redis
 from rq import Queue
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from lib.rq_dashboard_custom import format_dicomweb_job_command
+from common.rq_dashboard_custom import format_dicomweb_job_command
 
 logger = logging.getLogger("dicomweb")
 

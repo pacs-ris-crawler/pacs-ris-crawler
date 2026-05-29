@@ -9,7 +9,7 @@ import pandas as pd
 import rq_dashboard
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from lib.rq_dashboard_custom import patch_rq_dashboard
+from common.rq_dashboard_custom import patch_rq_dashboard
 import structlog
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
