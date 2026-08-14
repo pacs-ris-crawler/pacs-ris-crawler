@@ -708,8 +708,7 @@ a.view-images-link:hover {
 .crawler-rq-frame iframe {
     display: block;
     width: 100%;
-    min-height: 18rem;
-    height: 18rem;
+    min-height: 40rem;
     border: 0;
 }
 
