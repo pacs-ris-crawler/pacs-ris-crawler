@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software, please cite the article below."
 title: "PACS-RIS Crawler"
 description: "A unified search for PACS metadata and RIS report."
 version: "1.4.0"
@@ -16,3 +16,35 @@ authors:
 date-released: "2024-09-20"
 url: "https://github.com/pacs-ris-crawler/pacs-ris-crawler/"
 license: "GPL-3.0"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Cyriac"
+      given-names: "Joshy"
+      orcid: "https://orcid.org/0000-0002-4584-0623"
+    - family-names: "Indrakanti"
+      given-names: "Ashraya Kumar"
+      orcid: "https://orcid.org/0009-0001-3623-2271"
+    - family-names: "Wasserthal"
+      given-names: "Jakob"
+    - family-names: "Yang"
+      given-names: "Shan"
+    - family-names: "Bach"
+      given-names: "Michael"
+    - family-names: "Stieltjes"
+      given-names: "Bram"
+    - family-names: "Heye"
+      given-names: "Tobias"
+    - family-names: "Merkle"
+      given-names: "Elmar M."
+    - family-names: "Segeroth"
+      given-names: "Martin"
+      orcid: "https://orcid.org/0000-0001-7820-2778"
+  title: "Technical Developments in Radiology: Enhancing Research Workflows with PACScrawler"
+  journal: "Journal of Imaging Informatics in Medicine"
+  year: 2026
+  month: 7
+  date-published: "2026-07-21"
+  doi: "10.1007/s10278-026-02130-8"
+  url: "https://doi.org/10.1007/s10278-026-02130-8"
+  issn: "2948-2933"

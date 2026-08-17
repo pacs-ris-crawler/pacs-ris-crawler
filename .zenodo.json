@@ -19,5 +19,15 @@
             "affiliation": "Universit\u00e4tsspital Basel"
         }
     ],
-    "access_right": "open"
+    "access_right": "open",
+    "related_identifiers": [
+        {
+            "identifier": "https://doi.org/10.1007/s10278-026-02130-8",
+            "relation": "isDocumentedBy",
+            "resource_type": "publication-article"
+        }
+    ],
+    "references": [
+        "Cyriac, J., Indrakanti, A.K., Wasserthal, J. et al. Technical Developments in Radiology: Enhancing Research Workflows with PACScrawler. J Digit Imaging. Inform. med. (2026). https://doi.org/10.1007/s10278-026-02130-8"
+    ]
 }

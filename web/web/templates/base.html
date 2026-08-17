@@ -15,6 +15,14 @@
       {% block table %}
       {% endblock %}
     </div>
+    <footer class="citation-footer">
+      If you use PACScrawler in your research, please cite
+      <a href="https://doi.org/10.1007/s10278-026-02130-8" target="_blank" rel="noopener noreferrer">Cyriac et al. (2026)</a>
+      or open
+      <a href="#" data-toggle="modal" data-target="#citeModal">Cite</a>
+      for the full reference.
+    </footer>
   </div>
 </div>
+{% include 'partials/citation.html' %}
 {% endblock %}

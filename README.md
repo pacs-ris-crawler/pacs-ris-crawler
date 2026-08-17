@@ -9,6 +9,12 @@ at the  [University Hospital Basel](https://www.unispital-basel.ch/en/).
 
 The documentation can be found at: https://pacs-ris-crawler.github.io/
 
+## How to cite
+
+If you use PACScrawler in your research, please cite:
+
+Cyriac, J., Indrakanti, A.K., Wasserthal, J. et al. Technical Developments in Radiology: Enhancing Research Workflows with PACScrawler. J Digit Imaging. Inform. med. (2026). https://doi.org/10.1007/s10278-026-02130-8
+
 ## Requirements
 * python 3.9
 * solr 7.7 (for now)

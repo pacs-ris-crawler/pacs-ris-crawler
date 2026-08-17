@@ -753,6 +753,27 @@ a.view-images-link:hover {
     background: var(--surface-hover);
 }
 
+.citation-footer {
+    margin-top: 0.5rem;
+    padding: 0.75rem 0 1.25rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
+.citation-footer a {
+    color: var(--brand-primary);
+}
+
+.citation-text {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    background: var(--surface-muted);
+    border-left: 3px solid var(--brand-primary);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
 .form-control,
 .custom-select {
     background-color: var(--form-bg);

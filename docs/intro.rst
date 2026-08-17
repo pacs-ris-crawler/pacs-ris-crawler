@@ -15,6 +15,13 @@ With the PACS-Ris tool it is possible to search all exams at once with the
 corresponding RIS Report. So finding all x-ray images with a e.g.
 wrist fracture now takes only seconds instead of days.
 
+How to cite
+-----------
+
+If you use PACScrawler in your research, please cite:
+
+Cyriac, J., Indrakanti, A.K., Wasserthal, J. et al. Technical Developments in Radiology: Enhancing Research Workflows with PACScrawler. J Digit Imaging. Inform. med. (2026). https://doi.org/10.1007/s10278-026-02130-8
+
 
 How does it work
 ------------------

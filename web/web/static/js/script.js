@@ -497,7 +497,25 @@ $(function () {
   
   
   }
-  
-  
+
+  $('#copy-citation-btn').on('click', function () {
+    var text = $('#citation-text').text().trim();
+    var $btn = $(this);
+    function showCopied() {
+      var original = $btn.text();
+      $btn.text('Copied');
+      setTimeout(function () {
+        $btn.text(original);
+      }, 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied);
+    } else {
+      var $tmp = $('<textarea>').val(text).appendTo('body').select();
+      document.execCommand('copy');
+      $tmp.remove();
+      showCopied();
+    }
+  });
   
 });
