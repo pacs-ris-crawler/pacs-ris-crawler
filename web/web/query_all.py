@@ -1,11 +1,16 @@
 import json
+import sys
 from math import ceil
+from pathlib import Path
 
 import pandas as pd
 from requests import RequestException, get
 from werkzeug.datastructures import MultiDict
 
 from web.query import query_body
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from common.text import fix_utf8_mojibake_tree
 
 
 def query_all(search_params: MultiDict, solr_url: str):
@@ -30,7 +35,7 @@ def _query(query, solr_url):
     try:
         response = get(solr_url, data=json.dumps(query), headers=headers)
         data = response.json()
-        docs = data["response"]["docs"]
+        docs = fix_utf8_mojibake_tree(data["response"]["docs"])
         results = data["response"]["numFound"]
         return query, docs, results
     except RequestException as e:

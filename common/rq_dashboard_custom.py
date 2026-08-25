@@ -36,7 +36,11 @@ def format_dicomweb_job_command(config: dict, entry: dict, dir_name: str | None 
     study_uid = entry.get("study_uid", "")
     series_uid = entry.get("series_uid", "")
     accession_number = entry.get("accession_number", "")
-    uri = f"{base}/studies/{study_uid}/series/{series_uid}"
+    sop_uid = entry.get("sop_instance_uid") or ""
+    if sop_uid:
+        uri = f"{base}/studies/{study_uid}/series/{series_uid}/instances/{sop_uid}"
+    else:
+        uri = f"{base}/studies/{study_uid}/series/{series_uid}"
     parts = [f"WADO-RS GET {uri}"]
     if accession_number:
         parts.insert(0, f"accession={accession_number}")

@@ -1,8 +1,13 @@
+import sys
 from datetime import datetime
+from pathlib import Path
 from string import Template
 
 from flask import Flask
 from flask_assets import Bundle, Environment
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from common.text import fix_utf8_mojibake
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("web.default_config")
@@ -25,6 +30,15 @@ RECEIVER_DASHBOARD_URL = app.config["RECEIVER_DASHBOARD_URL"]
 RECEIVER_DOWNLOAD_URL = app.config["RECEIVER_DOWNLOAD_URL"]
 RECEIVER_TRANSFER_URL = app.config["RECEIVER_TRANSFER_URL"]
 SECTRA_UNIVIEW = app.config["SECTRA_UNIVIEW"]
+
+
+@app.template_filter("fix_mojibake")
+def fix_mojibake_filter(value):
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        return value
+    return fix_utf8_mojibake(value)
 
 
 @app.template_filter("to_date")

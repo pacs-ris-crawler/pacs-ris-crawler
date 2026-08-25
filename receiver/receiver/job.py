@@ -11,20 +11,36 @@ from receiver.executor import run, run_many
 logger = logging.getLogger("job")
 
 
-def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid):
+def transfer_new_pacs_command(dcmtk_config, target, study_uid, series_uid, sop_uid=None):
     """Constructs the first part of the transfer command to a PACS node."""
+    level = "IMAGE" if sop_uid else "SERIES"
     return (
         dcmtk_config.dcmtk_bin
-        + "/movescu -v -S -pdu 131072 -k QueryRetrieveLevel=SERIES "
+        + f"/movescu -v -S -pdu 131072 -k QueryRetrieveLevel={level} "
         + transfer_pacs()
-        + _transfer_new(target, study_uid, series_uid)
+        + _transfer_new(target, study_uid, series_uid, sop_uid)
     )
 
 
-def _transfer_new(target, study_uid, series_uid):
-    return " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
+def _transfer_new(target, study_uid, series_uid, sop_uid=None):
+    cmd = " -aem {} -k StudyInstanceUID={} -k SeriesInstanceUID={}".format(
         target, study_uid, series_uid
     )
+    if sop_uid:
+        cmd += f" -k SOPInstanceUID={sop_uid}"
+    return cmd
+
+
+def image_subdir(entry):
+    """Folder name under accession: series, or series_instance for echo clips."""
+    series_number = str(entry.get("series_number") or "0")
+    instance_number = str(entry.get("instance_number") or "").strip()
+    sop = str(entry.get("sop_instance_uid") or "").strip()
+    if instance_number:
+        return f"{series_number}_{instance_number}"
+    if sop:
+        return f"{series_number}_{sop.split('.')[-1]}"
+    return series_number
 
 
 def transfer_series(config, target, series_list):
@@ -32,7 +48,8 @@ def transfer_series(config, target, series_list):
     for entry in series_list:
         study_uid = entry["study_uid"]
         series_uid = entry["series_uid"]
-        command = transfer_new_pacs_command(dcmtk, target, study_uid, series_uid)
+        sop_uid = entry.get("sop_instance_uid") or None
+        command = transfer_new_pacs_command(dcmtk, target, study_uid, series_uid, sop_uid)
         args = shlex.split(command)
         queue_transfer(args)
         logger.debug("Running transfer command %s", args)
@@ -92,6 +109,7 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
         study_uid = entry["study_uid"]
         accession_number = entry["accession_number"]
         series_uid = entry["series_uid"]
+        sop_uid = (entry.get("sop_instance_uid") or "").strip()
         if not all([study_uid, series_uid, accession_number]):
             print("Error missing either study_uid, series_uid or accession number")
             print("study_uid:", study_uid)
@@ -107,6 +125,11 @@ def download_series(config, series_list, dir_name, image_type, queue_prio):
             + " -k SeriesInstanceUID="
             + series_uid
         )
+        if sop_uid:
+            command = command.replace(
+                "QueryRetrieveLevel=SERIES", "QueryRetrieveLevel=IMAGE"
+            )
+            command += " -k SOPInstanceUID=" + sop_uid
         args = shlex.split(command)
         queue(
             args,
@@ -191,7 +214,7 @@ def queue(
 def _create_image_dir(output_dir, entry, dir_name):
     patient_id = entry["patient_id"]
     accession_number = str(entry["accession_number"])
-    series_number = str(entry["series_number"])
+    series_number = image_subdir(entry)
     image_folder = os.path.join(
         output_dir, dir_name, patient_id, accession_number, series_number
     )

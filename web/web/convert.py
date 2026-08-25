@@ -26,6 +26,8 @@ def convert(df):
             p["series_uid"] = s["SeriesInstanceUID"]
             p["series_description"] = s.get("SeriesDescription", "")
             p["series_number"] = s.get("SeriesNumber", 9999)
+            p["sop_instance_uid"] = s.get("SOPInstanceUID", "")
+            p["instance_number"] = s.get("InstanceNumber", "")
             if not bool(p.get("study_uid")):
                 logging.error(
                     "Following serie not in download because of missing StudyInstanceUID, need to reindex solr"

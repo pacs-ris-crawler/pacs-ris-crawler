@@ -6,8 +6,10 @@ import structlog
 
 from crawler.command import (
     accs_per_day,
+    add_series_uid,
     add_study_uid,
     basic_query,
+    image_query,
     prefetch_query,
     study_uid_query,
     year_start_end,
@@ -38,6 +40,88 @@ def query_for_study_uid(config, accession_number):
     return ids
 
 
+US_EXPAND_MODALITIES = {"US"}
+
+
+def query_series_instances(config, study_uid, series_uid):
+    """IMAGE C-FIND for all instances in one series."""
+    full_config = load_config()
+    merged_config = {**full_config, **config}
+    query = add_series_uid(add_study_uid(image_query(merged_config), study_uid), series_uid)
+    result, _ = run(query)
+    return result, query
+
+
+def series_to_instance_rows(series, instances):
+    """Copy series metadata onto each IMAGE result that has a SOPInstanceUID."""
+    rows = []
+    seen = set()
+    series_desc = (series.get("SeriesDescription") or "").strip()
+    for inst in instances:
+        sop = (inst.get("SOPInstanceUID") or "").strip()
+        if not sop or sop in seen:
+            continue
+        seen.add(sop)
+        row = series.copy()
+        row["SOPInstanceUID"] = sop
+        instance_number = (inst.get("InstanceNumber") or "").strip()
+        if instance_number:
+            row["InstanceNumber"] = instance_number
+            suffix = f" (#{instance_number})"
+            if series_desc and suffix not in series_desc:
+                row["SeriesDescription"] = f"{series_desc}{suffix}"
+            elif not series_desc:
+                row["SeriesDescription"] = f"Instance {instance_number}"
+        rows.append(row)
+    return rows
+
+
+def expand_us_series_to_instances(config, series_results):
+    """Replace multi-instance US series with one row per SOPInstanceUID."""
+    if not series_results:
+        return series_results
+    expanded = []
+    for series in series_results:
+        if series.get("Modality") not in US_EXPAND_MODALITIES:
+            expanded.append(series)
+            continue
+        study_uid = series.get("StudyInstanceUID")
+        series_uid = series.get("SeriesInstanceUID")
+        if not study_uid or not series_uid:
+            expanded.append(series)
+            continue
+        try:
+            instances, image_query_cmd = query_series_instances(
+                config, study_uid, series_uid
+            )
+        except (DicomQueryError, subprocess.CalledProcessError) as exc:
+            log.warning(
+                "us_image_query_failed study_uid=%s series_uid=%s error=%s",
+                study_uid,
+                series_uid,
+                exc,
+            )
+            expanded.append(series)
+            continue
+        rows = series_to_instance_rows(series, instances or [])
+        if len(rows) <= 1:
+            log.debug(
+                "us_series_kept_as_series series_uid=%s instance_count=%s query=%s",
+                series_uid,
+                len(rows),
+                image_query_cmd,
+            )
+            expanded.append(series)
+            continue
+        log.info(
+            "us_series_expanded series_uid=%s instances=%s",
+            series_uid,
+            len(rows),
+        )
+        expanded.extend(rows)
+    return expanded
+
+
 def query_accession_number(config, study_uid):
     # Load full configuration for DCMTK_BIN and merge with DICOM node config
     full_config = load_config()
@@ -46,6 +130,7 @@ def query_accession_number(config, study_uid):
     query = basic_query(merged_config)
     query = add_study_uid(query, study_uid)
     result, _ = run(query)
+    result = expand_us_series_to_instances(config, result)
     return result, query
 
 

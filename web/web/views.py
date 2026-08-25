@@ -3,6 +3,8 @@ import io
 import json
 import logging
 import os
+import sys
+from pathlib import Path
 
 import matplotlib
 from plotnine import *
@@ -35,6 +37,9 @@ from web.solr import solr_url
 from web.statistics import calculate
 from web.terms import get_terms_data
 from web.query_llm import llm_validate
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from common.text import fix_utf8_mojibake_tree
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -132,7 +137,7 @@ def search():
         )
     else:
         app.logger.debug("Calling Solr with url %s", response.url)
-        data = response.json()
+        data = fix_utf8_mojibake_tree(response.json())
         docs = data["grouped"]["PatientID"]
         results = data["grouped"]["PatientID"]["ngroups"]
         studies_result = data["grouped"]["PatientID"]["matches"]

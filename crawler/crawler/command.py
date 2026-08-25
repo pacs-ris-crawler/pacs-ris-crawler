@@ -52,6 +52,21 @@ def basic_query(configuration):
              " -k SeriesTime"
 
 
+def image_query(configuration):
+    """IMAGE-level findscu used to expand ultrasound series into clips."""
+    dcmtk_bin = get_dcmtk_bin_path(configuration)
+    return (
+        f"{dcmtk_bin}/findscu -v -to 60 -S -k 0008,0052=IMAGE {pacs_settings(configuration)}"
+        " -k StudyInstanceUID "
+        " -k SeriesInstanceUID "
+        " -k SOPInstanceUID "
+        " -k InstanceNumber "
+        " -k SeriesDescription "
+        " -k SeriesNumber "
+        " -k Modality"
+    )
+
+
 def prefetch_query(configuration, study_uid):
     """This is a hack to force sectra to get exams to the online storage that afterwards seriesdescription can be retrieved"""
     dcmtk_bin = get_dcmtk_bin_path(configuration)
@@ -77,6 +92,11 @@ def add_time(query, time):
 def add_study_uid(query, study_uid):
     """Limit by Accession Number with StudyInstanceUID"""
     return query + " -k StudyInstanceUID=" + study_uid
+
+
+def add_series_uid(query, series_uid):
+    """Limit an IMAGE query to one series."""
+    return query + " -k SeriesInstanceUID=" + series_uid
 
 
 def add_study_description(query, study_description):

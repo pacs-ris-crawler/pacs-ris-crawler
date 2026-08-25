@@ -23,6 +23,7 @@ INSTANCE_AVAILABILITY = "InstanceAvailability"
 INSTITUTION_NAME = "InstitutionName"
 STUDY_INSTANCE_UID = "StudyInstanceUID"
 SERIES_INSTANCE_UID = "SeriesInstanceUID"
+SOP_INSTANCE_UID = "SOPInstanceUID"
 SPECIFIC_CHARACTER_SET = "SpecificCharacterSet"
 QUERY_RETRIEVE_LEVEL = "QueryRetrieveLevel"
 RETRIEVE_AE_TITLE = "RetrieveAETitle"
@@ -57,6 +58,7 @@ TAGS = {
     "(0018,1030)": PROTOCOL_NAME,
     "(0020,000d)": STUDY_INSTANCE_UID,
     "(0020,000e)": SERIES_INSTANCE_UID,
+    "(0008,0018)": SOP_INSTANCE_UID,
     "(0008,0005)": SPECIFIC_CHARACTER_SET,
     "(0008,0052)": QUERY_RETRIEVE_LEVEL,
     "(0008,0054)": RETRIEVE_AE_TITLE,
@@ -78,7 +80,9 @@ def get_results(strings: List[str]) -> List[Dict[str, str]]:
     single_result = {}
     for line in strings:
         if _is_valid(line):
-            single_result[_get_tag(line)] = _get_value(line)
+            tag = _get_tag(line)
+            if tag:
+                single_result[tag] = _get_value(line)
         if _is_start_or_end(line) and single_result:
             result.append(single_result.copy())
             single_result.clear()
@@ -120,7 +124,7 @@ def _get_tag(line: str) -> str:
     """
     start = line.find("(")
     end = line.find(")") + 1  # () needs to be included
-    return TAGS[line[start:end].strip(" \t\r\n\0")]
+    return TAGS.get(line[start:end].strip(" \t\r\n\0"))
 
 
 def _get_value(line: str) -> str:

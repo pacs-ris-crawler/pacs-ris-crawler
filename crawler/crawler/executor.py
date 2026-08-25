@@ -1,9 +1,15 @@
 import shlex
 import subprocess
+import sys
+from pathlib import Path
+from typing import List, Dict, Tuple
+
 import structlog
 
-from typing import List, Dict, Tuple
 from crawler.dicom import get_results, DicomQueryError
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from common.text import decode_dcmtk_output
 
 log = structlog.get_logger()
 
@@ -18,7 +24,7 @@ def run(query: str, parse_results=True) ->Tuple[List[Dict[str, str]], int]:
     cmd = shlex.split(query)
     # do not check=True because if segfaults with the current version of dcmtk 3.6.4 and ubuntu 20.04!!!
     completed = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stderr = completed.stderr.decode('latin1')
+    stderr = decode_dcmtk_output(completed.stderr)
     if "UnableToProcess" in stderr:
         raise DicomQueryError("Query failed at DICOM level")
     lines = stderr.splitlines()

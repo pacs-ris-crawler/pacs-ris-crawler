@@ -78,8 +78,10 @@ $(function () {
         var study_description = $(this).attr('data-study-description')
         var study_date = $(this).attr('data-study-date');
         var series_uid = $(this).attr('data-series-id');
+        var sop_instance_uid = $(this).attr('data-sop-instance-uid');
         var accession_number = $(this).attr('data-accession-number');
         var series_number = $(this).attr('data-series-number');
+        var instance_number = $(this).attr('data-instance-number');
         var series_description = $(this).attr('data-series-description');
         result = {
           "patient_id": patient_id,
@@ -88,8 +90,10 @@ $(function () {
           "study_description": study_description,
           "study_date": study_date,
           "series_uid": series_uid,
+          "sop_instance_uid": sop_instance_uid,
           "accession_number": accession_number,
           "series_number": series_number,
+          "instance_number": instance_number,
           "series_description": series_description
         };
         return result;

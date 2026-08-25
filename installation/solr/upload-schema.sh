@@ -54,6 +54,14 @@ curl -X POST -H 'Content-type:application/json' --data-binary '{
      "type":"string",
      "docValues":true },
    {
+     "name":"SOPInstanceUID",
+     "type":"string",
+     "docValues":true },
+   {
+     "name":"InstanceNumber",
+     "type":"string",
+     "docValues":true },
+   {
      "name":"StudyDate",
      "type":"plong" },
    {

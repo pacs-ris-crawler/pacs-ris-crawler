@@ -10,6 +10,7 @@ import rq_dashboard
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from common.rq_dashboard_custom import patch_rq_dashboard
+from common.text import fix_utf8_mojibake
 import structlog
 from flask import Flask, render_template, request
 from flask_assets import Bundle, Environment
@@ -79,6 +80,14 @@ def create_app(test_config=None):
         if date_as_int:
             return datetime.strptime(str(date_as_int), "%Y%m%d").strftime("%d.%m.%Y")
         return ""
+
+    @app.template_filter("fix_mojibake")
+    def fix_mojibake_filter(value):
+        if value is None:
+            return ""
+        if not isinstance(value, str):
+            return value
+        return fix_utf8_mojibake(value)
 
     @app.template_filter("series_num_short")
     def series_num_short(value, max_len=4):

@@ -1,13 +1,18 @@
 """ This file contains the locic associated with the tasks
     in the file 'ris_pacs_merge_upload.py'
 """
+import sys
 from datetime import datetime
+from pathlib import Path
 
 from requests import get
 from requests.auth import HTTPBasicAuth
 from crawler.util import load_config
 
 from crawler.config import get_report_show_url
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from common.text import fix_utf8_mojibake_tree
 
 
 def convert_pacs_file(json_in):
@@ -76,7 +81,7 @@ def convert_pacs_file(json_in):
     for v in values:
         if "ProtocolName" in v:
             v["ProtocolName"] = ";".join(dict.fromkeys(v["ProtocolName"]).keys())
-    return values
+    return [fix_utf8_mojibake_tree(v) for v in values]
 
 
 def add_child(parent, entry):
@@ -86,7 +91,12 @@ def add_child(parent, entry):
     child_dict["Modality"] = entry["Modality"]
     child_dict["StudyInstanceUID"] = entry["StudyInstanceUID"]
     child_dict["SeriesInstanceUID"] = entry["SeriesInstanceUID"]
-    child_dict["id"] = entry["SeriesInstanceUID"]
+    sop_uid = entry.get("SOPInstanceUID")
+    child_dict["id"] = sop_uid if sop_uid else entry["SeriesInstanceUID"]
+    if sop_uid:
+        child_dict["SOPInstanceUID"] = sop_uid
+    if entry.get("InstanceNumber"):
+        child_dict["InstanceNumber"] = entry["InstanceNumber"]
     if "SeriesDate" in entry:
         child_dict["SeriesDate"] = entry["SeriesDate"]
     if "SeriesTime" in entry:
@@ -132,4 +142,4 @@ def merge_pacs_ris(pacs):
             data = response.text
             dic["RisReport"] = data
             my_dict.append(dic)
-    return my_dict
+    return [fix_utf8_mojibake_tree(d) for d in my_dict]

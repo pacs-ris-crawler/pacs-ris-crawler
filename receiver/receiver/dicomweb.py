@@ -113,10 +113,12 @@ def _validate_dicomweb_config(config):
 
 def _image_folder_path(config, entry, dir_name):
     """Same layout as job.download_series: IMAGE_FOLDER/dir/patient/accession/series."""
+    from receiver.job import image_subdir
+
     output_dir = config["IMAGE_FOLDER"]
     patient_id = entry.get("patient_id", "")
     accession_number = str(entry.get("accession_number", ""))
-    series_number = str(entry.get("series_number", "0"))
+    series_number = image_subdir(entry)
     return os.path.join(
         output_dir, dir_name, patient_id, accession_number, series_number,
     )
@@ -143,6 +145,35 @@ def _session(config):
     verify = config.get("DICOMWEB_VERIFY_SSL", True)
     session.verify = verify
     return session
+
+
+def _retrieve_instance(session, base_url, study_uid, series_uid, sop_uid, output_dir):
+    """Retrieve one SOP instance via WADO-RS."""
+    attempted_urls = []
+    for endpoint in [
+        f"{base_url}/mrnissuers/all/studies/{study_uid}/series/{series_uid}/instances/{sop_uid}",
+        f"{base_url}/studies/{study_uid}/series/{series_uid}/instances/{sop_uid}",
+    ]:
+        attempted_urls.append(endpoint)
+        logger.debug("WADO-RS instance retrieve attempt: %s", endpoint)
+        resp = session.get(endpoint, headers={"Accept": "application/dicom"}, stream=True)
+        if resp.status_code == 404:
+            logger.debug("WADO-RS instance endpoint returned 404: %s", endpoint)
+            continue
+        resp.raise_for_status()
+        os.makedirs(output_dir, exist_ok=True)
+        filename = os.path.join(output_dir, "000000.dcm")
+        with open(filename, "wb") as f:
+            f.write(resp.content)
+        logger.info(
+            "Retrieved 1 instance %s for series %s (study %s)",
+            sop_uid, series_uid, study_uid,
+        )
+        return 1
+    raise ValueError(
+        "Failed to retrieve DICOM instance with any WADO-RS endpoint. "
+        f"Attempted urls: {attempted_urls}",
+    )
 
 
 def _retrieve_series(session, base_url, study_uid, series_uid, output_dir):
@@ -232,6 +263,7 @@ def _download_series_entry(config, entry, dir_name):
     """Download one series (RQ worker). Uses a dedicated session per job."""
     study_uid = entry["study_uid"]
     series_uid = entry["series_uid"]
+    sop_uid = (entry.get("sop_instance_uid") or "").strip()
     accession_number = entry.get("accession_number")
     if not all([study_uid, series_uid, accession_number]):
         raise ValueError(
@@ -240,7 +272,12 @@ def _download_series_entry(config, entry, dir_name):
     image_folder = _image_folder_path(config, entry, dir_name)
     session = _session(config)
     base_url = _wado_rs_base_url(config)
-    count = _retrieve_series(session, base_url, study_uid, series_uid, image_folder)
+    if sop_uid:
+        count = _retrieve_instance(
+            session, base_url, study_uid, series_uid, sop_uid, image_folder,
+        )
+    else:
+        count = _retrieve_series(session, base_url, study_uid, series_uid, image_folder)
     logger.info(
         "Downloaded %d instances for series %s (accession %s)",
         count, series_uid, accession_number,

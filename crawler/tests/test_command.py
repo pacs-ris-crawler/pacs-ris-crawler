@@ -1,6 +1,13 @@
 import pytest
 
-from crawler.command import accs_per_day, basic_query, prefetch_query, study_uid_query
+from crawler.command import (
+    accs_per_day,
+    add_series_uid,
+    basic_query,
+    image_query,
+    prefetch_query,
+    study_uid_query,
+)
 
 
 def test_basic_query_with_custom_dcmtk_bin():
@@ -58,6 +65,21 @@ def test_prefetch_query_with_custom_dcmtk_bin():
     query = prefetch_query(config, '1.2.3.4.5.6.7.8.9')
     assert query.startswith('/home/user/dcmtk/bin/movescu')
     assert 'StudyInstanceUID=1.2.3.4.5.6.7.8.9' in query
+
+
+def test_image_query_is_image_level():
+    config = {
+        "DCMTK_BIN": "/custom/path/to/dcmtk",
+        "AE_TITLE": "TEST_AE",
+        "AE_CALLED": "TEST_CALLED",
+        "PEER_ADDRESS": "192.168.1.100",
+        "PEER_PORT": 104,
+    }
+    query = image_query(config)
+    assert query.startswith("/custom/path/to/dcmtk/findscu")
+    assert "0008,0052=IMAGE" in query
+    assert "SOPInstanceUID" in query
+    assert add_series_uid(query, "1.2.3").endswith(" -k SeriesInstanceUID=1.2.3")
 
 
 def test_default_dcmtk_bin_path():

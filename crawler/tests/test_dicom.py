@@ -19,6 +19,14 @@ class DicomTest(unittest.TestCase):
         tag = _get_value(line)
         self.assertEqual('MR', tag)
 
+    def test_sop_instance_uid(self):
+        line = 'I: (0008,0018) UI [1.2.3.4.5] #  10, 1 SOPInstanceUID'
+        self.assertEqual('SOPInstanceUID', _get_tag(line))
+        self.assertEqual('1.2.3.4.5', _get_value(line))
+
+    def test_unknown_tag_is_skipped(self):
+        self.assertIsNone(_get_tag('I: (0008,0016) UI [1.2.840.10008.1.2]'))
+
 
     def test_all(self):
         with open('tests/test_data') as f:

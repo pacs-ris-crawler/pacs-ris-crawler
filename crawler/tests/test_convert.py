@@ -53,3 +53,41 @@ class ConvertTest(unittest.TestCase):
         self.assertEqual(1, len(study))
         self.assertEqual("P_3", study[0]["ProtocolName"])
 
+
+def test_instance_child_uses_sop_as_id():
+    raw = [
+        {
+            "AccessionNumber": "33043305",
+            "PatientID": "USB0002312888",
+            "PatientBirthDate": "19800101",
+            "StudyDate": "20260721",
+            "Modality": "US",
+            "StudyInstanceUID": "1.2.3",
+            "SeriesInstanceUID": "1.2.3.4",
+            "SOPInstanceUID": "1.2.3.4.5",
+            "SeriesNumber": "1",
+            "InstanceNumber": "7",
+            "SeriesDescription": "Echokardiografische Untersuchung (#7)",
+        },
+        {
+            "AccessionNumber": "33043305",
+            "PatientID": "USB0002312888",
+            "PatientBirthDate": "19800101",
+            "StudyDate": "20260721",
+            "Modality": "US",
+            "StudyInstanceUID": "1.2.3",
+            "SeriesInstanceUID": "1.2.3.4",
+            "SOPInstanceUID": "1.2.3.4.6",
+            "SeriesNumber": "1",
+            "InstanceNumber": "8",
+            "SeriesDescription": "Echokardiografische Untersuchung (#8)",
+        },
+    ]
+    converted = convert_pacs_file(raw)
+    children = converted[0]["_childDocuments_"]
+    assert len(children) == 2
+    assert children[0]["id"] == "1.2.3.4.5"
+    assert children[0]["SOPInstanceUID"] == "1.2.3.4.5"
+    assert children[0]["InstanceNumber"] == "7"
+    assert children[1]["id"] == "1.2.3.4.6"
+

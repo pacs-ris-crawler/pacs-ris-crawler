@@ -35,11 +35,11 @@
       </li>
       <li class="study-meta-item">
         <span class="study-meta-label">Referring</span>
-        <span class="study-meta-value">{{ study['ReferringPhysicianName'] }}</span>
+        <span class="study-meta-value">{{ study['ReferringPhysicianName'] | fix_mojibake }}</span>
       </li>
       <li class="study-meta-item">
         <span class="study-meta-label">Institution</span>
-        <span class="study-meta-value">{{ study['InstitutionName'] }}</span>
+        <span class="study-meta-value">{{ study['InstitutionName'] | fix_mojibake }}</span>
       </li>
     </ul>
   </div>
@@ -60,9 +60,12 @@
             </thead>
             <tbody>
               {% for series in study['_childDocuments_'] %}
-              {% set d = series.update({'series_int': series.get('SeriesNumber') | int }) %}
+              {% set d = series.update({
+                'series_int': series.get('SeriesNumber') | int,
+                'instance_int': series.get('InstanceNumber', 0) | int
+              }) %}
               {% endfor %}
-              {% for child in study['_childDocuments_'] | sort(attribute='series_int') %}
+              {% for child in study['_childDocuments_'] | sort(attribute='instance_int') | sort(attribute='series_int') %}
               <tr>
                 <td class="col-check">
                   <input type="checkbox" class="results-checkbox series-checkbox" name="series"
@@ -74,15 +77,17 @@
                     data-study-id="{{ study['StudyInstanceUID'].strip(' \t\r\0') }}"
                     {% endif %}
                     data-series-id="{{ child['SeriesInstanceUID'].strip(' \t\r\0') }}"
+                    data-sop-instance-uid="{{ child.get('SOPInstanceUID', '') }}"
+                    data-instance-number="{{ child.get('InstanceNumber', '') }}"
                     data-accession-number="{{ study['AccessionNumber'] }}"
                     data-series-number="{{ child['SeriesNumber'] }}"
-                    data-study-description="{{ study['StudyDescription'] }}"
+                    data-study-description="{{ study['StudyDescription'] | fix_mojibake }}"
                     data-study-date="{{ study['StudyDate'] }}"
-                    data-series-description="{{ child['SeriesDescription'] }}">
+                    data-series-description="{{ child['SeriesDescription'] | fix_mojibake }}">
                 </td>
                 <td class="col-mod">{{ child['Modality'] }}</td>
-                <td class="col-num" title="Series {{ child['SeriesNumber'] }}">{{ child['SeriesNumber'] | series_num_short }}</td>
-                <td class="col-desc" title="{{ child['SeriesDescription'] }}">{{ child['SeriesDescription'] }}</td>
+                <td class="col-num" title="Series {{ child['SeriesNumber'] }}{% if child.get('InstanceNumber') %}, Instance {{ child['InstanceNumber'] }}{% endif %}">{% if child.get('InstanceNumber') %}{{ child['SeriesNumber'] | series_num_short }}.{{ child['InstanceNumber'] }}{% else %}{{ child['SeriesNumber'] | series_num_short }}{% endif %}</td>
+                <td class="col-desc" title="{{ child['SeriesDescription'] | fix_mojibake }}">{{ child['SeriesDescription'] | fix_mojibake }}</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -91,7 +96,7 @@
       </div>
       <div class="study-report-panel">
         <div class="study-panel-heading">Report</div>
-        <div id="{{ study['AccessionNumber'] }}-report" class="study-report-body">{{ study['RisReport'] }}</div>
+        <div id="{{ study['AccessionNumber'] }}-report" class="study-report-body">{{ study['RisReport'] | fix_mojibake }}</div>
       </div>
     </div>
   </div>
