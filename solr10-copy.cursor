@@ -1,0 +1,8 @@
+{
+  "cursorMark": "AoE0wqc0MzIxNTQ1LTEzMjQzNjU0NjI=",
+  "copied_parents": 3134756,
+  "copied_children": 29828100,
+  "last_id": "\u00a74321545-1324365462",
+  "src": "http://meqpacscrllt01.uhbs.ch:8983/solr/ris_pacs_2",
+  "dst": "http://localhost:8984/solr/pacs_crawler"
+}

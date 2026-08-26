@@ -5,11 +5,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import structlog
 from requests import get
 from requests.auth import HTTPBasicAuth
 from crawler.util import load_config
 
 from crawler.config import get_report_show_url
+
+log = structlog.get_logger()
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from common.text import fix_utf8_mojibake_tree
@@ -117,6 +120,23 @@ def add_child(parent, entry):
     return parent
 
 
+def fetch_ris_report(url, auth=None):
+    """Return report text. Treat 502 / empty body as no report."""
+    if auth:
+        response = get(url, auth=auth, verify=False)
+    else:
+        response = get(url, verify=False)
+    if response.status_code == 502:
+        log.warning("ris_report_unavailable", url=url, status=502)
+        return ""
+    response.raise_for_status()
+    data = response.text or ""
+    if not data.strip():
+        log.warning("ris_report_empty", url=url, status=response.status_code)
+        return ""
+    return data
+
+
 def merge_pacs_ris(pacs):
     """ Insert ris report into converted pacs json file"""
     config = load_config()
@@ -134,12 +154,7 @@ def merge_pacs_ris(pacs):
         elif "AccessionNumber" in entry:
             aNum = str(entry["AccessionNumber"])
             url = get_report_show_url(config) + aNum + "&output=text"
-            if uses_basis_auth:
-                response = get(url, auth=HTTPBasicAuth(user, pwd), verify=False)
-            else:
-                response = get(url, verify=False)
-            response.raise_for_status()
-            data = response.text
-            dic["RisReport"] = data
+            auth = HTTPBasicAuth(user, pwd) if uses_basis_auth else None
+            dic["RisReport"] = fetch_ris_report(url, auth=auth)
             my_dict.append(dic)
     return [fix_utf8_mojibake_tree(d) for d in my_dict]

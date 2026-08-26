@@ -3,7 +3,9 @@ from pathlib import Path
 import json
 import pandas as pd
 
-from crawler.convert import convert_pacs_file
+from unittest.mock import MagicMock, patch
+
+from crawler.convert import convert_pacs_file, fetch_ris_report, merge_pacs_ris
 
 sample_json = Path.cwd() / "tests" / "example.json"
 
@@ -90,4 +92,51 @@ def test_instance_child_uses_sop_as_id():
     assert children[0]["SOPInstanceUID"] == "1.2.3.4.5"
     assert children[0]["InstanceNumber"] == "7"
     assert children[1]["id"] == "1.2.3.4.6"
+
+
+def _response(status_code, text=""):
+    response = MagicMock()
+    response.status_code = status_code
+    response.text = text
+    if status_code >= 400:
+        response.raise_for_status.side_effect = Exception(f"HTTP {status_code}")
+    return response
+
+
+@patch("crawler.convert.get")
+def test_fetch_ris_report_treats_502_as_empty(mock_get):
+    mock_get.return_value = _response(502, "Bad Gateway")
+    assert fetch_ris_report("https://report.example/sectra?accession_number=33043305") == ""
+    mock_get.return_value.raise_for_status.assert_not_called()
+
+
+@patch("crawler.convert.get")
+def test_fetch_ris_report_treats_empty_body_as_empty(mock_get):
+    mock_get.return_value = _response(200, "  \n")
+    assert fetch_ris_report("https://report.example/sectra?accession_number=33043305") == ""
+
+
+@patch("crawler.convert.get")
+def test_fetch_ris_report_returns_text(mock_get):
+    mock_get.return_value = _response(200, "Findings: normal")
+    assert fetch_ris_report("https://report.example/show?accession_number=1") == "Findings: normal"
+
+
+@patch("crawler.convert.load_config")
+@patch("crawler.convert.get_report_show_url")
+@patch("crawler.convert.get")
+def test_merge_pacs_ris_indexes_when_sectra_returns_502(mock_get, mock_url, mock_config):
+    mock_config.return_value = {
+        "REPORT_USES_BASIC_AUTH": False,
+        "REPORT_USE": True,
+        "REPORT_USER": "",
+        "REPORT_PWD": "",
+    }
+    mock_url.return_value = "https://report.example/sectra?accession_number="
+    mock_get.return_value = _response(502, "Bad Gateway")
+    pacs = [{"AccessionNumber": "33043305", "PatientID": "USB0002312888"}]
+    merged = merge_pacs_ris(pacs)
+    assert len(merged) == 1
+    assert merged[0]["RisReport"] == ""
+    assert merged[0]["AccessionNumber"] == "33043305"
 
