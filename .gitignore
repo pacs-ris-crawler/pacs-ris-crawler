@@ -118,3 +118,5 @@ receiver/jobs/*
 institute_statistics*.csv
 
 main.db
+
+.pi/*
