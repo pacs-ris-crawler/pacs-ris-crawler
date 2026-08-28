@@ -147,29 +147,57 @@ def _session(config):
     return session
 
 
+# WADO-RS Retrieve Instance/Series expects multipart (DICOM PS3.18).
+# Some origin servers also accept a single-part application/dicom body.
+# transfer-syntax=* is a fallback for cine/echo objects that cannot be
+# transcoded to Implicit/Explicit VR Little Endian.
+_WADO_RS_ACCEPTS = (
+    'multipart/related; type="application/dicom"',
+    'multipart/related; type="application/dicom"; transfer-syntax=*',
+    "application/dicom",
+)
+
+
 def _retrieve_instance(session, base_url, study_uid, series_uid, sop_uid, output_dir):
     """Retrieve one SOP instance via WADO-RS."""
     attempted_urls = []
+    last_error = None
     for endpoint in [
         f"{base_url}/mrnissuers/all/studies/{study_uid}/series/{series_uid}/instances/{sop_uid}",
         f"{base_url}/studies/{study_uid}/series/{series_uid}/instances/{sop_uid}",
     ]:
         attempted_urls.append(endpoint)
-        logger.debug("WADO-RS instance retrieve attempt: %s", endpoint)
-        resp = session.get(endpoint, headers={"Accept": "application/dicom"}, stream=True)
-        if resp.status_code == 404:
-            logger.debug("WADO-RS instance endpoint returned 404: %s", endpoint)
-            continue
-        resp.raise_for_status()
-        os.makedirs(output_dir, exist_ok=True)
-        filename = os.path.join(output_dir, "000000.dcm")
-        with open(filename, "wb") as f:
-            f.write(resp.content)
-        logger.info(
-            "Retrieved 1 instance %s for series %s (study %s)",
-            sop_uid, series_uid, study_uid,
-        )
-        return 1
+        for accept in _WADO_RS_ACCEPTS:
+            logger.debug(
+                "WADO-RS instance retrieve attempt: %s Accept: %s", endpoint, accept,
+            )
+            resp = session.get(endpoint, headers={"Accept": accept}, stream=True)
+            if resp.status_code == 404:
+                logger.debug("WADO-RS instance endpoint returned 404: %s", endpoint)
+                break
+            if resp.status_code == 406:
+                logger.debug(
+                    "WADO-RS instance endpoint returned 406 for Accept %s: %s",
+                    accept, endpoint,
+                )
+                last_error = requests.HTTPError(
+                    f"406 Client Error: Not Acceptable for url: {endpoint}",
+                    response=resp,
+                )
+                continue
+            try:
+                resp.raise_for_status()
+            except requests.HTTPError as exc:
+                last_error = exc
+                break
+            count = _save_wado_payload(resp, output_dir)
+            logger.info(
+                "Retrieved %d instance(s) %s for series %s (study %s)",
+                count, sop_uid, series_uid, study_uid,
+            )
+            return count
+    if last_error:
+        raise last_error
     raise ValueError(
         "Failed to retrieve DICOM instance with any WADO-RS endpoint. "
         f"Attempted urls: {attempted_urls}",
@@ -190,30 +218,14 @@ def _retrieve_series(session, base_url, study_uid, series_uid, output_dir):
         logger.debug("WADO-RS retrieve attempt: %s", endpoint)
         resp = session.get(
             endpoint,
-            headers={"Accept": "multipart/related; type=\"application/dicom\""},
+            headers={"Accept": _WADO_RS_ACCEPTS[0]},
             stream=True,
         )
         if resp.status_code == 404:
             logger.debug("WADO-RS endpoint returned 404: %s", endpoint)
             continue
         resp.raise_for_status()
-        content_type = resp.headers.get("Content-Type", "")
-        boundary = _parse_boundary(content_type)
-
-        os.makedirs(output_dir, exist_ok=True)
-        if boundary is None:
-            if "application/dicom" in content_type or "application/octet-stream" in content_type:
-                filename = os.path.join(output_dir, "000000.dcm")
-                with open(filename, "wb") as f:
-                    f.write(resp.content)
-                logger.info(
-                    "Retrieved 1 instance for series %s (study %s) as single DICOM response",
-                    series_uid, study_uid,
-                )
-                return 1
-            raise ValueError(f"Could not parse boundary from Content-Type: {content_type}")
-
-        count = _save_multipart_dicom(resp.content, boundary, output_dir)
+        count = _save_wado_payload(resp, output_dir)
         logger.info(
             "Retrieved %d instances for series %s (study %s)",
             count, series_uid, study_uid,
@@ -224,6 +236,25 @@ def _retrieve_series(session, base_url, study_uid, series_uid, output_dir):
         "Failed to retrieve DICOM series with any WADO-RS endpoint. "
         f"Attempted urls: {attempted_urls}",
     )
+
+
+def _save_wado_payload(resp, output_dir):
+    """Write a WADO-RS DICOM payload (multipart or single-part) to output_dir."""
+    content_type = resp.headers.get("Content-Type", "")
+    boundary = _parse_boundary(content_type)
+    os.makedirs(output_dir, exist_ok=True)
+    if boundary is None:
+        if (
+            "application/dicom" in content_type
+            or "application/octet-stream" in content_type
+            or not content_type
+        ):
+            filename = os.path.join(output_dir, "000000.dcm")
+            with open(filename, "wb") as f:
+                f.write(resp.content)
+            return 1
+        raise ValueError(f"Could not parse boundary from Content-Type: {content_type}")
+    return _save_multipart_dicom(resp.content, boundary, output_dir)
 
 
 def _parse_boundary(content_type):
