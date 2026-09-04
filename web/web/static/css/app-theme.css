@@ -456,6 +456,18 @@ ul.result .patient-entry + .patient-entry {
     align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem 0.65rem;
+    min-width: 0;
+}
+
+.study-row-description {
+    min-width: 0;
+    flex: 1 1 10rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .study-meta {

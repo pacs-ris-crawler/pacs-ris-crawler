@@ -8,6 +8,10 @@ set -euo pipefail
 #   bin/solr start --user-managed -p 8984
 # Cloud mode CREATE fails with: coreNodeName missing {configSet=_default}
 #
+# Schema API cannot persist to the shared _default configset (often root-owned).
+# After CREATE, copy conf into the core instanceDir and drop configSet= from
+# core.properties so later field-type changes stay writable.
+#
 # Usage:
 #   ./init-solr10.sh
 #   ./init-solr10.sh pacs_crawler 8984
@@ -80,7 +84,8 @@ curl -sS -f -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true },
    {
      "name":"InstitutionName",
-     "type":"text_de"},
+     "type":"string",
+     "docValues":true },
    {
      "name":"Modality",
      "type":"string",
@@ -106,13 +111,16 @@ curl -sS -f -X POST -H 'Content-type:application/json' --data-binary '{
      "docValues":true },
    {
      "name":"ProtocolName",
-     "type":"text_de"},
+     "type":"string",
+     "docValues":true },
    {
      "name":"ReferringPhysicianName",
-     "type":"text_de"},
+     "type":"string",
+     "docValues":true },
    {
      "name":"SeriesDescription",
-     "type":"text_de"},
+     "type":"string",
+     "docValues":true },
    {
      "name":"SeriesInstanceUID",
      "type":"string",
@@ -137,7 +145,8 @@ curl -sS -f -X POST -H 'Content-type:application/json' --data-binary '{
      "type":"plong" },
    {
      "name":"StudyDescription",
-     "type":"text_de"},
+     "type":"string",
+     "docValues":true },
    {
      "name":"StudyID",
      "type":"string",

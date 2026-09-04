@@ -240,7 +240,7 @@ def main() -> int:
             print(
                 f"batch {batches}: +{len(docs)} parents +{n_child} children "
                 f"total={copied_parents}/{n_src} "
-                f"{rate:.1f} parents/s eta={eta / 3600:.1f}h last_id={last_id}"
+                f"{rate:.1f} parents/s eta={eta / 3600:.1f}h"
             )
 
             if nxt is None or nxt == cursor:

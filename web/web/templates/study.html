@@ -10,6 +10,9 @@
         data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}">
         {{ study['AccessionNumber'] }}
       </button>
+      {% if study.get('StudyDescription') %}
+      <span class="study-row-description" title="{{ study['StudyDescription'] | fix_mojibake }}">{{ study['StudyDescription'] | fix_mojibake }}</span>
+      {% endif %}
       <a class="view-images-link" target="_blank" rel="noopener"
         href="{{ sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">
         View images <span class="oi oi-external-link small"></span>
