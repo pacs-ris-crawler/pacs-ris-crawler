@@ -1,25 +1,35 @@
 <div class="study-block">
   <div class="results-row study-row">
-    <div class="results-body w-100 pl-1">
-      <button type="button" class="results-text-btn exam-details"
-        data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}">
-        {{ study['PatientID'] }}, {{ study['StudyDescription'] | fix_mojibake }}, {{ study['AccessionNumber'] }}
-      </button>
+    <div class="results-body study-row-main">
+      <span class="study-patient">{{ study['PatientID'] }}</span>
+      <span class="study-accession-group">
+        <span class="study-accession">{{ study['AccessionNumber'] }}</span>
+        <button type="button" class="copy-accession-btn" data-accession-number="{{ study['AccessionNumber'] }}"
+          aria-label="Copy accession number {{ study['AccessionNumber'] }}" title="Copy accession number">
+          <span class="bi bi-clipboard-plus copy-accession-icon" aria-hidden="true"></span>
+        </button>
+      </span>
+      {% if study.get('StudyDescription') %}
+      <span class="study-row-description" title="{{ study['StudyDescription'] | fix_mojibake }}">{{ study['StudyDescription'] | fix_mojibake }}</span>
+      {% endif %}
+      <span class="study-inline-meta">
+        <span class="study-meta-item">
+          <span class="study-meta-label">Date</span>
+          <span class="study-meta-value">{{ study['StudyDate'] | to_date }}</span>
+        </span>
+        <span class="study-meta-item">
+          <span class="study-meta-label">Age</span>
+          <span class="study-meta-value">{{ study['PatientAge'] }}</span>
+        </span>
+      </span>
     </div>
-    <div class="results-meta">
-      <button type="button" class="results-icon-btn"
+    <div class="results-meta study-row-actions">
+      <button type="button" class="results-icon-btn exam-toggle"
         data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}"
-        aria-label="Expand study">
-        <span class="oi oi-collapse-down small exam-chevron" aria-hidden="true"></span>
+        aria-label="Collapse study" aria-expanded="true">
+        <span class="bi bi-chevron-up exam-chevron" aria-hidden="true"></span>
       </button>
     </div>
-  </div>
-  <div class="study-meta small text-muted">
-    StudyDate: {{ study['StudyDate'] | to_date }}, Age: {{ study['PatientAge'] }},
-    AccessionNumber: {{ study['AccessionNumber'] }}
-    {% if study.get('ReferringPhysicianName') %}, ReferringPhysician: {{ study['ReferringPhysicianName'] | fix_mojibake }}{% endif %}
-    {% if study.get('InstitutionName') %}, Institution: {{ study['InstitutionName'] | fix_mojibake }}{% endif %}
-    {% if study.get('ProtocolName') %}<br>ProtocolNames: {{ study['ProtocolName'] | fix_mojibake }}{% endif %}
   </div>
   <div class="study-details collapse show" id="study-{{ study['AccessionNumber'] }}">
     <div class="study-panels">

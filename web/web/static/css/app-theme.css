@@ -538,6 +538,10 @@ ul.result .patient-entry + .patient-entry {
     min-width: 1.8rem;
 }
 
+.study-row-actions .exam-chevron {
+    font-size: 0.85rem;
+}
+
 .study-row-actions .view-images-link:hover,
 .study-row-actions .results-icon-btn:hover,
 .study-row-actions .results-icon-btn:focus {

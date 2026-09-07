@@ -12,8 +12,8 @@ $(function () {
       expanded ? 'Hide filter options' : 'Show more filter options'
     );
     $moreSearchDetailsToggleIcon
-      .toggleClass('oi-collapse-down', !expanded)
-      .toggleClass('oi-collapse-up', expanded);
+      .toggleClass('bi-chevron-down', !expanded)
+      .toggleClass('bi-chevron-up', expanded);
     $moreSearchDetailsToggle.attr('aria-expanded', expanded ? 'true' : 'false');
   }
   $moreSearchDetails.on('show.bs.collapse', function () {
@@ -468,7 +468,7 @@ $(function () {
 
   $('li.patient-entry').on('click', '.patient-row-toggle, .patient-row .results-icon-btn', function () {
     var $row = $(this).closest('.patient-row');
-    $row.find('.patient-row-chevron').toggleClass('oi-collapse-down oi-collapse-up');
+    $row.find('.patient-row-chevron').toggleClass('bi-chevron-down bi-chevron-up');
   });
 
   $('li.patient-entry').on('click', '.patient-row', function (e) {
@@ -483,8 +483,8 @@ $(function () {
       .attr('aria-label', expanded ? 'Collapse study' : 'Expand study')
       .attr('aria-expanded', expanded ? 'true' : 'false');
     $study.find('.exam-chevron')
-      .toggleClass('oi-collapse-down', !expanded)
-      .toggleClass('oi-collapse-up', expanded);
+      .toggleClass('bi-chevron-down', !expanded)
+      .toggleClass('bi-chevron-up', expanded);
   }
 
   $('.study-block').on('click', '.study-row', function (e) {

@@ -1,8 +1,69 @@
 $(function () {
   console.log('ready');
 
-  $('.study-block').on('click', '.exam-details, .results-icon-btn', function () {
-    $(this).closest('.study-block').find('.exam-chevron').toggleClass('oi-collapse-down oi-collapse-up');
+  function updateStudyToggle($study, expanded) {
+    $study.find('.study-row')
+      .toggleClass('is-expanded', expanded);
+    $study.find('.exam-toggle')
+      .attr('aria-label', expanded ? 'Collapse study' : 'Expand study')
+      .attr('aria-expanded', expanded ? 'true' : 'false');
+    $study.find('.exam-chevron')
+      .toggleClass('bi-chevron-down', !expanded)
+      .toggleClass('bi-chevron-up', expanded);
+  }
+
+  $('.study-block').on('click', '.study-row', function (e) {
+    if ($(e.target).closest('input, a, button').length) return;
+    $(this).closest('.study-block').find('.study-details').collapse('toggle');
+  });
+
+  $('.study-block').on('click', '.copy-accession-btn', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    var $button = $(this);
+    var accessionNumber = $button.attr('data-accession-number');
+    var showCopied = function () {
+      var $icon = $button.find('.copy-accession-icon');
+      $icon.removeClass('bi-clipboard-plus').addClass('bi-check2');
+      $button.attr('aria-label', 'Accession number copied');
+      window.setTimeout(function () {
+        $icon.removeClass('bi-check2').addClass('bi-clipboard-plus');
+        $button.attr('aria-label', 'Copy accession number ' + accessionNumber);
+      }, 1400);
+    };
+    var copyFallback = function () {
+      var $temporaryInput = $('<textarea>').val(accessionNumber).appendTo('body');
+      $temporaryInput[0].select();
+      var copied = false;
+      try {
+        copied = document.execCommand('copy');
+      } catch (error) {
+        copied = false;
+      }
+      $temporaryInput.remove();
+      return copied;
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(accessionNumber).then(showCopied).catch(function () {
+        if (copyFallback()) showCopied();
+      });
+    } else if (copyFallback()) {
+      showCopied();
+    }
+  });
+
+  $('.study-block').on('show.bs.collapse', '.study-details', function () {
+    updateStudyToggle($(this).closest('.study-block'), true);
+  });
+
+  $('.study-block').on('hide.bs.collapse', '.study-details', function () {
+    updateStudyToggle($(this).closest('.study-block'), false);
+  });
+
+  $('.study-details.show').each(function () {
+    updateStudyToggle($(this).closest('.study-block'), true);
   });
 
   var rqFrameResizeTimer = null;
