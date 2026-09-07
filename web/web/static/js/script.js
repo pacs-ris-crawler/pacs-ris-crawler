@@ -110,11 +110,17 @@ $(function () {
   };
 
   $('#expand-all').on('click', function (e) {
-    $('.collapse').slice(1).collapse('show');
+    e.preventDefault();
+    // Showing patients hydrates their studies synchronously; query for study
+    // details afterwards so Expand all retains its previous behaviour.
+    $('.patient-studies').collapse('show');
+    $('.study-details').collapse('show');
   });
 
   $('#collapse-all').on('click', function (e) {
-    $('.collapse').slice(1).collapse('hide');
+    e.preventDefault();
+    $('.study-details').collapse('hide');
+    $('.patient-studies').collapse('hide');
   });
 
 
@@ -445,36 +451,45 @@ $(function () {
     $('input[name=download-dir]').removeClass("form-control-danger");
   }
 
-  $('input[name=select-all-accession-number').on('click', function (e) {
-    var accession_number = $(e.target).data('accession-number');
-    var table = $('table[data-accession-number="' + accession_number + '"]')[0];
+  var $resultsPanel = $('.results-panel');
+
+  $resultsPanel.on('click', 'input[name="select-all-accession-number"]', function (e) {
     var value = $(this).prop("checked")
-    $("td input:checkbox", table).prop('checked', value);
+    $(this).closest('.study-block').find('td input:checkbox').prop('checked', value);
   });
 
-  $('input[name=select-all-patient').on('click', function (e) {
+  $resultsPanel.on('click', 'input[name="select-all-patient"]', function (e) {
     var value = $(this).prop("checked")
-    var patientId = $(e.target).attr('data-patient-id');
-    var selector = 'table[data-patient-id="' + patientId + '"]'
-    $(selector).find('input:checkbox').prop('checked', value)
-    var selector2 = 'input[data-patient-id="' + patientId + '"]'[0]
-    $(selector2).prop('checked', value)
+    $(this).closest('.patient-entry').find('input:checkbox').prop('checked', value);
   });
 
-  $('input[name=select-all-page').on('click', function (e) {
+  $resultsPanel.on('click', 'input[name="select-all-page"]', function (e) {
     var value = $(this).prop("checked")
     $("input:checkbox").not('.modality').prop('checked', value);
   });
 
-  $('li.patient-entry').on('click', '.patient-row-toggle, .patient-row .results-icon-btn', function () {
-    var $row = $(this).closest('.patient-row');
-    $row.find('.patient-row-chevron').toggleClass('bi-chevron-down bi-chevron-up');
-  });
-
-  $('li.patient-entry').on('click', '.patient-row', function (e) {
+  $resultsPanel.on('click', '.patient-row', function (e) {
     if ($(e.target).closest('input, a, button').length) return;
     $(this).closest('.patient-entry').find('.patient-studies').collapse('toggle');
   });
+
+  function hydrateCollapse(element) {
+    var template = $(element).children('template.deferred-collapse-content')[0];
+    if (!template) return;
+
+    element.appendChild(template.content);
+    template.remove();
+  }
+
+  function updatePatientToggle($patient, expanded) {
+    $patient.find('.patient-row-toggle, .patient-row .results-icon-btn')
+      .attr('aria-expanded', expanded ? 'true' : 'false');
+    $patient.find('.patient-row .results-icon-btn')
+      .attr('aria-label', expanded ? 'Collapse patient' : 'Expand patient');
+    $patient.find('.patient-row-chevron')
+      .toggleClass('bi-chevron-down', !expanded)
+      .toggleClass('bi-chevron-up', expanded);
+  }
 
   function updateStudyToggle($study, expanded) {
     $study.find('.study-row')
@@ -487,13 +502,13 @@ $(function () {
       .toggleClass('bi-chevron-up', expanded);
   }
 
-  $('.study-block').on('click', '.study-row', function (e) {
+  $resultsPanel.on('click', '.study-row', function (e) {
     // Checkboxes, the image viewer, the copy action and the explicit toggle are independent controls.
     if ($(e.target).closest('input, a, button').length) return;
     $(this).closest('.study-block').find('.study-details').collapse('toggle');
   });
 
-  $('.study-block').on('click', '.copy-accession-btn', function (e) {
+  $resultsPanel.on('click', '.copy-accession-btn', function (e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -530,11 +545,40 @@ $(function () {
     }
   });
 
-  $('.study-block').on('show.bs.collapse', '.study-details', function () {
-    updateStudyToggle($(this).closest('.study-block'), true);
+  $resultsPanel.on('show.bs.collapse', '.patient-studies', function (e) {
+    if (e.target !== this) return;
+    hydrateCollapse(this);
+    var $patient = $(this).closest('.patient-entry');
+    updatePatientToggle($patient, true);
+
+    // Preserve selections made while the patient's deferred content was inert.
+    if ($('#select-all-page').prop('checked') ||
+        $patient.find('input[name="select-all-patient"]').prop('checked')) {
+      $patient.find('input:checkbox').prop('checked', true);
+    }
   });
 
-  $('.study-block').on('hide.bs.collapse', '.study-details', function () {
+  $resultsPanel.on('hide.bs.collapse', '.patient-studies', function (e) {
+    if (e.target !== this) return;
+    updatePatientToggle($(this).closest('.patient-entry'), false);
+  });
+
+  $resultsPanel.on('show.bs.collapse', '.study-details', function (e) {
+    if (e.target !== this) return;
+    hydrateCollapse(this);
+    var $study = $(this).closest('.study-block');
+    updateStudyToggle($study, true);
+
+    // A study can be selected before its deferred series table is hydrated.
+    if ($('#select-all-page').prop('checked') ||
+        $study.find('input[name="select-all-accession-number"]').prop('checked') ||
+        $study.closest('.patient-entry').find('input[name="select-all-patient"]').prop('checked')) {
+      $study.find('input:checkbox').prop('checked', true);
+    }
+  });
+
+  $resultsPanel.on('hide.bs.collapse', '.study-details', function (e) {
+    if (e.target !== this) return;
     updateStudyToggle($(this).closest('.study-block'), false);
   });
 

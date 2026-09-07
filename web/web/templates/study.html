@@ -41,6 +41,9 @@
     </div>
   </div>
   <div class="study-details collapse" id="study-{{ study['AccessionNumber'] }}">
+    {# Series tables and reports can be very large. Template contents are parsed
+       but stay outside the active document until this study is expanded. #}
+    <template class="deferred-collapse-content">
     <div class="study-panels">
       <div class="study-series-panel">
         <div class="study-panel-heading">Series</div>
@@ -96,5 +99,6 @@
         <div id="{{ study['AccessionNumber'] }}-report" class="study-report-body">{{ study['RisReport'] | fix_mojibake }}</div>
       </div>
     </div>
+    </template>
   </div>
 </div>

@@ -48,9 +48,13 @@
         </div>
       </div>
       <div class="patient-studies collapse" id="{{ doc['groupValue'] }}">
-        {% for study in doc.doclist.docs %}
-        {% include 'study.html' %}
-        {% endfor %}
+        {# Keep large result trees inert until a patient is opened. This avoids
+           style calculation and event setup for every hidden study. #}
+        <template class="deferred-collapse-content">
+          {% for study in doc.doclist.docs %}
+          {% include 'study.html' %}
+          {% endfor %}
+        </template>
       </div>
     </li>
     {% endfor %}
