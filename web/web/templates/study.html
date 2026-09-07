@@ -3,48 +3,42 @@
     <div class="results-check">
       <input type="checkbox" class="results-checkbox" name="select-all-accession-number"
         data-patient-id="{{ doc['groupValue'] }}"
-        data-accession-number="{{ study['AccessionNumber'] }}">
+        data-accession-number="{{ study['AccessionNumber'] }}"
+        aria-label="Select study {{ study['AccessionNumber'] }}">
     </div>
     <div class="results-body study-row-main">
-      <button type="button" class="results-text-btn exam-details"
-        data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}">
-        {{ study['AccessionNumber'] }}
-      </button>
+      <span class="study-accession-group">
+        <span class="study-accession">{{ study['AccessionNumber'] }}</span>
+        <button type="button" class="copy-accession-btn" data-accession-number="{{ study['AccessionNumber'] }}"
+          aria-label="Copy accession number {{ study['AccessionNumber'] }}" title="Copy accession number">
+          <span class="bi bi-clipboard-plus copy-accession-icon" aria-hidden="true"></span>
+        </button>
+      </span>
       {% if study.get('StudyDescription') %}
       <span class="study-row-description" title="{{ study['StudyDescription'] | fix_mojibake }}">{{ study['StudyDescription'] | fix_mojibake }}</span>
       {% endif %}
+      <span class="study-inline-meta">
+        <span class="study-meta-item">
+          <span class="study-meta-label">Date</span>
+          <span class="study-meta-value">{{ study['StudyDate'] | to_date }}</span>
+        </span>
+        <span class="study-meta-item">
+          <span class="study-meta-label">Age</span>
+          <span class="study-meta-value">{{ study['PatientAge'] }}</span>
+        </span>
+      </span>
+    </div>
+    <div class="results-meta study-row-actions">
       <a class="view-images-link" target="_blank" rel="noopener"
         href="{{ sectra_uniview_url(study['PatientID'], study['AccessionNumber']) }}">
-        View images <span class="oi oi-external-link small"></span>
+        View images <span class="oi oi-external-link small" aria-hidden="true"></span>
       </a>
-    </div>
-    <div class="results-meta">
-      <button type="button" class="results-icon-btn"
+      <button type="button" class="results-icon-btn exam-toggle"
         data-toggle="collapse" data-target="#study-{{ study['AccessionNumber'] }}"
-        aria-label="Expand study">
+        aria-label="Expand study" aria-expanded="false">
         <span class="oi oi-collapse-down small exam-chevron" aria-hidden="true"></span>
       </button>
     </div>
-  </div>
-  <div class="study-meta">
-    <ul class="study-meta-list">
-      <li class="study-meta-item">
-        <span class="study-meta-label">Date</span>
-        <span class="study-meta-value">{{ study['StudyDate'] | to_date }}</span>
-      </li>
-      <li class="study-meta-item">
-        <span class="study-meta-label">Age</span>
-        <span class="study-meta-value">{{ study['PatientAge'] }}</span>
-      </li>
-      <li class="study-meta-item">
-        <span class="study-meta-label">Referring</span>
-        <span class="study-meta-value">{{ study['ReferringPhysicianName'] | fix_mojibake }}</span>
-      </li>
-      <li class="study-meta-item">
-        <span class="study-meta-label">Institution</span>
-        <span class="study-meta-value">{{ study['InstitutionName'] | fix_mojibake }}</span>
-      </li>
-    </ul>
   </div>
   <div class="study-details collapse" id="study-{{ study['AccessionNumber'] }}">
     <div class="study-panels">

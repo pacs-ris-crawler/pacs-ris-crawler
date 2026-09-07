@@ -236,6 +236,12 @@ body {
     padding-top: 0.35rem;
     padding-bottom: 0.35rem;
     min-height: 1.85rem;
+    cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+.patient-row:hover {
+    background-color: var(--surface-hover);
 }
 
 .patient-row .results-text-btn {
@@ -444,24 +450,104 @@ ul.result .patient-entry + .patient-entry {
     padding-bottom: 0.2rem;
     min-height: 1.5rem;
     gap: 0.35rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
-.study-row .results-text-btn {
+.study-row:hover,
+.study-row.is-expanded {
+    background-color: var(--surface-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .patient-row,
+    .study-row {
+        transition: none;
+    }
+}
+
+.study-accession-group {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    gap: 0.2rem;
+}
+
+.study-accession {
+    color: var(--text-primary);
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.copy-accession-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem 0.2rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: 0;
+    border-radius: 3px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.copy-accession-btn:hover,
+.copy-accession-btn:focus {
+    color: var(--brand-primary);
+    background-color: var(--surface-hover);
+    outline: none;
 }
 
 .study-row-main {
     display: flex;
+    flex: 0 1 auto;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.35rem 0.65rem;
     min-width: 0;
 }
 
+.study-row-actions {
+    gap: 0;
+    margin-left: auto;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--surface);
+}
+
+.study-row-actions .view-images-link,
+.study-row-actions .results-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 1.5rem;
+    padding: 0.2rem 0.45rem;
+    line-height: 1.1;
+}
+
+.study-row-actions .view-images-link {
+    border-right: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.study-row-actions .results-icon-btn {
+    min-width: 1.8rem;
+}
+
+.study-row-actions .view-images-link:hover,
+.study-row-actions .results-icon-btn:hover,
+.study-row-actions .results-icon-btn:focus {
+    background-color: var(--surface-hover);
+    text-decoration: none;
+}
+
 .study-row-description {
     min-width: 0;
-    flex: 1 1 10rem;
+    flex: 0 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -470,19 +556,11 @@ ul.result .patient-entry + .patient-entry {
     color: var(--text-secondary);
 }
 
-.study-meta {
-    padding: 0 0.5rem 0.3rem
-        calc(var(--results-pad-x) + var(--results-check-col) + 0.35rem);
-}
-
-.study-meta-list {
-    display: flex;
-    flex-wrap: wrap;
+.study-inline-meta {
+    display: inline-flex;
     align-items: baseline;
-    gap: 0.2rem 0.55rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    flex: 0 0 auto;
+    gap: 0.55rem;
 }
 
 .study-meta-item {
