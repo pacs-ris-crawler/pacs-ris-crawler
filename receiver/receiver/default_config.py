@@ -28,3 +28,7 @@ DICOMWEB_USER = ''
 DICOMWEB_PASSWORD = ''
 DICOMWEB_VERIFY_SSL = True
 DICOMWEB_MAX_WORKERS = 4
+
+# When WADO-RS retrieval fails, retry that study/series with DIMSE C-MOVE.
+# Requires the normal DICOM_NODES['SECTRA'] DCMTK configuration.
+DICOMWEB_DIMSE_FALLBACK = True

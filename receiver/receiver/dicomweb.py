@@ -6,6 +6,8 @@ DICOM data from a PACS that supports DICOMweb (WADO-RS).
 
 import logging
 import os
+import shlex
+import subprocess
 import sys
 from pathlib import Path
 
@@ -325,17 +327,60 @@ def _download_series_entry(config, entry, dir_name):
     image_folder = _image_folder_path(config, entry, dir_name)
     session = _session(config)
     base_url = _wado_rs_base_url(config)
-    if sop_uid:
-        count = _retrieve_instance(
-            session, base_url, study_uid, series_uid, sop_uid, image_folder,
+    try:
+        if sop_uid:
+            count = _retrieve_instance(
+                session, base_url, study_uid, series_uid, sop_uid, image_folder,
+            )
+        else:
+            count = _retrieve_series(
+                session, base_url, study_uid, series_uid, image_folder,
+            )
+    except (requests.RequestException, ValueError):
+        if not config.get("DICOMWEB_DIMSE_FALLBACK", False):
+            raise
+        logger.warning(
+            "WADO-RS retrieval failed for series %s; retrying with DIMSE C-MOVE",
+            series_uid,
         )
-    else:
-        count = _retrieve_series(session, base_url, study_uid, series_uid, image_folder)
+        count = _download_series_via_dimse(config, entry, image_folder)
     logger.info(
         "Downloaded %d instances for series %s (accession %s)",
         count, series_uid, accession_number,
     )
     return count
+
+
+def _download_series_via_dimse(config, entry, image_folder):
+    """Retrieve one series through C-MOVE after a WADO-RS failure."""
+    from receiver.config import dcmtk_config
+    from receiver.job import base_command_new_pacs
+
+    dcmtk = dcmtk_config(config)
+    level = "IMAGE" if entry.get("sop_instance_uid") else "SERIES"
+    command = (
+        base_command_new_pacs(dcmtk)
+        + f" --output-directory {shlex.quote(image_folder)}"
+        + f" -k StudyInstanceUID={entry['study_uid']}"
+        + f" -k SeriesInstanceUID={entry['series_uid']}"
+    )
+    if level == "IMAGE":
+        command = command.replace("QueryRetrieveLevel=SERIES", "QueryRetrieveLevel=IMAGE")
+        command += f" -k SOPInstanceUID={entry['sop_instance_uid']}"
+
+    os.makedirs(image_folder, exist_ok=True)
+    completed = subprocess.run(
+        shlex.split(command),
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if completed.returncode:
+        raise RuntimeError(
+            f"DIMSE C-MOVE fallback failed with exit status {completed.returncode}",
+        )
+    return sum(1 for path in Path(image_folder).iterdir() if path.is_file())
 
 
 def _queue_dicomweb_download(config, entry, dir_name, image_type, queue_prio):

@@ -1,7 +1,13 @@
 import unittest
 from unittest.mock import Mock, mock_open, patch
 
-from receiver.dicomweb import _retrieve_instance, _retrieve_series
+import requests
+
+from receiver.dicomweb import (
+    _download_series_entry,
+    _retrieve_instance,
+    _retrieve_series,
+)
 
 
 def _response(status, content=b"", content_type=""):
@@ -78,3 +84,27 @@ class RetrieveSeriesAcceptTest(unittest.TestCase):
         self.assertIn("multipart/related", first_accept)
         self.assertIn("transfer-syntax=*", second_accept)
         self.assertEqual(session.get.call_count, 2)
+
+
+class DimseFallbackTest(unittest.TestCase):
+    def test_retries_wado_failure_via_dimse_when_enabled(self):
+        entry = {
+            "study_uid": "1.2.3",
+            "series_uid": "1.2.4",
+            "accession_number": "1",
+            "patient_id": "patient",
+            "series_number": "1",
+        }
+        config = {
+            "IMAGE_FOLDER": "/tmp/images",
+            "DICOMWEB_WADO_BASE_URL": "https://pacs.example/wado",
+            "DICOMWEB_DIMSE_FALLBACK": True,
+        }
+
+        with patch("receiver.dicomweb._session"), \
+             patch("receiver.dicomweb._retrieve_series", side_effect=requests.HTTPError()), \
+             patch("receiver.dicomweb._download_series_via_dimse", return_value=3) as dimse:
+            count = _download_series_entry(config, entry, "download")
+
+        self.assertEqual(count, 3)
+        dimse.assert_called_once()

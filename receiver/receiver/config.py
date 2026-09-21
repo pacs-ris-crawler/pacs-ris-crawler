@@ -42,4 +42,7 @@ def pacs_config(config):
 
 def dcmtk_config(config):
     """Returns the dcmtk configuration."""
-    return DcmtkConfig(config["DCMTK_BIN"], config["DCMIN"])
+    # DCMIN was used by older DCMTK integrations but is not required by
+    # movescu. Keep the attribute for compatibility without making DIMSE
+    # retrieval unavailable to DICOMweb-only configurations.
+    return DcmtkConfig(config["DCMTK_BIN"], config.get("DCMIN", ""))
