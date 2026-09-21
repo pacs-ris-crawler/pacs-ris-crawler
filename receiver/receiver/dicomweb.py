@@ -207,6 +207,7 @@ def _retrieve_instance(session, base_url, study_uid, series_uid, sop_uid, output
 def _retrieve_series(session, base_url, study_uid, series_uid, output_dir):
     """Retrieve all instances of a series via WADO-RS and write .dcm files."""
     attempted_urls = []
+    last_error = None
     for endpoint in [
         # Sectra PACS uses /mrnissuers/all/ prefix (same as QIDO-RS)
         f"{base_url}/mrnissuers/all/studies/{study_uid}/series/{series_uid}",
@@ -215,23 +216,44 @@ def _retrieve_series(session, base_url, study_uid, series_uid, output_dir):
         f"{base_url}/studies/{study_uid}/series/{series_uid}/instances",
     ]:
         attempted_urls.append(endpoint)
-        logger.debug("WADO-RS retrieve attempt: %s", endpoint)
-        resp = session.get(
-            endpoint,
-            headers={"Accept": _WADO_RS_ACCEPTS[0]},
-            stream=True,
-        )
-        if resp.status_code == 404:
-            logger.debug("WADO-RS endpoint returned 404: %s", endpoint)
-            continue
-        resp.raise_for_status()
-        count = _save_wado_payload(resp, output_dir)
-        logger.info(
-            "Retrieved %d instances for series %s (study %s)",
-            count, series_uid, study_uid,
-        )
-        return count
+        for accept in _WADO_RS_ACCEPTS:
+            logger.debug(
+                "WADO-RS retrieve attempt: %s Accept: %s", endpoint, accept,
+            )
+            resp = session.get(
+                endpoint,
+                headers={"Accept": accept},
+                stream=True,
+            )
+            if resp.status_code == 404:
+                logger.debug("WADO-RS endpoint returned 404: %s", endpoint)
+                break
+            if resp.status_code == 406:
+                # Some series contain objects whose transfer syntax the PACS
+                # cannot transcode. Retry while permitting the stored syntax.
+                logger.debug(
+                    "WADO-RS endpoint returned 406 for Accept %s: %s",
+                    accept, endpoint,
+                )
+                last_error = requests.HTTPError(
+                    f"406 Client Error: Not Acceptable for url: {endpoint}",
+                    response=resp,
+                )
+                continue
+            try:
+                resp.raise_for_status()
+            except requests.HTTPError as exc:
+                last_error = exc
+                break
+            count = _save_wado_payload(resp, output_dir)
+            logger.info(
+                "Retrieved %d instances for series %s (study %s)",
+                count, series_uid, study_uid,
+            )
+            return count
 
+    if last_error:
+        raise last_error
     raise ValueError(
         "Failed to retrieve DICOM series with any WADO-RS endpoint. "
         f"Attempted urls: {attempted_urls}",
