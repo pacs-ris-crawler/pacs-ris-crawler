@@ -1,0 +1,67 @@
+<section id="jev-panel" class="d-none" data-max="{{ jev_max_studies }}" aria-label="Kev report annotation">
+  <div class="d-flex align-items-end flex-wrap mb-3">
+    <div class="mb-0 mr-auto">Kev (beta)
+      <span class="oi oi-info" tabindex="0" aria-label="How to use Kev" data-toggle="tooltip" data-placement="bottom" data-html="true"
+            title="<div style='text-align: left;'>
+                   <strong>Purpose</strong><br>
+                   Kev uses an AI model to answer questions from report text.
+                   Use the answers to label studies and select a research cohort in Excel.
+                   Kev processes all studies in the current search, across all pages.<br><br>
+                   <strong>Procedure</strong><br>
+                   1. Limit the search to {{ jev_max_studies | swiss_number }} studies or fewer.<br>
+                   2. Add a query. Enter a name for the Excel column and a question.<br>
+                   3. Select Noul for a yes/no question. Select Choice for named options.<br>
+                   4. For Choice, enter at least two options. Add descriptions if necessary.<br>
+                   5. Select Confirm changes for each query.<br>
+                   6. Select Apply pipeline. Kev sends all questions together for each report.<br>
+                   7. Wait for completion. Export the answers to Excel.<br><br>
+                   <strong>Output and controls</strong><br>
+                   Noul adds the probability of Yes. Choice adds the selected option and its confidence score.<br>
+                   Select Summary to view or download the search criteria and query details.<br>
+                   Use Interrupt to stop after the current batch.<br>
+                   Close &amp; reset clears the Kev queries and answers.
+                   </div>"></span>
+      <input type="hidden" id="jev-name" value="Cohort annotation">
+    </div>
+    <button type="button" id="jev-summary-toggle" class="btn btn-outline-secondary btn-sm ml-2">Summary</button>
+    <button type="button" id="jev-close" class="btn btn-outline-secondary btn-sm ml-2">Close &amp; reset</button>
+  </div>
+  <p class="small text-muted">Annotate the reports in this search for Excel. Up to {{ jev_max_studies | swiss_number }} studies; all questions run together for each report.</p>
+  <div class="jev-layout">
+    <nav aria-label="Queries">
+      <div id="jev-queries" class="list-group mb-2"></div>
+      <button type="button" id="jev-add" class="btn btn-outline-primary btn-sm w-100">+ Add query</button>
+    </nav>
+    <form id="jev-editor">
+      <fieldset id="jev-fields">
+        <div class="row">
+          <label class="col-sm-8">Query name <input id="jev-query-name" class="form-control form-control-sm" required maxlength="120"></label>
+          <label class="col-sm-4">Type <select id="jev-type" class="form-control form-control-sm"><option value="noul">Noul · Yes/No</option><option value="choice">Choice</option></select></label>
+        </div>
+        <label class="w-100">Question <textarea id="jev-question" class="form-control form-control-sm" rows="3" required></textarea></label>
+        <div id="jev-choice" class="d-none mb-2">
+          <div class="small text-muted mb-1">Options · give each a name and, optionally, a description.</div>
+          <div id="jev-options"></div>
+          <button type="button" id="jev-option-add" class="btn btn-outline-secondary btn-sm">+ Add option</button>
+        </div>
+        <div class="d-flex align-items-center">
+          <button class="btn btn-primary btn-sm" type="submit">Confirm changes</button>
+          <span id="jev-draft" class="small ml-2" role="status"></span>
+          <button type="button" id="jev-remove" class="btn btn-link btn-sm ml-auto">Remove query</button>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="border-top mt-3 pt-3">
+    <button type="button" id="jev-apply" class="btn btn-primary btn-sm">Apply pipeline</button>
+    <button type="button" id="jev-interrupt" class="btn btn-outline-secondary btn-sm d-none">Interrupt</button>
+    <span id="jev-export-state" class="small ml-2"></span>
+    <progress id="jev-progress" class="d-none w-100 mt-2" value="0" max="1"></progress>
+    <div id="jev-status" class="small mt-2" role="status" aria-live="polite"></div>
+    <div id="jev-error" class="small text-danger mt-2" role="alert"></div>
+  </div>
+  <div id="jev-summary" class="d-none mt-3">
+    <button type="button" id="jev-summary-download" class="btn btn-outline-secondary btn-sm mb-2">Download summary (.txt)</button>
+    <pre id="jev-summary-text"></pre>
+  </div>
+</section>

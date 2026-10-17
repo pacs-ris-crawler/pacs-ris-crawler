@@ -1,0 +1,10 @@
+#jev-panel { color: var(--text-primary); }
+#jev-panel .jev-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 1.25rem; }
+#jev-panel .list-group-item { background: var(--surface); color: var(--text-primary); border-color: var(--border); text-align: left; overflow-wrap: anywhere; }
+#jev-panel .list-group-item.active { background: var(--brand-primary); color: var(--on-brand); }
+#jev-panel .jev-option { display: grid; grid-template-columns: 1fr 2fr auto; gap: .5rem; margin-bottom: .5rem; }
+#jev-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 360px; color: var(--text-primary); background: var(--surface-muted); padding: .75rem; }
+#jev-panel progress { accent-color: var(--brand-primary); height: .6rem; }
+@media (max-width: 600px) {
+  #jev-panel .jev-layout { grid-template-columns: 1fr; }
+}

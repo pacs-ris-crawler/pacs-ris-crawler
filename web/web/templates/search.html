@@ -225,6 +225,9 @@
           </div>
         </div>
         <div class="col d-flex justify-content-end">
+          {% if show_kev %}
+          <button type="button" id="jev-open" class="btn btn-primary btn-sm align-self-end mr-2">Kev (beta)</button>
+          {% endif %}
           {% if show_llm_assisted_filtering %}
           <button type="button" class="btn btn-primary btn-sm align-self-end mr-2" data-toggle="modal" data-target="#textInputModal">
             LLM-assisted Filtering (beta)
@@ -237,6 +240,7 @@
     <input type="hidden" name="offset" value="{{offset}}">
     <input type="hidden" name="page" value="{{page}}">
 </form>
+{% if show_kev %}{% include "partials/jev.html" %}{% endif %}
 
 {% if show_llm_assisted_filtering %}
 <div class="modal fade" id="textInputModal" tabindex="-1">

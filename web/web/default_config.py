@@ -32,3 +32,9 @@ ZFP_VIEWER = ""
 # LLM-assisted search (vLLM OpenAI-compatible API)
 VLLM_URL = ''
 VLLM_MODEL = ''
+
+# Kev report annotation; set the endpoint in instance/config.cfg to enable.
+JEV_URL = ''
+JEV_MODEL = 'kev-latest'
+JEV_MAX_STUDIES = 5000
+JEV_TIMEOUT = 15

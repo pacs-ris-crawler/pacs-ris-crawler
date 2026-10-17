@@ -81,6 +81,8 @@ def series_num_short(value, max_len=4):
 def inject_ui_flags():
     return dict(
         show_llm_assisted_filtering=SHOW_LLM_ASSISTED_FILTERING,
+        show_kev=bool(app.config["JEV_URL"]),
+        jev_max_studies=app.config["JEV_MAX_STUDIES"],
     )
 
 
@@ -113,9 +115,13 @@ js = Bundle(
     "js/FileSaver.js",
     "js/intercooler.js",
     "js/script.js",
+    "js/jev.js",
     filters="jsmin",
     output="gen/packed.js",
 )
 assets.register("js_all", js)
 
 import web.views
+
+from web.jev import bp as jev_blueprint
+app.register_blueprint(jev_blueprint)

@@ -109,7 +109,7 @@ $(function () {
     return set;
   };
 
-  $('#expand-all').on('click', function (e) {
+  $(document).on('click', '#expand-all', function (e) {
     e.preventDefault();
     // Showing patients hydrates their studies synchronously; query for study
     // details afterwards so Expand all retains its previous behaviour.
@@ -117,14 +117,16 @@ $(function () {
     $('.study-details').collapse('show');
   });
 
-  $('#collapse-all').on('click', function (e) {
+  $(document).on('click', '#collapse-all', function (e) {
     e.preventDefault();
     $('.study-details').collapse('hide');
     $('.patient-studies').collapse('hide');
   });
 
 
-  $('.page-link').on('click', function (e) {
+  $(document).on('click', '.page-link', function (e) {
+    e.preventDefault();
+    if (window.kev && window.kev.isOpen()) { window.kev.page(this); return; }
     page = $(this).data('page');
     offset = $(this).data('offset');
     $('input[name="offset"]').val(offset);
@@ -157,8 +159,10 @@ $(function () {
     $('#loading').removeClass('d-none');
     q = $('#search-form').serialize();
     var xhr = new XMLHttpRequest();
+    var kevExport = window.kev && window.kev.exportData();
     xhr.open('POST', '/export', true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-type", kevExport ? "application/json" : "application/x-www-form-urlencoded");
+    if (kevExport) q = JSON.stringify(kevExport);
     xhr.responseType = 'blob';
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -201,8 +205,10 @@ $(function () {
     $('#loading').removeClass('d-none');
     q = $('#search-form').serialize();
     var xhr = new XMLHttpRequest();
+    var kevExport = window.kev && window.kev.exportData();
     xhr.open('POST', '/export_anon', true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Content-type", kevExport ? "application/json" : "application/x-www-form-urlencoded");
+    if (kevExport) q = JSON.stringify(kevExport);
     xhr.responseType = 'blob';
     xhr.onload = function (e) {
       if (this.status == 200) {
@@ -451,7 +457,7 @@ $(function () {
     $('input[name=download-dir]').removeClass("form-control-danger");
   }
 
-  var $resultsPanel = $('.results-panel');
+  var $resultsPanel = $('#table-view');
 
   $resultsPanel.on('click', 'input[name="select-all-accession-number"]', function (e) {
     var value = $(this).prop("checked")

@@ -14,6 +14,7 @@ import pandas as pd
 import requests
 from flask import render_template, request, send_file, jsonify, current_app
 from requests import RequestException, get, post
+from werkzeug.datastructures import MultiDict
 
 from web.app import (
     RECEIVER_DASHBOARD_URL,
@@ -29,6 +30,7 @@ from web.app import (
     VERSION,
     app,
 )
+from web.jev import annotate_export, summary_lines
 from web.convert import convert
 from web.paging import calc
 from web.query import query_body, query_indexed_dates
@@ -145,7 +147,7 @@ def search():
         offset = params.get("offset", 0)
         paging = calc(results, page, RESULT_LIMIT)
         return render_template(
-            "result.html",
+            "patient.html" if request.headers.get("X-Kev-Page") == "1" else "result.html",
             docs=docs,
             results=results,
             studies_result=studies_result,
@@ -169,31 +171,34 @@ def search():
 
 @app.route("/export_anon", methods=["POST"])
 def export_anon():
-    q = request.form
-    df = query_all(q, solr_url(app.config))
-    if df is not None:
-        df = df.drop(["PatientName", "PatientBirthDate"], axis=1)
-        out = io.BytesIO()
-        writer = pd.ExcelWriter(out, engine="xlsxwriter")
-        df.to_excel(writer, index=False, sheet_name="Sheet1")
-        writer.close()
-        out.seek(0)
-        return send_file(out, download_name="export.xlsx", as_attachment=True)
-    return ("", 204)
+    return export(anonymous=True)
 
 
 @app.route("/export", methods=["POST"])
-def export():
-    q = request.form
+def export(anonymous=False):
+    data = request.get_json() if request.is_json else {}
+    q = MultiDict(data['search']) if data else request.form
+    run = data.get('jev')
     df = query_all(q, solr_url(app.config))
-    if df is not None:
-        out = io.BytesIO()
-        writer = pd.ExcelWriter(out, engine="xlsxwriter")
+    if df is None:
+        return ("", 204)
+    if anonymous:
+        df = df.drop(["PatientName", "PatientBirthDate"], axis=1)
+    if run:
+        try:
+            df = annotate_export(df, run)
+        except (ValueError, KeyError, TypeError):
+            return jsonify(error="Invalid Kev annotation data."), 400
+    out = io.BytesIO()
+    options = {'strings_to_formulas': False, 'strings_to_urls': False} if run else {}
+    with pd.ExcelWriter(out, engine="xlsxwriter", engine_kwargs={'options': options}) as writer:
         df.to_excel(writer, index=False, sheet_name="Sheet1")
-        writer.close()
-        out.seek(0)
-        return send_file(out, download_name="export.xlsx", as_attachment=True)
-    return ("", 204)
+        if run:
+            if anonymous:
+                run = dict(run, search=[p for p in run['search'] if p[0] not in ('PatientName', 'PatientBirthDate')])
+            pd.DataFrame({'Kev summary': summary_lines(run)}).to_excel(writer, index=False, sheet_name='Kev summary')
+    out.seek(0)
+    return send_file(out, download_name="export.xlsx", as_attachment=True)
 
 
 @app.route("/download-all", methods=["POST"])
